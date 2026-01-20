@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>個人復古手札</title>
     <!-- Google Fonts: Cinzel for headers, Lora for body -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,8 +11,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- QR Code Library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <script>
         tailwind.config = {
@@ -50,7 +47,6 @@
             font-family: 'Lora', serif;
             color: #4A4238;
             background-color: #F4F1EA;
-            /* 輕微的噪點紋理增加紙張感 */
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.05'/%3E%3C/svg%3E");
         }
         
@@ -112,7 +108,7 @@
             outline: none;
             transition: all 0.2s;
             box-shadow: 2px 2px 0px 0px transparent;
-            font-size: 16px; /* Prevent iOS zoom */
+            font-size: 16px; 
         }
         input:focus, select:focus, textarea:focus {
             box-shadow: 4px 4px 0px 0px #A67F78;
@@ -122,12 +118,37 @@
             background-color: #EAE5DE;
             cursor: not-allowed;
             opacity: 0.6;
+            color: #8D7F71;
         }
         
         input[readonly] {
             background-color: #EAE5DE;
             color: #8D7F71;
             cursor: not-allowed;
+        }
+
+        /* Range Slider Styling */
+        input[type=range] {
+            -webkit-appearance: none;
+            background: transparent;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            height: 20px;
+            width: 20px;
+            border-radius: 50%;
+            background: #4A4238;
+            border: 2px solid #F4F1EA;
+            cursor: pointer;
+            margin-top: -8px; 
+            box-shadow: 1px 1px 3px rgba(0,0,0,0.3);
+        }
+        input[type=range]::-webkit-slider-runnable-track {
+            width: 100%;
+            height: 4px;
+            cursor: pointer;
+            background: #8D7F71;
+            border-radius: 2px;
         }
 
         /* Checkbox Customization */
@@ -161,20 +182,20 @@
             border-top: 0px solid #4A4238;
         }
         .collapse-content.open {
-            max-height: 2000px; 
+            max-height: 3000px; /* Increased for longer literature forms */
             border-top: 2px solid #4A4238;
         }
         
-        /* Specific transition for the drink form panel */
-        #drink-form-panel, #order-form-panel, #sub-form-panel {
+        /* Specific transitions */
+        #task-form-panel, #drink-form-panel, #order-form-panel, #sub-form-panel, #lit-form-panel {
             transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out, margin 0.4s;
             max-height: 0;
             opacity: 0;
             overflow: hidden;
             margin-bottom: 0;
         }
-        #drink-form-panel.open, #order-form-panel.open, #sub-form-panel.open {
-            max-height: 1000px;
+        #task-form-panel.open, #drink-form-panel.open, #order-form-panel.open, #sub-form-panel.open, #lit-form-panel.open {
+            max-height: 3000px;
             opacity: 1;
             margin-bottom: 1.5rem;
         }
@@ -236,25 +257,30 @@
                 <span class="md:hidden flex items-center gap-2"><span class="text-lg">📅</span><span class="text-xs font-bold">日程</span></span>
                 <span class="hidden md:inline">📅</span>
             </button>
+
             <button onclick="switchTab('drinks')" id="btn-drinks" class="tab-btn p-2 rounded-lg flex items-center justify-center transition-all md:w-14 md:h-14 md:text-2xl" title="飲品紀錄">
                 <span class="md:hidden flex items-center gap-2"><span class="text-lg">🧋</span><span class="text-xs font-bold">飲品</span></span>
                 <span class="hidden md:inline">🧋</span>
             </button>
+            
             <button onclick="switchTab('purchasing')" id="btn-purchasing" class="tab-btn p-2 rounded-lg flex items-center justify-center transition-all md:w-14 md:h-14 md:text-2xl" title="代購管理">
                 <span class="md:hidden flex items-center gap-2"><span class="text-lg">🛍️</span><span class="text-xs font-bold">代購</span></span>
                 <span class="hidden md:inline">🛍️</span>
             </button>
+
             <button onclick="switchTab('subs')" id="btn-subs" class="tab-btn p-2 rounded-lg flex items-center justify-center transition-all md:w-14 md:h-14 md:text-2xl" title="訂閱管理">
                 <span class="md:hidden flex items-center gap-2"><span class="text-lg">💳</span><span class="text-xs font-bold">訂閱</span></span>
                 <span class="hidden md:inline">💳</span>
             </button>
+            
             <button onclick="switchTab('debt')" id="btn-debt" class="tab-btn p-2 rounded-lg flex items-center justify-center transition-all md:w-14 md:h-14 md:text-2xl" title="全球百大企業投資">
                 <span class="md:hidden flex items-center gap-2"><span class="text-lg">💰</span><span class="text-xs font-bold">投資</span></span>
                 <span class="hidden md:inline">💰</span>
             </button>
-            <button onclick="switchTab('tools')" id="btn-tools" class="tab-btn p-2 rounded-lg flex items-center justify-center transition-all md:w-14 md:h-14 md:text-2xl" title="小工具">
-                <span class="md:hidden flex items-center gap-2"><span class="text-lg">🛠️</span><span class="text-xs font-bold">工具</span></span>
-                <span class="hidden md:inline">🛠️</span>
+
+            <button onclick="switchTab('literature')" id="btn-literature" class="tab-btn p-2 rounded-lg flex items-center justify-center transition-all md:w-14 md:h-14 md:text-2xl" title="文獻統整">
+                <span class="md:hidden flex items-center gap-2"><span class="text-lg">📚</span><span class="text-xs font-bold">文獻</span></span>
+                <span class="hidden md:inline">📚</span>
             </button>
         </div>
     </nav>
@@ -264,188 +290,146 @@
         
         <!-- Tab 1: Planner -->
         <div id="tab-planner" class="section-content fade-in space-y-4 md:space-y-8 pb-10">
-            <header class="flex flex-col md:flex-row justify-between items-start md:items-end border-b-4 border-morandi-dark pb-2 mb-2 md:mb-4 gap-2">
-                <div>
-                    <h2 class="text-2xl md:text-4xl font-display font-bold text-morandi-dark">日程與提醒</h2>
-                    <p class="text-xs md:text-sm font-bold text-morandi-brown mt-1 uppercase tracking-widest">Planner & Calendar</p>
-                </div>
-                <div class="flex flex-row-reverse md:flex-col items-end gap-2 w-full md:w-auto justify-between md:justify-start">
-                    <div id="current-date" class="font-display text-xs md:text-base text-morandi-dark font-bold bg-morandi-paper px-2 md:px-3 py-1 border-2 border-morandi-dark shadow-retro-sm flex items-center gap-2 tracking-wide"></div>
-                    <div class="flex gap-2">
-                        <button onclick="exportTasks()" class="btn-retro px-2 md:px-3 py-1 text-[10px] md:text-xs bg-white border-2 border-morandi-dark text-morandi-dark font-bold shadow-retro-sm hover:bg-gray-50"><i class="fas fa-file-export"></i> <span class="hidden md:inline">匯出</span></button>
-                        <label class="btn-retro px-2 md:px-3 py-1 text-[10px] md:text-xs bg-morandi-brown border-2 border-morandi-dark text-white font-bold shadow-retro-sm hover:bg-morandi-brown/80 cursor-pointer flex items-center"><i class="fas fa-file-import mr-1"></i> <span class="hidden md:inline">匯入</span><input type="file" class="hidden" onchange="importTasks(this)"></label>
-                    </div>
-                </div>
-            </header>
-            
-            <!-- Calendar View (Responsive Grid) -->
-            <div class="bg-white border-2 border-morandi-dark shadow-retro mb-4 md:mb-6">
-                <div class="p-3 md:p-6 bg-morandi-bg">
-                    <div class="flex justify-between items-center mb-4">
-                        <button onclick="changeMonth(-1)" class="btn-retro px-3 py-1 bg-white border border-morandi-dark rounded"><i class="fas fa-chevron-left"></i></button>
-                        <h3 id="calendar-month-year" class="text-lg md:text-xl font-display font-bold text-morandi-dark">Month Year</h3>
-                        <button onclick="changeMonth(1)" class="btn-retro px-3 py-1 bg-white border border-morandi-dark rounded"><i class="fas fa-chevron-right"></i></button>
-                    </div>
-                    <div class="grid grid-cols-7 gap-1 text-center font-bold text-morandi-brown text-xs md:text-sm mb-2"><div>日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div></div>
-                    <div id="calendar-grid" class="grid grid-cols-7 gap-1 border-t-2 border-morandi-dark pt-2"></div>
-                </div>
-            </div>
-            
-            <!-- Add Task Form -->
-            <div class="bg-white border-2 border-morandi-dark shadow-retro scroll-mt-20 md:scroll-mt-4" id="add-task-container">
-                <button onclick="toggleCollapse('add-task-content', 'icon-add-task')" class="w-full flex justify-between items-center p-3 md:p-5 bg-morandi-paper hover:bg-morandi-brown/20 transition text-left group">
-                    <span class="font-bold text-base md:text-lg text-morandi-dark"><i class="fas fa-plus-circle mr-2"></i> 新增日程</span>
-                    <i id="icon-add-task" class="fas fa-chevron-down transition-transform border-2 border-morandi-dark rounded-full p-1 w-6 h-6 md:w-8 md:h-8 flex items-center justify-center bg-white text-xs md:text-base"></i>
-                </button>
-                <div id="add-task-content" class="collapse-content bg-white">
-                    <div class="p-4 md:p-6 bg-morandi-bg">
-                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
-                            <div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">日期</label><input type="date" id="task-date" class="p-2 w-full text-sm"></div>
-                            <div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">時間</label><div class="flex items-center gap-2"><input type="time" id="task-time" class="p-2 w-full text-sm"><label class="flex items-center gap-1 whitespace-nowrap text-xs font-bold text-morandi-dark cursor-pointer"><input type="checkbox" id="task-allday" onchange="toggleTimeInput()"> 全日</label></div></div>
-                            <div class="flex flex-col md:col-span-2"><label class="text-xs font-bold text-morandi-dark mb-1">類型</label><select id="task-priority" class="p-2 w-full text-sm font-bold bg-white cursor-pointer"><option value="q1">🔥 緊急且重要</option><option value="q2">⭐ 重要但不緊急</option><option value="q3">⚡ 緊急但不重要</option><option value="q4">☕ 不重要不緊急</option></select></div>
-                            <div class="flex flex-col md:col-span-4"><label class="text-xs font-bold text-morandi-dark mb-1">標題</label><input type="text" id="task-title" placeholder="任務標題..." class="p-2 w-full text-lg font-bold"></div>
-                            <div class="flex flex-col md:col-span-4"><label class="text-xs font-bold text-morandi-dark mb-1">內容</label><textarea id="task-content" rows="3" placeholder="詳細內容..." class="p-2 w-full text-sm"></textarea></div>
-                            <div class="flex flex-col md:col-span-2"><label class="text-xs font-bold text-morandi-dark mb-1">地點</label><input type="text" id="task-location" placeholder="輸入地點" class="p-2 w-full text-sm"></div>
-                            <div class="flex flex-col md:col-span-2"><label class="text-xs font-bold text-morandi-dark mb-1">網址</label><input type="text" id="task-url" placeholder="相關連結..." class="p-2 w-full text-sm"></div>
-                            <div class="md:col-span-4 mt-2"><button onclick="addTask()" class="btn-retro w-full bg-morandi-dark text-white py-3 border-2 border-morandi-dark font-bold hover:bg-gray-800 shadow-retro-sm"><i class="fas fa-feather-alt mr-2"></i> 新增</button></div>
+             <header class="flex flex-col md:flex-row justify-between items-start md:items-end border-b-4 border-morandi-dark pb-2 mb-2 md:mb-4 gap-2"><div><h2 class="text-2xl md:text-4xl font-display font-bold text-morandi-dark">日程與提醒</h2><p class="text-xs md:text-sm font-bold text-morandi-brown mt-1 uppercase tracking-widest">Planner & Calendar</p></div><div class="flex flex-row-reverse md:flex-col items-end gap-2 w-full md:w-auto justify-between md:justify-start"><div id="current-date" class="font-display text-xs md:text-base text-morandi-dark font-bold bg-morandi-paper px-2 md:px-3 py-1 border-2 border-morandi-dark shadow-retro-sm flex items-center gap-2 tracking-wide"></div>
+             
+             <!-- Moved Add Button Here -->
+             <div class="flex gap-2">
+                 <button onclick="toggleTaskForm()" class="btn-retro px-2 md:px-3 py-1 text-[10px] md:text-xs bg-morandi-dark text-white font-bold shadow-retro-sm hover:bg-gray-700"><i class="fas fa-plus mr-1"></i> 新增</button>
+                 <button onclick="exportTasks()" class="btn-retro px-2 md:px-3 py-1 text-[10px] md:text-xs bg-white border-2 border-morandi-dark text-morandi-dark font-bold shadow-retro-sm hover:bg-gray-50"><i class="fas fa-file-export"></i> <span class="hidden md:inline">匯出</span></button>
+                 <label class="btn-retro px-2 md:px-3 py-1 text-[10px] md:text-xs bg-morandi-brown border-2 border-morandi-dark text-white font-bold shadow-retro-sm hover:bg-morandi-brown/80 cursor-pointer flex items-center"><i class="fas fa-file-import mr-1"></i> <span class="hidden md:inline">匯入</span><input type="file" class="hidden" onchange="importTasks(this)"></label>
+             </div>
+             
+             </div></header>
+             
+             <!-- Collapsible Task Form Panel (Moved to top) -->
+             <div id="task-form-panel" class="bg-white border-2 border-morandi-dark shadow-retro mb-4 md:mb-6 overflow-hidden">
+                <div class="p-4 md:p-6 bg-morandi-bg">
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+                        <div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">日期</label><input type="date" id="task-date" class="p-2 w-full text-sm"></div>
+                        <div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">時間</label><div class="flex items-center gap-2"><input type="time" id="task-time" class="p-2 w-full text-sm"><label class="flex items-center gap-1 whitespace-nowrap text-xs font-bold text-morandi-dark cursor-pointer"><input type="checkbox" id="task-allday" onchange="toggleTimeInput()"> 全日</label></div></div>
+                        <div class="flex flex-col md:col-span-2"><label class="text-xs font-bold text-morandi-dark mb-1">類型</label><select id="task-priority" class="p-2 w-full text-sm font-bold bg-white cursor-pointer"><option value="q1">🔥 緊急且重要</option><option value="q2">⭐ 重要但不緊急</option><option value="q3">⚡ 緊急但不重要</option><option value="q4">☕ 不重要不緊急</option></select></div>
+                        <div class="flex flex-col md:col-span-4"><label class="text-xs font-bold text-morandi-dark mb-1">標題</label><input type="text" id="task-title" placeholder="任務標題..." class="p-2 w-full text-lg font-bold"></div>
+                        <div class="flex flex-col md:col-span-4"><label class="text-xs font-bold text-morandi-dark mb-1">內容</label><textarea id="task-content" rows="3" placeholder="詳細內容..." class="p-2 w-full text-sm"></textarea></div>
+                        <div class="flex flex-col md:col-span-2"><label class="text-xs font-bold text-morandi-dark mb-1">地點</label><input type="text" id="task-location" placeholder="輸入地點" class="p-2 w-full text-sm"></div>
+                        <div class="flex flex-col md:col-span-2"><label class="text-xs font-bold text-morandi-dark mb-1">網址</label><input type="text" id="task-url" placeholder="相關連結..." class="p-2 w-full text-sm"></div>
+                        <div class="md:col-span-4 mt-2 text-right">
+                            <button onclick="toggleTaskForm()" class="btn-retro px-4 py-2 bg-gray-200 text-gray-700 font-bold rounded mr-2 hover:bg-gray-300">取消</button>
+                            <button onclick="addTask()" class="btn-retro px-6 py-2 bg-morandi-dark text-white border-2 border-morandi-dark font-bold hover:bg-gray-800 shadow-retro-sm"><i class="fas fa-feather-alt mr-2"></i> 新增</button>
                         </div>
                     </div>
                 </div>
-            </div>
-            
-            <!-- Matrix -->
-            <div class="bg-white border-2 border-morandi-dark shadow-retro mt-4 md:mt-6">
+             </div>
+
+             <div class="bg-white border-2 border-morandi-dark shadow-retro mb-4 md:mb-6"><div class="p-3 md:p-6 bg-morandi-bg"><div class="flex justify-between items-center mb-4"><button onclick="changeMonth(-1)" class="btn-retro px-3 py-1 bg-white border border-morandi-dark rounded"><i class="fas fa-chevron-left"></i></button><h3 id="calendar-month-year" class="text-lg md:text-xl font-display font-bold text-morandi-dark">Month Year</h3><button onclick="changeMonth(1)" class="btn-retro px-3 py-1 bg-white border border-morandi-dark rounded"><i class="fas fa-chevron-right"></i></button></div><div class="grid grid-cols-7 gap-1 text-center font-bold text-morandi-brown text-xs md:text-sm mb-2"><div>日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div></div><div id="calendar-grid" class="grid grid-cols-7 gap-1 border-t-2 border-morandi-dark pt-2"></div></div></div>
+             
+             <!-- List View Matrix -->
+             <div class="bg-white border-2 border-morandi-dark shadow-retro mt-4 md:mt-6">
                 <button onclick="toggleCollapse('matrix-content', 'icon-matrix-view')" class="w-full flex justify-between items-center p-3 md:p-5 bg-morandi-paper hover:bg-morandi-brown/20 transition text-left group">
-                    <span class="font-bold text-base md:text-lg text-morandi-dark"><i class="fas fa-th-large mr-2"></i> 待辦矩陣</span>
+                    <span class="font-bold text-base md:text-lg text-morandi-dark"><i class="fas fa-list-ul mr-2"></i> 待辦清單</span>
                     <i id="icon-matrix-view" class="fas fa-chevron-down transition-transform border-2 border-morandi-dark rounded-full p-1 w-6 h-6 md:w-8 md:h-8 flex items-center justify-center bg-white text-xs md:text-base"></i>
                 </button>
                 <div id="matrix-content" class="collapse-content bg-white open">
                     <div class="p-3 md:p-6 bg-morandi-bg">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
-                            <div class="bg-white border-2 border-morandi-dark shadow-retro-sm flex flex-col relative h-[250px] md:h-[350px]"><div class="bg-morandi-pink border-b-2 border-morandi-dark p-2 md:p-3 flex justify-between items-center"><h3 class="font-bold text-morandi-dark text-sm md:text-base"><i class="fas fa-fire mr-2"></i> 緊急重要</h3><span class="font-display font-bold text-lg md:text-xl opacity-50">I</span></div><div class="p-2 md:p-4 h-full overflow-y-auto custom-scroll"><ul id="list-q1" class="space-y-3"></ul></div></div>
-                            <div class="bg-white border-2 border-morandi-dark shadow-retro-sm flex flex-col relative h-[250px] md:h-[350px]"><div class="bg-morandi-blue border-b-2 border-morandi-dark p-2 md:p-3 flex justify-between items-center"><h3 class="font-bold text-morandi-dark text-sm md:text-base"><i class="fas fa-star mr-2"></i> 重要不急</h3><span class="font-display font-bold text-lg md:text-xl opacity-50">II</span></div><div class="p-2 md:p-4 h-full overflow-y-auto custom-scroll"><ul id="list-q2" class="space-y-3"></ul></div></div>
-                            <div class="bg-white border-2 border-morandi-dark shadow-retro-sm flex flex-col relative h-[250px] md:h-[350px]"><div class="bg-yellow-200 border-b-2 border-morandi-dark p-2 md:p-3 flex justify-between items-center"><h3 class="font-bold text-morandi-dark text-sm md:text-base"><i class="fas fa-bolt mr-2"></i> 緊急不重</h3><span class="font-display font-bold text-lg md:text-xl opacity-50">III</span></div><div class="p-2 md:p-4 h-full overflow-y-auto custom-scroll"><ul id="list-q3" class="space-y-3"></ul></div></div>
-                            <div class="bg-white border-2 border-morandi-dark shadow-retro-sm flex flex-col relative h-[250px] md:h-[350px]"><div class="bg-gray-200 border-b-2 border-morandi-dark p-2 md:p-3 flex justify-between items-center"><h3 class="font-bold text-morandi-dark text-sm md:text-base"><i class="fas fa-coffee mr-2"></i> 不急不重</h3><span class="font-display font-bold text-lg md:text-xl opacity-50">IV</span></div><div class="p-2 md:p-4 h-full overflow-y-auto custom-scroll"><ul id="list-q4" class="space-y-3"></ul></div></div>
+                        <div class="bg-white border-2 border-morandi-dark shadow-retro-sm">
+                            <div class="p-3 bg-morandi-paper border-b-2 border-morandi-dark flex justify-between items-center">
+                                 <span class="font-bold text-morandi-dark">所有待辦事項</span>
+                                 <span class="text-xs text-morandi-brown font-bold">按優先級排序</span>
+                            </div>
+                            <ul id="all-tasks-list" class="divide-y divide-morandi-dark/10"></ul>
+                            <div id="empty-tasks-msg" class="hidden p-8 text-center text-morandi-brown text-sm font-bold">目前沒有待辦事項，去新增一些吧！</div>
                         </div>
                     </div>
                 </div>
-            </div>
+             </div>
         </div>
 
         <!-- Tab 2: Drinks Tracker -->
         <div id="tab-drinks" class="section-content hidden fade-in space-y-4 md:space-y-8 pb-10">
-            <header class="flex flex-col md:flex-row justify-between items-start md:items-end border-b-4 border-morandi-dark pb-2 mb-4 gap-2">
-                <div>
-                    <h2 class="text-2xl md:text-4xl font-display font-bold text-morandi-dark">飲品紀錄</h2>
-                    <p class="text-xs md:text-sm font-bold text-morandi-brown mt-1 uppercase tracking-widest">Beverage Log</p>
-                </div>
-                <div class="flex flex-wrap gap-2 justify-end w-full md:w-auto">
-                    <button onclick="toggleDrinkForm()" class="btn-retro px-2 md:px-3 py-1 text-[10px] md:text-xs bg-morandi-dark text-white font-bold shadow-retro-sm hover:bg-gray-700"><i class="fas fa-plus mr-1"></i> 新增</button>
-                    <button onclick="exportDrinks()" class="btn-retro px-2 md:px-3 py-1 text-[10px] md:text-xs bg-white border-2 border-morandi-dark text-morandi-dark font-bold shadow-retro-sm hover:bg-gray-50"><i class="fas fa-file-export"></i> <span class="hidden md:inline">匯出</span></button>
-                    <label class="btn-retro px-2 md:px-3 py-1 text-[10px] md:text-xs bg-morandi-brown border-2 border-morandi-dark text-white font-bold shadow-retro-sm hover:bg-morandi-brown/80 cursor-pointer flex items-center"><i class="fas fa-file-import mr-1"></i> <span class="hidden md:inline">匯入</span><input type="file" class="hidden" onchange="importDrinks(this)"></label>
-                </div>
-            </header>
+            <!-- Drinks content preserved -->
+            <header class="flex flex-col md:flex-row justify-between items-start md:items-end border-b-4 border-morandi-dark pb-2 mb-4 gap-2"><div><h2 class="text-2xl md:text-4xl font-display font-bold text-morandi-dark">飲品紀錄</h2><p class="text-xs md:text-sm font-bold text-morandi-brown mt-1 uppercase tracking-widest">Beverage Log</p></div><div class="flex flex-wrap gap-2 justify-end w-full md:w-auto"><button onclick="toggleDrinkForm()" class="btn-retro px-2 md:px-3 py-1 text-[10px] md:text-xs bg-morandi-dark text-white font-bold shadow-retro-sm hover:bg-gray-700"><i class="fas fa-plus mr-1"></i> 新增</button><button onclick="exportDrinks()" class="btn-retro px-2 md:px-3 py-1 text-[10px] md:text-xs bg-white border-2 border-morandi-dark text-morandi-dark font-bold shadow-retro-sm hover:bg-gray-50"><i class="fas fa-file-export"></i> <span class="hidden md:inline">匯出</span></button><label class="btn-retro px-2 md:px-3 py-1 text-[10px] md:text-xs bg-morandi-brown border-2 border-morandi-dark text-white font-bold shadow-retro-sm hover:bg-morandi-brown/80 cursor-pointer flex items-center"><i class="fas fa-file-import mr-1"></i> <span class="hidden md:inline">匯入</span><input type="file" class="hidden" onchange="importDrinks(this)"></label></div></header>
+            <div id="drink-form-panel" class="bg-white border-2 border-morandi-dark shadow-retro mb-4 md:mb-6 overflow-hidden"><div class="p-4 md:p-6 bg-morandi-bg"><h4 class="font-bold text-lg text-morandi-dark mb-4 border-b border-morandi-brown/30 pb-2">新增飲品紀錄</h4><div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6 mb-4"><div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">日期</label><input type="date" id="drink-date" class="p-3 w-full text-sm"></div><div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">店家</label><input type="text" id="drink-shop" placeholder="例：50嵐" class="p-3 w-full text-sm"></div><div class="flex flex-col md:col-span-2"><label class="text-xs font-bold text-morandi-dark mb-1">飲料名稱</label><input type="text" id="drink-name" placeholder="例：四季春珍波椰" class="p-3 w-full text-sm"></div><div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">冰塊</label><select id="drink-ice" class="p-3 w-full text-sm font-bold bg-white"><option value="正常">正常</option><option value="少冰">少冰</option><option value="微冰">微冰</option><option value="去冰">去冰</option><option value="常溫">常溫</option><option value="溫">溫</option><option value="無">無法調整/無</option></select></div><div class="flex flex-col"><div class="flex justify-between items-end mb-2"><label class="text-xs font-bold text-morandi-dark">甜度</label><span id="drink-sugar-display" class="text-xs font-bold text-morandi-brown bg-white px-2 py-1 border border-morandi-dark rounded">無/無法調整</span></div><input type="range" id="drink-sugar" min="0" max="6" value="0" step="1" class="w-full h-2 bg-morandi-brown/30 rounded-lg appearance-none cursor-pointer accent-morandi-dark mt-2" oninput="updateSugarDisplay()"><div class="flex justify-between text-[10px] text-gray-400 mt-1"><span>無</span><span>全</span></div></div><div class="flex flex-col md:col-span-2"><label class="text-xs font-bold text-morandi-dark mb-1">金額 (NT$)</label><div class="flex flex-col md:flex-row items-stretch md:items-center gap-3"><input type="number" id="drink-price" placeholder="50" class="p-3 w-full text-sm flex-1 transition-colors disabled:bg-gray-200 disabled:text-gray-400"><div class="flex gap-2 overflow-x-auto pb-1 md:pb-0 no-scrollbar"><label class="flex items-center gap-1 whitespace-nowrap text-xs font-bold text-morandi-dark cursor-pointer bg-white px-3 py-2 border border-morandi-dark rounded shadow-sm hover:bg-gray-50 flex-shrink-0"><input type="checkbox" id="drink-treat" onchange="toggleDrinkPriceState()"> 🎁 請客</label><label class="flex items-center gap-1 whitespace-nowrap text-xs font-bold text-morandi-dark cursor-pointer bg-white px-3 py-2 border border-morandi-dark rounded shadow-sm hover:bg-gray-50 flex-shrink-0"><input type="checkbox" id="drink-meal" onchange="toggleDrinkPriceState()"> 🍱 隨餐</label><label class="flex items-center gap-1 whitespace-nowrap text-xs font-bold text-morandi-dark cursor-pointer bg-white px-3 py-2 border border-morandi-dark rounded shadow-sm hover:bg-gray-50 flex-shrink-0"><input type="checkbox" id="drink-eco"> ♻️ 環保</label></div></div></div></div><div class="mt-2 text-right"><button onclick="toggleDrinkForm()" class="btn-retro px-4 py-2 bg-gray-200 text-gray-700 font-bold rounded mr-2 hover:bg-gray-300">取消</button><button onclick="addDrink()" class="btn-retro px-6 py-2 bg-morandi-blue text-white border-2 border-morandi-dark font-bold hover:bg-morandi-blue/90 shadow-retro-sm">儲存</button></div></div></div>
+            <div class="bg-white border-2 border-morandi-dark shadow-retro mb-4 md:mb-6"><div class="p-4 md:p-6 bg-morandi-bg"><div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 text-center"><div class="p-4 md:p-6 bg-morandi-green text-white border-2 border-morandi-dark shadow-retro-sm transform hover:-translate-y-1 transition-transform"><h4 class="font-bold text-sm mb-2 uppercase tracking-wider opacity-80">總花費 (今年)</h4><p class="text-3xl md:text-4xl font-display font-bold" id="stat-total-cost">NT$ 0</p><p class="text-xs md:text-sm mt-2 font-bold bg-white/20 inline-block px-3 py-1 rounded-full" id="stat-total-cups">共 0 杯</p></div><div class="p-4 md:p-6 bg-morandi-blue text-white border-2 border-morandi-dark shadow-retro-sm transform hover:-translate-y-1 transition-transform"><h4 class="font-bold text-sm mb-2 uppercase tracking-wider opacity-80">最常去</h4><p class="text-xl md:text-2xl font-display font-bold mt-2 break-words leading-tight" id="stat-fav-shop">-</p></div><div class="p-4 md:p-6 bg-morandi-pink text-white border-2 border-morandi-dark shadow-retro-sm transform hover:-translate-y-1 transition-transform"><h4 class="font-bold text-sm mb-2 uppercase tracking-wider opacity-80">最愛喝</h4><p class="text-xl md:text-2xl font-display font-bold mt-2 break-words leading-tight" id="stat-fav-drink">-</p></div></div></div></div>
+            <div class="bg-white border-2 border-morandi-dark shadow-retro mb-4 md:mb-6"><div class="p-3 md:p-6 bg-morandi-bg"><div class="flex justify-between items-center mb-4"><button onclick="changeDrinkMonth(-1)" class="btn-retro px-3 py-1 bg-white border border-morandi-dark rounded"><i class="fas fa-chevron-left"></i></button><h3 id="drink-calendar-month-year" class="text-lg md:text-xl font-display font-bold text-morandi-dark">Month Year</h3><button onclick="changeDrinkMonth(1)" class="btn-retro px-3 py-1 bg-white border border-morandi-dark rounded"><i class="fas fa-chevron-right"></i></button></div><div class="grid grid-cols-7 gap-1 text-center font-bold text-morandi-brown text-xs md:text-sm mb-2"><div>日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div></div><div id="drink-calendar-grid" class="grid grid-cols-7 gap-1 border-t-2 border-morandi-dark pt-2"></div></div></div>
             
-            <!-- Hidden Slide-down Add Form -->
-            <div id="drink-form-panel" class="bg-white border-2 border-morandi-dark shadow-retro mb-4 md:mb-6 overflow-hidden">
-                <div class="p-4 md:p-6 bg-morandi-bg">
-                    <h4 class="font-bold text-lg text-morandi-dark mb-4 border-b border-morandi-brown/30 pb-2">新增飲品紀錄</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-6 mb-4">
-                        <div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">日期</label><input type="date" id="drink-date" class="p-3 w-full text-sm"></div>
-                        <div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">店家</label><input type="text" id="drink-shop" placeholder="例：50嵐" class="p-3 w-full text-sm"></div>
-                        <div class="flex flex-col md:col-span-2"><label class="text-xs font-bold text-morandi-dark mb-1">飲料名稱</label><input type="text" id="drink-name" placeholder="例：四季春珍波椰" class="p-3 w-full text-sm"></div>
-                        <div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">冰塊</label><select id="drink-ice" class="p-3 w-full text-sm font-bold bg-white"><option value="正常">正常</option><option value="少冰">少冰</option><option value="微冰">微冰</option><option value="去冰">去冰</option><option value="常溫">常溫</option><option value="溫">溫</option><option value="無">無法調整/無</option></select></div>
-                        <div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">甜度</label><select id="drink-sugar" class="p-3 w-full text-sm font-bold bg-white"><option value="正常">正常</option><option value="少糖">少糖</option><option value="微糖">微糖</option><option value="無糖">無糖</option><option value="無">無法調整/無</option></select></div>
-                        <div class="flex flex-col md:col-span-2">
-                            <label class="text-xs font-bold text-morandi-dark mb-1">金額 (NT$)</label>
-                            <div class="flex items-center gap-3">
-                                <input type="number" id="drink-price" placeholder="50" class="p-3 w-full text-sm flex-1">
-                                <label class="flex items-center gap-1 whitespace-nowrap text-xs font-bold text-morandi-dark cursor-pointer bg-white px-3 py-2 border border-morandi-dark rounded shadow-sm hover:bg-gray-50"><input type="checkbox" id="drink-treat"> 🎁 被請客</label>
-                                <label class="flex items-center gap-1 whitespace-nowrap text-xs font-bold text-morandi-dark cursor-pointer bg-white px-3 py-2 border border-morandi-dark rounded shadow-sm hover:bg-gray-50"><input type="checkbox" id="drink-eco"> ♻️ 環保杯</label>
-                            </div>
+            <!-- Records and Chart Merged Row -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6 mt-4 md:mt-6">
+                <!-- Recent Records (Span 2) -->
+                <div class="lg:col-span-2 bg-white border-2 border-morandi-dark shadow-retro p-0 h-full flex flex-col">
+                    <h3 class="font-bold text-morandi-dark p-3 md:p-4 bg-morandi-paper border-b-2 border-morandi-dark">最近紀錄</h3>
+                    <div class="overflow-x-auto p-2 md:p-4 flex-1 max-h-[400px] overflow-y-auto custom-scroll">
+                        <table class="w-full text-sm text-left border-collapse min-w-[400px] md:min-w-0">
+                            <thead class="text-morandi-dark sticky top-0 bg-white shadow-sm">
+                                <tr>
+                                    <th class="p-2 md:p-3 border-b-2 border-morandi-dark whitespace-nowrap">日期</th>
+                                    <th class="p-2 md:p-3 border-b-2 border-morandi-dark whitespace-nowrap">店家</th>
+                                    <th class="p-2 md:p-3 border-b-2 border-morandi-dark whitespace-nowrap">品項</th>
+                                    <th class="p-2 md:p-3 border-b-2 border-morandi-dark whitespace-nowrap">金額</th>
+                                    <th class="p-2 md:p-3 border-b-2 border-morandi-dark w-10"></th>
+                                </tr>
+                            </thead>
+                            <tbody id="drink-list-body"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Pie Chart (Span 1) -->
+                <div class="lg:col-span-1 bg-white border-2 border-morandi-dark shadow-retro h-full flex flex-col">
+                    <h3 class="font-bold text-morandi-dark p-3 md:p-4 bg-morandi-paper border-b-2 border-morandi-dark">消費趨勢</h3>
+                    <div class="p-4 md:p-6 bg-morandi-bg flex-1 flex items-center justify-center">
+                        <div class="flex flex-col items-center justify-center gap-4 p-4 bg-white/50 border border-morandi-dark/20 rounded w-full h-full">
+                            <div id="chart-pie" class="w-32 h-32 md:w-36 md:h-36 rounded-full border-2 border-morandi-dark shadow-sm bg-gray-100 flex items-center justify-center text-xs text-gray-400">無資料</div>
+                            <div id="chart-legend" class="text-xs space-y-2 font-bold text-morandi-dark"></div>
                         </div>
                     </div>
-                    <div class="mt-2 text-right">
-                        <button onclick="toggleDrinkForm()" class="btn-retro px-4 py-2 bg-gray-200 text-gray-700 font-bold rounded mr-2 hover:bg-gray-300">取消</button>
-                        <button onclick="addDrink()" class="btn-retro px-6 py-2 bg-morandi-blue text-white border-2 border-morandi-dark font-bold hover:bg-morandi-blue/90 shadow-retro-sm">儲存</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Permanent Stats Section -->
-            <div class="bg-white border-2 border-morandi-dark shadow-retro mb-4 md:mb-6">
-                <div class="p-4 md:p-6 bg-morandi-bg">
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6 text-center mb-6">
-                        <div class="p-4 md:p-6 bg-morandi-green text-white border-2 border-morandi-dark shadow-retro-sm transform hover:-translate-y-1 transition-transform"><h4 class="font-bold text-sm mb-2 uppercase tracking-wider opacity-80">總花費 (今年)</h4><p class="text-3xl md:text-4xl font-display font-bold" id="stat-total-cost">NT$ 0</p><p class="text-xs md:text-sm mt-2 font-bold bg-white/20 inline-block px-3 py-1 rounded-full" id="stat-total-cups">共 0 杯</p></div>
-                        <div class="p-4 md:p-6 bg-morandi-blue text-white border-2 border-morandi-dark shadow-retro-sm transform hover:-translate-y-1 transition-transform"><h4 class="font-bold text-sm mb-2 uppercase tracking-wider opacity-80">最常去</h4><p class="text-xl md:text-2xl font-display font-bold mt-2 break-words leading-tight" id="stat-fav-shop">-</p></div>
-                        <div class="p-4 md:p-6 bg-morandi-pink text-white border-2 border-morandi-dark shadow-retro-sm transform hover:-translate-y-1 transition-transform"><h4 class="font-bold text-sm mb-2 uppercase tracking-wider opacity-80">最愛喝</h4><p class="text-xl md:text-2xl font-display font-bold mt-2 break-words leading-tight" id="stat-fav-drink">-</p></div>
-                    </div>
-                    <div class="px-2">
-                        <h4 class="text-xs font-bold text-morandi-brown mb-4 border-b border-morandi-brown/30 pb-1 inline-block uppercase tracking-widest">消費趨勢</h4>
-                        <div id="chart-bars" class="h-32 md:h-48 flex items-end justify-around space-x-2 md:space-x-4 px-2 md:px-4 pt-4 border-l-2 border-b-2 border-morandi-dark bg-white/50"><div class="text-xs text-gray-400 w-full text-center flex items-center justify-center h-full">暫無資料</div></div>
-                    </div>
-                </div>
-            </div>
-
-             <!-- Permanent Drink Calendar (Moved Below Chart) -->
-             <div class="bg-white border-2 border-morandi-dark shadow-retro mb-4 md:mb-6">
-                <div class="p-3 md:p-6 bg-morandi-bg">
-                    <div class="flex justify-between items-center mb-4">
-                        <button onclick="changeDrinkMonth(-1)" class="btn-retro px-3 py-1 bg-white border border-morandi-dark rounded"><i class="fas fa-chevron-left"></i></button>
-                        <h3 id="drink-calendar-month-year" class="text-lg md:text-xl font-display font-bold text-morandi-dark">Month Year</h3>
-                        <button onclick="changeDrinkMonth(1)" class="btn-retro px-3 py-1 bg-white border border-morandi-dark rounded"><i class="fas fa-chevron-right"></i></button>
-                    </div>
-                    <div class="grid grid-cols-7 gap-1 text-center font-bold text-morandi-brown text-xs md:text-sm mb-2"><div>日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div></div>
-                    <div id="drink-calendar-grid" class="grid grid-cols-7 gap-1 border-t-2 border-morandi-dark pt-2"></div>
-                </div>
-            </div>
-            
-            <div class="bg-white border-2 border-morandi-dark shadow-retro p-0 mt-4 md:mt-6">
-                <h3 class="font-bold text-morandi-dark p-3 md:p-4 bg-morandi-paper border-b-2 border-morandi-dark">最近紀錄</h3>
-                <div class="overflow-x-auto p-2 md:p-4">
-                    <table class="w-full text-sm text-left border-collapse min-w-[500px] md:min-w-0">
-                        <thead class="text-morandi-dark"><tr><th class="p-2 md:p-3 border-b-2 border-morandi-dark whitespace-nowrap">日期</th><th class="p-2 md:p-3 border-b-2 border-morandi-dark whitespace-nowrap">店家/品項</th><th class="p-2 md:p-3 border-b-2 border-morandi-dark">冰甜/備註</th><th class="p-2 md:p-3 border-b-2 border-morandi-dark whitespace-nowrap">金額</th><th class="p-2 md:p-3 border-b-2 border-morandi-dark w-10"></th></tr></thead>
-                        <tbody id="drink-list-body"></tbody>
-                    </table>
                 </div>
             </div>
         </div>
         
         <!-- Tab 3: Purchasing -->
         <div id="tab-purchasing" class="section-content hidden fade-in space-y-4 md:space-y-8 pb-10">
-            <header class="flex flex-col md:flex-row justify-between items-start md:items-end border-b-4 border-morandi-dark pb-2 mb-4 gap-2">
-                <div>
-                    <h2 class="text-2xl md:text-4xl font-display font-bold text-morandi-dark">代購管理</h2>
-                    <p class="text-xs md:text-sm font-bold text-morandi-brown mt-1 uppercase tracking-widest">Purchasing</p>
-                </div>
-                <div class="flex flex-wrap gap-2 justify-end w-full md:w-auto">
-                    <button onclick="toggleOrderForm()" class="btn-retro px-2 md:px-3 py-1 text-[10px] md:text-xs bg-morandi-dark text-white font-bold shadow-retro-sm hover:bg-gray-700"><i class="fas fa-plus mr-1"></i> 新增</button>
-                    <button onclick="exportOrders()" class="btn-retro px-2 md:px-3 py-1 text-[10px] md:text-xs bg-white border-2 border-morandi-dark text-morandi-dark font-bold shadow-retro-sm hover:bg-gray-50"><i class="fas fa-file-export"></i> <span class="hidden md:inline">匯出</span></button>
-                    <label class="btn-retro px-2 md:px-3 py-1 text-[10px] md:text-xs bg-morandi-brown border-2 border-morandi-dark text-white font-bold shadow-retro-sm hover:bg-morandi-brown/80 cursor-pointer flex items-center"><i class="fas fa-file-import mr-1"></i> <span class="hidden md:inline">匯入</span><input type="file" class="hidden" onchange="importOrders(this)"></label>
-                </div>
-            </header>
+            <header class="flex flex-col md:flex-row justify-between items-start md:items-end border-b-4 border-morandi-dark pb-2 mb-4 gap-2"><div><h2 class="text-2xl md:text-4xl font-display font-bold text-morandi-dark">代購管理</h2><p class="text-xs md:text-sm font-bold text-morandi-brown mt-1 uppercase tracking-widest">Purchasing</p></div><div class="flex gap-2"><button onclick="exportOrders()" class="btn-retro px-2 md:px-3 py-1 text-[10px] md:text-xs bg-white border-2 border-morandi-dark text-morandi-dark font-bold shadow-retro-sm hover:bg-gray-50"><i class="fas fa-file-export"></i> <span class="hidden md:inline">匯出</span></button><label class="btn-retro px-2 md:px-3 py-1 text-[10px] md:text-xs bg-morandi-brown border-2 border-morandi-dark text-white font-bold shadow-retro-sm hover:bg-morandi-brown/80 cursor-pointer flex items-center"><i class="fas fa-file-import mr-1"></i> <span class="hidden md:inline">匯入</span><input type="file" class="hidden" onchange="importOrders(this)"></label></div></header>
+            <div class="bg-white border-2 border-morandi-dark shadow-retro"><button onclick="toggleOrderForm()" class="w-full flex justify-between items-center p-3 md:p-5 bg-morandi-paper hover:bg-morandi-brown/20 transition text-left group"><span class="font-bold text-base md:text-lg text-morandi-dark"><i class="fas fa-calculator mr-2"></i> 新增訂單</span><i id="icon-purchasing" class="fas fa-chevron-down transition-transform border-2 border-morandi-dark rounded-full p-1 w-6 h-6 md:w-8 md:h-8 flex items-center justify-center bg-white text-xs md:text-base"></i></button></div>
             
-            <!-- Hidden Order Form -->
             <div id="order-form-panel" class="bg-white border-2 border-morandi-dark shadow-retro mb-4 md:mb-6 overflow-hidden">
                 <div class="p-4 md:p-6 bg-morandi-bg">
                     <h4 class="font-bold text-lg text-morandi-dark mb-4 border-b border-morandi-brown/30 pb-2">新增訂單</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4 mb-4">
-                            <div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">日期</label><input type="date" id="order-date" class="p-2 w-full text-sm"></div>
-                            <div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">代號</label><input type="text" id="order-code" class="p-2 w-full text-sm"></div>
-                            <div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">店家</label><input type="text" id="order-shop" class="p-2 w-full text-sm"></div>
-                            <div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">商品名稱</label><input type="text" id="order-name" class="p-2 w-full text-sm"></div>
-                            <div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">規格</label><input type="text" id="order-spec" class="p-2 w-full text-sm"></div>
-                            <div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">數量</label><input type="number" id="order-qty" value="1" oninput="calcProfit()" class="p-2 w-full text-sm"></div>
-                            <div class="flex flex-col md:col-span-2"><label class="text-xs font-bold text-morandi-dark mb-1">狀態</label><select id="order-status" class="p-2 w-full text-sm font-bold bg-white text-morandi-dark"></select></div>
-                            <div class="flex flex-col bg-yellow-50 p-2 border border-morandi-brown/30 rounded"><label class="text-xs font-bold text-morandi-dark mb-1">韓幣成本</label><input type="number" id="order-krw-cost" oninput="calcProfit()" class="p-2 w-full text-sm"></div>
-                            <div class="flex flex-col bg-yellow-50 p-2 border border-morandi-brown/30 rounded"><label class="text-xs font-bold text-morandi-dark mb-1">匯率</label><input type="number" id="order-rate" placeholder="38" value="38" oninput="calcProfit()" class="p-2 w-full text-sm"></div>
-                            <div class="flex flex-col bg-red-50 p-2 border border-red-200 rounded"><label class="text-xs font-bold text-red-800 mb-1">台幣成本</label><input type="text" id="order-twd-cost" readonly class="p-2 w-full text-sm bg-gray-100"></div>
-                            <div class="flex flex-col bg-blue-50 p-2 border border-blue-200 rounded"><label class="text-xs font-bold text-blue-800 mb-1">總售價</label><input type="number" id="order-sell-price" oninput="calcProfit()" class="p-2 w-full text-sm"></div>
-                            <div class="flex flex-col md:col-span-2"><label class="text-xs font-bold text-morandi-dark mb-1">備註</label><input type="text" id="order-note" class="p-2 w-full text-sm"></div>
-                            <div class="flex items-center gap-2 pt-2"><input type="checkbox" id="order-paid"><label for="order-paid" class="text-sm font-bold">商品已收</label></div>
-                            <div class="flex items-center gap-2 pt-2"><input type="checkbox" id="order-shipping"><label for="order-shipping" class="text-sm font-bold">運費已匯</label></div>
-                            <div class="flex flex-col md:col-span-4 bg-morandi-green p-3 border-2 border-morandi-dark mt-2"><div class="flex justify-between items-center"><label class="text-sm font-bold text-white mb-1">預估利潤</label><input type="text" id="order-profit" readonly class="p-2 w-1/2 text-xl font-display font-bold text-right"></div></div>
+                    
+                    <!-- Form Grid: Single column on mobile (grid-cols-1), 4 columns on desktop (md:grid-cols-4) -->
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+                        <div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">日期</label><input type="date" id="order-date" class="p-2 w-full text-sm"></div>
+                        <div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">代號</label><input type="text" id="order-code" class="p-2 w-full text-sm"></div>
+                        <div class="flex flex-col md:col-span-2"><label class="text-xs font-bold text-morandi-dark mb-1">店家</label><input type="text" id="order-shop" class="p-2 w-full text-sm"></div>
+                        <div class="flex flex-col bg-yellow-50 p-2 border border-morandi-brown/30 rounded"><label class="text-xs font-bold text-morandi-dark mb-1">匯率</label><input type="number" id="order-rate" placeholder="38" value="38" oninput="calcProfit()" class="p-2 w-full text-sm"></div>
+                        <div class="flex flex-col md:col-span-3"><label class="text-xs font-bold text-morandi-dark mb-1">狀態</label><select id="order-status" class="p-2 w-full text-sm font-bold bg-white text-morandi-dark"></select></div>
                     </div>
+
+                    <!-- Dynamic Items Section -->
+                    <div class="mb-4">
+                        <div class="flex justify-between items-center mb-2">
+                            <label class="text-sm font-bold text-morandi-dark">訂購品項</label>
+                            <button onclick="addOrderItemRow()" class="text-xs bg-morandi-paper hover:bg-morandi-brown/20 text-morandi-dark px-2 py-1 rounded border border-morandi-dark font-bold"><i class="fas fa-plus"></i> 增加品項</button>
+                        </div>
+                        <div id="order-items-container" class="space-y-2">
+                            <!-- Items will be injected here via JS -->
+                        </div>
+                    </div>
+
+                    <!-- Profit Summary -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4 border-t border-morandi-brown/20 pt-4">
+                        <div class="flex flex-col bg-red-50 p-2 border border-red-200 rounded"><label class="text-xs font-bold text-red-800 mb-1">總成本 (TWD)</label><input type="text" id="order-twd-cost" readonly class="p-2 w-full text-sm bg-gray-100 font-bold text-red-800" value="0"></div>
+                        <div class="flex flex-col bg-blue-50 p-2 border border-blue-200 rounded"><label class="text-xs font-bold text-blue-800 mb-1">總售價 (TWD)</label><input type="text" id="order-sell-price" readonly class="p-2 w-full text-sm bg-gray-100 font-bold text-blue-800" value="0"></div>
+                        <div class="flex flex-col md:col-span-2 bg-morandi-green p-2 border-2 border-morandi-dark rounded"><label class="text-xs font-bold text-white mb-1">預估利潤</label><input type="text" id="order-profit" readonly class="p-2 w-full text-xl font-display font-bold text-right bg-white/90 text-morandi-dark" value="0"></div>
+                    </div>
+
+                    <!-- Additional Info -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">備註</label><input type="text" id="order-note" class="p-2 w-full text-sm"></div>
+                        <div class="flex items-center gap-4 pt-4">
+                            <div class="flex items-center gap-2"><input type="checkbox" id="order-paid"><label for="order-paid" class="text-sm font-bold">商品已收</label></div>
+                            <div class="flex items-center gap-2"><input type="checkbox" id="order-shipping"><label for="order-shipping" class="text-sm font-bold">運費已匯</label></div>
+                        </div>
+                    </div>
+
                     <div class="mt-2 text-right">
                         <button onclick="toggleOrderForm()" class="btn-retro px-4 py-2 bg-gray-200 text-gray-700 font-bold rounded mr-2 hover:bg-gray-300">取消</button>
                         <button onclick="addOrder()" class="btn-retro px-6 py-2 bg-morandi-dark text-white border-2 border-morandi-dark font-bold hover:bg-gray-800 shadow-retro-sm">儲存</button>
@@ -453,89 +437,20 @@
                 </div>
             </div>
 
-            <!-- Stats -->
-            <div class="bg-white border-2 border-morandi-dark shadow-retro mt-4 md:mt-6">
-                <button onclick="toggleCollapse('purchasing-stats-content', 'icon-purchasing-stats')" class="w-full flex justify-between items-center p-3 md:p-5 bg-morandi-blue text-white hover:opacity-90 transition text-left group border-b-2 border-morandi-dark">
-                    <span class="font-bold text-base md:text-lg group-hover:translate-x-1 transition-transform"><i class="fas fa-chart-line mr-2"></i> 營運儀表板</span>
-                    <i id="icon-purchasing-stats" class="fas fa-chevron-down transition-transform border-2 border-white rounded-full p-1 w-6 h-6 md:w-8 md:h-8 flex items-center justify-center text-xs md:text-base"></i>
-                </button>
-                <div id="purchasing-stats-content" class="collapse-content bg-white">
-                    <div class="p-4 md:p-6 bg-morandi-bg">
-                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 mb-6">
-                            <div class="p-3 bg-white border-2 border-morandi-dark shadow-retro-sm"><div class="text-[10px] font-bold text-morandi-brown uppercase">淨利潤</div><div class="text-lg md:text-2xl font-display font-bold text-morandi-green mt-1" id="stats-net-profit">NT$ 0</div></div>
-                            <div class="p-3 bg-white border-2 border-morandi-dark shadow-retro-sm"><div class="text-[10px] font-bold text-morandi-brown uppercase">總營收</div><div class="text-lg md:text-2xl font-display font-bold text-morandi-dark mt-1" id="stats-revenue">NT$ 0</div></div>
-                            <div class="p-3 bg-white border-2 border-morandi-dark shadow-retro-sm"><div class="text-[10px] font-bold text-morandi-brown uppercase">總成本</div><div class="text-lg md:text-2xl font-display font-bold text-red-400 mt-1" id="stats-cost">NT$ 0</div></div>
-                            <!-- Second Row -->
-                            <div class="p-2 bg-morandi-paper border border-morandi-brown/30 rounded text-center"><div class="text-xs text-morandi-brown font-bold">利潤率</div><div class="text-base font-bold text-morandi-dark" id="stats-margin">0%</div></div>
-                            <div class="p-2 bg-morandi-paper border border-morandi-brown/30 rounded text-center"><div class="text-xs text-morandi-brown font-bold">訂單數</div><div class="text-base font-bold text-morandi-dark" id="stats-total-orders">0</div></div>
-                            <div class="p-2 bg-morandi-paper border border-morandi-brown/30 rounded text-center"><div class="text-xs text-morandi-brown font-bold">未收款</div><div class="text-base font-bold text-red-500" id="stats-unpaid">NT$ 0</div></div>
-                        </div>
-                        <h4 class="text-sm font-bold text-morandi-dark mb-4 border-b-2 border-dashed border-morandi-dark pb-2">狀態分布</h4>
-                        <div id="stats-status-dist" class="space-y-3"></div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- List -->
-            <div class="bg-white border-2 border-morandi-dark shadow-retro mt-4 md:mt-6">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center p-3 md:p-5 bg-morandi-paper border-b-2 border-morandi-dark gap-3">
-                    <h3 class="font-bold text-base md:text-lg text-morandi-dark uppercase tracking-wider"><i class="fas fa-list-alt mr-2"></i> 訂單帳本</h3>
-                    <div class="flex flex-col md:flex-row gap-2 w-full md:w-auto">
-                        <div class="flex items-center gap-2">
-                            <select id="order-sort-select" onchange="updateOrderDisplaySettings()" class="p-1 text-xs border border-morandi-dark rounded bg-white font-bold cursor-pointer"><option value="desc">新 → 舊</option><option value="asc">舊 → 新</option></select>
-                            <label class="flex items-center cursor-pointer bg-white px-2 py-1 border border-morandi-dark rounded shadow-sm hover:bg-gray-50 select-none"><input type="checkbox" id="order-filter-unfinished" onchange="updateOrderDisplaySettings()" class="mr-2"><span class="text-xs font-bold text-morandi-dark">僅未完成</span></label>
-                        </div>
-                    </div>
-                </div>
-                <div class="p-3 md:p-6 bg-morandi-bg">
-                    <div class="overflow-x-auto border-2 border-morandi-dark shadow-retro-sm bg-white">
-                        <table class="w-full text-sm text-left border-collapse min-w-[700px] md:min-w-0">
-                            <thead class="bg-morandi-paper text-morandi-dark font-bold border-b-2 border-morandi-dark">
-                                <tr>
-                                    <th class="p-2 md:p-3 border-r border-morandi-dark/20 whitespace-nowrap">日期/代號</th>
-                                    <th class="p-2 md:p-3 border-r border-morandi-dark/20 whitespace-nowrap">商品詳情</th>
-                                    <th class="p-2 md:p-3 border-r border-morandi-dark/20 whitespace-nowrap">狀態</th>
-                                    <th class="p-2 md:p-3 border-r border-morandi-dark/20 whitespace-nowrap">財務</th>
-                                    <th class="p-2 md:p-3 border-r border-morandi-dark/20 whitespace-nowrap">利潤</th>
-                                    <th class="p-2 md:p-3 w-10 text-center">刪</th>
-                                </tr>
-                            </thead>
-                            <tbody id="order-list-body" class="divide-y divide-morandi-dark/10"></tbody>
-                        </table>
-                    </div>
-                    <div class="mt-4 flex justify-end gap-4 text-xs font-bold text-morandi-dark"><div class="bg-white px-3 py-1 border border-morandi-dark rounded shadow-retro-sm">顯示：<span id="order-count-display">0</span></div></div>
-                </div>
-            </div>
+            <div class="bg-white border-2 border-morandi-dark shadow-retro mt-4 md:mt-6"><button onclick="toggleCollapse('purchasing-stats-content', 'icon-purchasing-stats')" class="w-full flex justify-between items-center p-3 md:p-5 bg-morandi-blue text-white hover:opacity-90 transition text-left group border-b-2 border-morandi-dark"><span class="font-bold text-base md:text-lg group-hover:translate-x-1 transition-transform"><i class="fas fa-chart-line mr-2"></i> 營運儀表板</span><i id="icon-purchasing-stats" class="fas fa-chevron-down transition-transform border-2 border-white rounded-full p-1 w-6 h-6 md:w-8 md:h-8 flex items-center justify-center text-xs md:text-base"></i></button><div id="purchasing-stats-content" class="collapse-content bg-white"><div class="p-4 md:p-6 bg-morandi-bg"><div class="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 mb-6"><div class="p-3 bg-white border-2 border-morandi-dark shadow-retro-sm"><div class="text-[10px] font-bold text-morandi-brown uppercase">淨利潤</div><div class="text-lg md:text-2xl font-display font-bold text-morandi-green mt-1" id="stats-net-profit">NT$ 0</div></div><div class="p-3 bg-white border-2 border-morandi-dark shadow-retro-sm"><div class="text-[10px] font-bold text-morandi-brown uppercase">總營收</div><div class="text-lg md:text-2xl font-display font-bold text-morandi-dark mt-1" id="stats-revenue">NT$ 0</div></div><div class="p-3 bg-white border-2 border-morandi-dark shadow-retro-sm"><div class="text-[10px] font-bold text-morandi-brown uppercase">總成本</div><div class="text-lg md:text-2xl font-display font-bold text-red-400 mt-1" id="stats-cost">NT$ 0</div></div><div class="p-2 bg-morandi-paper border border-morandi-brown/30 rounded text-center"><div class="text-xs text-morandi-brown font-bold">利潤率</div><div class="text-base font-bold text-morandi-dark" id="stats-margin">0%</div></div><div class="p-2 bg-morandi-paper border border-morandi-brown/30 rounded text-center"><div class="text-xs text-morandi-brown font-bold">訂單數</div><div class="text-base font-bold text-morandi-dark" id="stats-total-orders">0</div></div><div class="p-2 bg-morandi-paper border border-morandi-brown/30 rounded text-center"><div class="text-xs text-morandi-brown font-bold">未收款 (貨款)</div><div class="text-base font-bold text-red-500" id="stats-unpaid">NT$ 0</div></div></div><h4 class="text-sm font-bold text-morandi-dark mb-4 border-b-2 border-dashed border-morandi-dark pb-2">狀態分布</h4><div id="stats-status-dist" class="space-y-3"></div></div></div></div>
+            <div class="bg-white border-2 border-morandi-dark shadow-retro mt-4 md:mt-6"><div class="flex flex-col md:flex-row justify-between items-start md:items-center p-3 md:p-5 bg-morandi-paper border-b-2 border-morandi-dark gap-3"><h3 class="font-bold text-base md:text-lg text-morandi-dark uppercase tracking-wider"><i class="fas fa-list-alt mr-2"></i> 訂單帳本</h3><div class="flex flex-col md:flex-row gap-2 w-full md:w-auto"><div class="flex items-center gap-2"><select id="order-sort-select" onchange="updateOrderDisplaySettings()" class="p-1 text-xs border border-morandi-dark rounded bg-white font-bold cursor-pointer"><option value="desc">新 → 舊</option><option value="asc">舊 → 新</option></select><label class="flex items-center cursor-pointer bg-white px-2 py-1 border border-morandi-dark rounded shadow-sm hover:bg-gray-50 select-none"><input type="checkbox" id="order-filter-unfinished" onchange="updateOrderDisplaySettings()" class="mr-2"><span class="text-xs font-bold text-morandi-dark">僅未完成</span></label></div></div></div><div class="p-3 md:p-6 bg-morandi-bg"><div class="overflow-x-auto border-2 border-morandi-dark shadow-retro-sm bg-white"><table class="w-full text-sm text-left border-collapse min-w-[700px] md:min-w-0"><thead class="bg-morandi-paper text-morandi-dark font-bold border-b-2 border-morandi-dark"><tr><th class="p-2 md:p-3 border-r border-morandi-dark/20 whitespace-nowrap">日期/代號</th><th class="p-2 md:p-3 border-r border-morandi-dark/20 whitespace-nowrap">商品詳情</th><th class="p-2 md:p-3 border-r border-morandi-dark/20 whitespace-nowrap">狀態</th><th class="p-2 md:p-3 border-r border-morandi-dark/20 whitespace-nowrap">財務</th><th class="p-2 md:p-3 border-r border-morandi-dark/20 whitespace-nowrap">利潤</th><th class="p-2 md:p-3 w-10 text-center">刪</th></tr></thead><tbody id="order-list-body" class="divide-y divide-morandi-dark/10"></tbody></table></div><div class="mt-4 flex justify-end gap-4 text-xs font-bold text-morandi-dark"><div class="bg-white px-3 py-1 border border-morandi-dark rounded shadow-retro-sm">顯示：<span id="order-count-display">0</span></div></div></div></div>
         </div>
 
         <!-- Tab 4: Subscriptions -->
         <div id="tab-subs" class="section-content hidden fade-in space-y-4 md:space-y-8 pb-10">
-            <header class="flex justify-between items-end border-b-4 border-morandi-dark pb-2 mb-4">
-                <div><h2 class="text-2xl md:text-4xl font-display font-bold text-morandi-dark">訂閱管理</h2><p class="text-xs md:text-sm font-bold text-morandi-brown mt-1 uppercase tracking-widest">Subscriptions</p></div>
-                <div class="flex gap-2">
-                    <button onclick="toggleSubForm()" class="btn-retro px-2 md:px-3 py-1 text-[10px] md:text-xs bg-morandi-dark text-white font-bold shadow-retro-sm hover:bg-gray-700"><i class="fas fa-plus mr-1"></i> 新增</button>
-                    <button onclick="exportSubs()" class="btn-retro px-2 md:px-3 py-1 text-[10px] md:text-xs bg-white border-2 border-morandi-dark text-morandi-dark font-bold shadow-retro-sm hover:bg-gray-50"><i class="fas fa-file-export"></i> <span class="hidden md:inline">匯出</span></button>
-                    <label class="btn-retro px-2 md:px-3 py-1 text-[10px] md:text-xs bg-morandi-brown border-2 border-morandi-dark text-white font-bold shadow-retro-sm hover:bg-morandi-brown/80 cursor-pointer flex items-center"><i class="fas fa-file-import mr-1"></i> <span class="hidden md:inline">匯入</span><input type="file" class="hidden" onchange="importSubs(this)"></label>
-                </div>
-            </header>
-            
-            <div id="sub-form-panel" class="bg-white border-2 border-morandi-dark shadow-retro mb-4 md:mb-6 overflow-hidden">
-                <div class="p-4 md:p-6 bg-morandi-bg">
-                    <h4 class="font-bold text-lg text-morandi-dark mb-4 border-b border-morandi-brown/30 pb-2">新增訂閱服務</h4>
-                    <div class="grid grid-cols-1 md:grid-cols-4 gap-3 md:gap-4 mb-4">
-                            <div class="flex flex-col md:col-span-2"><label class="text-xs font-bold text-morandi-dark mb-1">名稱</label><input type="text" id="sub-name" class="p-2 w-full text-sm"></div><div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">金額</label><input type="number" id="sub-price" class="p-2 w-full text-sm"></div><div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">分擔人</label><input type="text" id="sub-person" class="p-2 w-full text-sm"></div><div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">週期</label><select id="sub-cycle" class="p-2 w-full text-sm bg-white font-bold"><option value="monthly">每月</option><option value="yearly">每年</option></select></div><div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">扣款日</label><input type="date" id="sub-date" class="p-2 w-full text-sm"></div>
-                    </div>
-                    <div class="mt-2 text-right">
-                        <button onclick="toggleSubForm()" class="btn-retro px-4 py-2 bg-gray-200 text-gray-700 font-bold rounded mr-2 hover:bg-gray-300">取消</button>
-                        <button onclick="addSub()" class="btn-retro px-6 py-2 bg-morandi-green text-white border-2 border-morandi-dark font-bold hover:opacity-90 shadow-retro-sm">儲存</button>
-                    </div>
-                </div>
-            </div>
-            
+            <header class="flex justify-between items-end border-b-4 border-morandi-dark pb-2 mb-4"><div><h2 class="text-2xl md:text-4xl font-display font-bold text-morandi-dark">訂閱管理</h2><p class="text-xs md:text-sm font-bold text-morandi-brown mt-1 uppercase tracking-widest">Subscriptions</p></div><div class="flex gap-2"><button onclick="exportSubs()" class="btn-retro px-2 md:px-3 py-1 text-[10px] md:text-xs bg-white border-2 border-morandi-dark text-morandi-dark font-bold shadow-retro-sm hover:bg-gray-50"><i class="fas fa-file-export"></i> <span class="hidden md:inline">匯出</span></button><label class="btn-retro px-2 md:px-3 py-1 text-[10px] md:text-xs bg-morandi-brown border-2 border-morandi-dark text-white font-bold shadow-retro-sm hover:bg-morandi-brown/80 cursor-pointer flex items-center"><i class="fas fa-file-import mr-1"></i> <span class="hidden md:inline">匯入</span><input type="file" class="hidden" onchange="importSubs(this)"></label></div></header>
+            <div class="bg-white border-2 border-morandi-dark shadow-retro"><button onclick="toggleSubForm()" class="w-full flex justify-between items-center p-4 md:p-5 bg-morandi-paper hover:bg-morandi-brown/20 transition text-left group"><span class="font-bold text-base md:text-lg text-morandi-dark"><i class="fas fa-plus-circle mr-2"></i> 新增訂閱</span><i id="icon-add-sub" class="fas fa-chevron-down transition-transform border-2 border-morandi-dark rounded-full p-1 w-6 h-6 md:w-8 md:h-8 flex items-center justify-center bg-white text-xs md:text-base"></i></button></div>
+            <div id="sub-form-panel" class="bg-white border-2 border-morandi-dark shadow-retro mb-4 md:mb-6 overflow-hidden"><div class="p-4 md:p-6 bg-morandi-bg"><div class="grid grid-cols-1 md:grid-cols-4 gap-3 md:gap-4 mb-4"><div class="flex flex-col md:col-span-2"><label class="text-xs font-bold text-morandi-dark mb-1">名稱</label><input type="text" id="sub-name" class="p-2 w-full text-sm"></div><div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">金額</label><input type="number" id="sub-price" class="p-2 w-full text-sm"></div><div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">分擔人</label><input type="text" id="sub-person" class="p-2 w-full text-sm"></div><div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">週期</label><select id="sub-cycle" class="p-2 w-full text-sm bg-white font-bold"><option value="monthly">每月</option><option value="quarterly">每季</option><option value="yearly">每年</option></select></div><div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">扣款日</label><input type="date" id="sub-date" class="p-2 w-full text-sm"></div></div><div class="mt-2 text-right"><button onclick="toggleSubForm()" class="btn-retro px-4 py-2 bg-gray-200 text-gray-700 font-bold rounded mr-2 hover:bg-gray-300">取消</button><button onclick="addSub()" class="btn-retro px-6 py-2 bg-morandi-green text-white border-2 border-morandi-dark font-bold hover:opacity-90 shadow-retro-sm">儲存</button></div></div></div>
             <div class="bg-white border-2 border-morandi-dark shadow-retro mt-4 md:mt-6">
+                <!-- Added IDs for easier toggle handling -->
                 <div class="flex p-2 bg-morandi-paper border-b-2 border-morandi-dark gap-2">
-                    <button onclick="renderSubs('service')" class="flex-1 py-2 font-bold text-sm md:text-base text-morandi-dark border-2 border-transparent hover:border-morandi-dark rounded bg-white transition shadow-sm">依服務</button>
-                    <button onclick="renderSubs('person')" class="flex-1 py-2 font-bold text-sm md:text-base text-morandi-dark border-2 border-transparent hover:border-morandi-dark rounded bg-white transition shadow-sm">依人員</button>
+                    <button id="btn-view-service" onclick="renderSubs('service')" class="flex-1 py-2 font-bold text-sm md:text-base text-morandi-dark border-2 border-transparent hover:border-morandi-dark rounded bg-white transition shadow-sm">依服務</button>
+                    <button id="btn-view-person" onclick="renderSubs('person')" class="flex-1 py-2 font-bold text-sm md:text-base text-morandi-dark border-2 border-transparent hover:border-morandi-dark rounded bg-white transition shadow-sm">依人員</button>
                 </div>
                 <div id="sub-list-container" class="p-4 md:p-6 bg-morandi-bg"></div>
             </div>
@@ -543,585 +458,1101 @@
 
         <!-- Tab 5: Ledger -->
         <div id="tab-debt" class="section-content hidden fade-in space-y-4 md:space-y-8 pb-10">
-            <header class="flex justify-between items-end border-b-4 border-morandi-dark pb-2 mb-4">
-                <div>
-                    <h2 class="text-xl md:text-4xl font-display font-bold text-morandi-dark">全球百大企業投資收益管理</h2>
-                    <p class="text-[10px] md:text-sm font-bold text-morandi-brown mt-1 uppercase tracking-widest">Investment</p>
+            <header class="flex justify-between items-end border-b-4 border-morandi-dark pb-2 mb-4"><div><h2 class="text-xl md:text-4xl font-display font-bold text-morandi-dark">全球百大企業投資收益管理</h2><p class="text-[10px] md:text-sm font-bold text-morandi-brown mt-1 uppercase tracking-widest">Investment</p></div><div class="flex gap-2"><button onclick="exportTracker()" class="btn-retro px-2 md:px-3 py-1 text-[10px] md:text-xs bg-white border-2 border-morandi-dark text-morandi-dark font-bold shadow-retro-sm hover:bg-gray-50"><i class="fas fa-file-export"></i> <span class="hidden md:inline">匯出</span></button><label class="btn-retro px-2 md:px-3 py-1 text-[10px] md:text-xs bg-morandi-brown border-2 border-morandi-dark text-white font-bold shadow-retro-sm hover:bg-morandi-brown/80 cursor-pointer flex items-center"><i class="fas fa-file-import mr-1"></i> <span class="hidden md:inline">匯入</span><input type="file" class="hidden" onchange="importTracker(this)"></label></div></header>
+            
+            <!-- Update Form Section -->
+            <div class="bg-white border-2 border-morandi-dark shadow-retro" id="ledger-form-container">
+                <div class="p-3 md:p-5 bg-morandi-paper border-b-2 border-morandi-dark">
+                    <h3 class="font-bold text-base md:text-lg text-morandi-dark"><i class="fas fa-pen-nib mr-2"></i> 新增帳務紀錄</h3>
                 </div>
-                <div class="flex gap-2">
-                    <button onclick="exportTracker()" class="btn-retro px-2 md:px-3 py-1 text-[10px] md:text-xs bg-white border-2 border-morandi-dark text-morandi-dark font-bold shadow-retro-sm hover:bg-gray-50"><i class="fas fa-file-export"></i> <span class="hidden md:inline">匯出</span></button>
-                    <label class="btn-retro px-2 md:px-3 py-1 text-[10px] md:text-xs bg-morandi-brown border-2 border-morandi-dark text-white font-bold shadow-retro-sm hover:bg-morandi-brown/80 cursor-pointer flex items-center"><i class="fas fa-file-import mr-1"></i> <span class="hidden md:inline">匯入</span><input type="file" class="hidden" onchange="importTracker(this)"></label>
-                </div>
-            </header>
-
-            <div class="bg-white border-2 border-morandi-dark shadow-retro">
-                <div class="p-3 md:p-5 bg-morandi-paper border-b-2 border-morandi-dark"><h3 class="font-bold text-base md:text-lg text-morandi-dark"><i class="fas fa-pen-nib mr-2"></i> 新增帳務紀錄</h3></div>
                 <div class="p-4 md:p-6 bg-morandi-bg">
                     <div class="grid grid-cols-1 md:grid-cols-5 gap-3 p-3 md:p-4 border border-morandi-brown/30 bg-white/50 rounded">
                         <div class="md:col-span-2 flex gap-2">
-                            <select id="ledger-category" class="w-1/2 p-2 text-sm font-bold bg-white" onchange="updateLedgerTypeOptions()"><option value="general">一般帳務</option><option value="camera">相機夢</option></select>
+                            <select id="ledger-category" class="w-1/2 p-2 text-sm font-bold bg-white" onchange="updateLedgerTypeOptions()">
+                                <option value="general">一般帳務</option>
+                                <option value="camera">相機夢</option>
+                            </select>
                             <select id="ledger-type" class="w-1/2 p-2 text-sm font-bold bg-white"></select>
                         </div>
                         <input type="date" id="ledger-date" class="p-2 text-sm border-morandi-dark">
                         <input type="text" id="ledger-desc" placeholder="項目" class="p-2 text-sm">
                         <input type="number" id="ledger-amount" placeholder="金額" class="p-2 text-sm">
-                        <button onclick="addLedgerEntry()" class="btn-retro bg-morandi-dark text-white font-bold py-2 md:col-span-5 border-2 border-morandi-dark hover:opacity-90 mt-2">新增</button>
+                        
+                        <div class="md:col-span-5 flex gap-2 mt-2">
+                            <button id="btn-save-ledger" onclick="saveLedgerEntry()" class="btn-retro bg-morandi-dark text-white font-bold py-2 flex-1 border-2 border-morandi-dark hover:opacity-90">新增</button>
+                            <button id="btn-cancel-ledger" onclick="resetLedgerForm()" class="btn-retro bg-gray-200 text-gray-700 font-bold py-2 px-4 border border-gray-300 hover:bg-gray-300 hidden">取消</button>
+                        </div>
                     </div>
                 </div>
             </div>
 
+            <!-- General Ledger List -->
             <div class="bg-white border-2 border-morandi-dark shadow-retro mt-4 md:mt-6">
                 <button onclick="toggleCollapse('debt-list-content', 'icon-debt-list')" class="w-full flex justify-between items-center p-4 md:p-5 bg-morandi-paper hover:bg-morandi-brown/20 transition text-left group">
-                    <span class="font-bold text-base md:text-lg text-morandi-dark group-hover:translate-x-1 transition-transform"><i class="fas fa-hand-holding-usd mr-2"></i> 一般帳務明細 <span id="debt-header-balance" class="text-xs ml-2 font-normal text-morandi-brown"></span></span>
+                    <span class="font-bold text-base md:text-lg text-morandi-dark group-hover:translate-x-1 transition-transform">
+                        <i class="fas fa-hand-holding-usd mr-2"></i> 一般帳務明細 
+                        <span id="debt-header-balance" class="text-xs ml-2 font-normal text-morandi-brown"></span>
+                    </span>
                     <i id="icon-debt-list" class="fas fa-chevron-down transition-transform border-2 border-morandi-dark rounded-full p-1 w-6 h-6 md:w-8 md:h-8 flex items-center justify-center bg-white text-xs md:text-base"></i>
                 </button>
-                <div id="debt-list-content" class="collapse-content bg-white"><div class="p-4 md:p-6 bg-morandi-bg"><ul id="debt-list" class="space-y-2"></ul></div></div>
+                <div id="debt-list-content" class="collapse-content bg-white">
+                    <div class="p-4 md:p-6 bg-morandi-bg">
+                        <ul id="debt-list" class="space-y-2"></ul>
+                    </div>
+                </div>
             </div>
 
+            <!-- Camera Fund List -->
             <div class="bg-white border-2 border-morandi-dark shadow-retro mt-4 md:mt-6">
                 <button onclick="toggleCollapse('camera-fund-content', 'icon-camera-fund')" class="w-full flex justify-between items-center p-4 md:p-5 bg-morandi-paper hover:bg-morandi-brown/20 transition text-left group">
-                    <span class="font-bold text-base md:text-lg text-morandi-dark group-hover:translate-x-1 transition-transform"><i class="fas fa-camera-retro mr-2"></i> 粿粿勞斯の相機夢 <span id="camera-header-balance" class="text-xs ml-2 font-normal text-morandi-green"></span></span>
+                    <span class="font-bold text-base md:text-lg text-morandi-dark group-hover:translate-x-1 transition-transform">
+                        <i class="fas fa-camera-retro mr-2"></i> 粿粿勞斯の相機夢 
+                        <span id="camera-header-balance" class="text-xs ml-2 font-normal text-morandi-green"></span>
+                    </span>
                     <i id="icon-camera-fund" class="fas fa-chevron-down transition-transform border-2 border-morandi-dark rounded-full p-1 w-6 h-6 md:w-8 md:h-8 flex items-center justify-center bg-white text-xs md:text-base"></i>
                 </button>
-                <div id="camera-fund-content" class="collapse-content bg-white"><div class="p-4 md:p-6 bg-morandi-bg"><div class="flex justify-between items-center mb-2"><div class="text-xs font-bold text-morandi-brown bg-white px-2 py-1 border border-morandi-brown rounded">Target: NT$ <span id="camera-target-display">50000</span></div></div><div class="mb-6"><div class="flex justify-between text-xs font-bold mb-1"><span>存額: NT$ <span id="camera-current">0</span></span><span id="camera-percent">0%</span></div><div class="w-full bg-gray-200 rounded-full h-4 border border-morandi-dark overflow-hidden"><div id="camera-bar" class="bg-morandi-green h-full transition-all duration-500" style="width: 0%"></div></div></div><ul id="fund-list" class="max-h-60 overflow-y-auto custom-scroll space-y-1 text-sm bg-white p-4 border border-morandi-brown/20 rounded"></ul></div></div>
+                <div id="camera-fund-content" class="collapse-content bg-white">
+                    <div class="p-4 md:p-6 bg-morandi-bg">
+                        <div class="flex justify-between items-center mb-2">
+                            <div class="text-xs font-bold text-morandi-brown bg-white px-2 py-1 border border-morandi-brown rounded">Target: NT$ <span id="camera-target-display">50000</span></div>
+                        </div>
+                        <div class="mb-6">
+                            <div class="flex justify-between text-xs font-bold mb-1">
+                                <span>存額: NT$ <span id="camera-current">0</span></span>
+                                <span id="camera-percent">0%</span>
+                            </div>
+                            <div class="w-full bg-gray-200 rounded-full h-4 border border-morandi-dark overflow-hidden">
+                                <div id="camera-bar" class="bg-morandi-green h-full transition-all duration-500" style="width: 0%"></div>
+                            </div>
+                        </div>
+                        <ul id="fund-list" class="max-h-60 overflow-y-auto custom-scroll space-y-1 text-sm bg-white p-4 border border-morandi-brown/20 rounded"></ul>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- Tab 6: Tools -->
-        <div id="tab-tools" class="section-content hidden fade-in space-y-4 md:space-y-8 pb-10">
-            <header class="border-b-4 border-morandi-dark pb-2 mb-4"><h2 class="text-2xl md:text-4xl font-display font-bold text-morandi-dark">小工具</h2><p class="text-xs md:text-sm font-bold text-morandi-brown mt-1 uppercase tracking-widest">Utilities</p></header>
-            <div class="bg-white border-2 border-morandi-dark shadow-retro"><button onclick="toggleCollapse('qr-content', 'icon-qr-collapse')" class="w-full flex justify-between items-center p-4 md:p-5 bg-morandi-paper hover:bg-morandi-brown/20 transition text-left group"><span class="font-bold text-base md:text-lg text-morandi-dark"><i class="fas fa-qrcode mr-2"></i> QR Code 製作</span><i id="icon-qr-collapse" class="fas fa-chevron-down transition-transform border-2 border-morandi-dark rounded-full p-1 w-6 h-6 md:w-8 md:h-8 flex items-center justify-center bg-white text-xs md:text-base"></i></button><div id="qr-content" class="collapse-content bg-white"><div class="p-6 bg-morandi-bg flex flex-col items-center"><input type="text" id="qr-input" placeholder="輸入網址或文字..." class="w-full p-3 mb-4"><button onclick="generateQR()" class="btn-retro w-full bg-morandi-green text-white py-3 font-bold border-2 border-morandi-dark shadow-retro-sm mb-8">生成圖碼</button><div class="p-4 bg-white border-2 border-morandi-dark shadow-retro-sm"><div id="qrcode"></div></div></div></div></div>
-            <div class="bg-white border-2 border-morandi-dark shadow-retro mt-4 md:mt-6"><button onclick="toggleCollapse('url-content', 'icon-url-collapse')" class="w-full flex justify-between items-center p-4 md:p-5 bg-morandi-paper hover:bg-morandi-brown/20 transition text-left group"><span class="font-bold text-base md:text-lg text-morandi-dark"><i class="fas fa-link mr-2"></i> 縮網址</span><i id="icon-url-collapse" class="fas fa-chevron-down transition-transform border-2 border-morandi-dark rounded-full p-1 w-6 h-6 md:w-8 md:h-8 flex items-center justify-center bg-white text-xs md:text-base"></i></button><div id="url-content" class="collapse-content bg-white"><div class="p-6 bg-morandi-bg"><p class="text-xs font-bold text-morandi-brown mb-4 bg-morandi-paper p-2 border border-morandi-brown">* 介面演示模式 (Demo Mode)</p><input type="text" id="url-input" placeholder="輸入長網址..." class="w-full p-3 mb-4"><button onclick="shortenUrl()" class="btn-retro w-full bg-morandi-blue text-white py-3 font-bold border-2 border-morandi-dark shadow-retro-sm mb-6">縮短連結</button><div class="relative"><input type="text" id="short-url-output" readonly placeholder="結果將顯示於此" class="w-full p-3 bg-gray-100 text-gray-500 font-mono text-sm"><button onclick="copyUrl()" class="btn-retro absolute right-0 top-0 h-full px-4 bg-morandi-dark text-white border-l-2 border-morandi-dark"><i class="fas fa-copy"></i></button></div></div></div></div>
+        <!-- Tab 6: Literature (NEW) -->
+        <div id="tab-literature" class="section-content hidden fade-in space-y-4 md:space-y-8 pb-10">
+            <header class="flex justify-between items-end border-b-4 border-morandi-dark pb-2 mb-4">
+                <div><h2 class="text-2xl md:text-4xl font-display font-bold text-morandi-dark">文獻統整</h2><p class="text-xs md:text-sm font-bold text-morandi-brown mt-1 uppercase tracking-widest">Reference & Bibliography</p></div>
+                <div class="flex gap-2"><button onclick="exportLit()" class="btn-retro px-2 md:px-3 py-1 text-[10px] md:text-xs bg-white border-2 border-morandi-dark text-morandi-dark font-bold shadow-retro-sm hover:bg-gray-50"><i class="fas fa-file-export"></i> <span class="hidden md:inline">匯出</span></button><label class="btn-retro px-2 md:px-3 py-1 text-[10px] md:text-xs bg-morandi-brown border-2 border-morandi-dark text-white font-bold shadow-retro-sm hover:bg-morandi-brown/80 cursor-pointer flex items-center"><i class="fas fa-file-import mr-1"></i> <span class="hidden md:inline">匯入</span><input type="file" class="hidden" onchange="importLit(this)"></label></div>
+            </header>
+
+            <!-- Add Literature Form -->
+            <div class="bg-white border-2 border-morandi-dark shadow-retro">
+                <button onclick="toggleCollapse('lit-form-panel', 'icon-add-lit')" class="w-full flex justify-between items-center p-4 md:p-5 bg-morandi-paper hover:bg-morandi-brown/20 transition text-left group">
+                    <span class="font-bold text-base md:text-lg text-morandi-dark"><i class="fas fa-book-open mr-2"></i> 新增文獻</span>
+                    <i id="icon-add-lit" class="fas fa-chevron-down transition-transform border-2 border-morandi-dark rounded-full p-1 w-6 h-6 md:w-8 md:h-8 flex items-center justify-center bg-white text-xs md:text-base"></i>
+                </button>
+                <div id="lit-form-panel" class="collapse-content bg-white">
+                    <div class="p-4 md:p-6 bg-morandi-bg">
+                        <!-- 區塊1: 基本資訊 -->
+                        <div class="mb-4 border-b border-morandi-brown/20 pb-4">
+                            <h4 class="text-xs font-bold text-morandi-brown uppercase tracking-widest mb-3">基本資訊 (Basic Info)</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-3 md:gap-4">
+                                <div class="flex flex-col md:col-span-2"><label class="text-xs font-bold text-morandi-dark mb-1">標題</label><input type="text" id="lit-title" class="p-2 w-full text-sm"></div>
+                                <div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">作者</label><input type="text" id="lit-author" class="p-2 w-full text-sm"></div>
+                                <div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">年份/日期</label><input type="text" id="lit-date" class="p-2 w-full text-sm" placeholder="2023"></div>
+                                <div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">類型</label><select id="lit-type" class="p-2 w-full text-sm bg-white font-bold"><option>期刊論文</option><option>書籍</option><option>學位論文</option><option>研討會論文</option><option>網路文章</option><option>其他</option></select></div>
+                                <div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">狀態</label><select id="lit-status" class="p-2 w-full text-sm bg-white font-bold"><option>已讀</option><option>閱讀中</option><option>想讀</option></select></div>
+                                <div class="flex flex-col md:col-span-2"><label class="text-xs font-bold text-morandi-dark mb-1">涉及領域</label><input type="text" id="lit-field" class="p-2 w-full text-sm"></div>
+                                <div class="flex flex-col md:col-span-4"><label class="text-xs font-bold text-morandi-dark mb-1">關鍵字</label><input type="text" id="lit-keywords" class="p-2 w-full text-sm" placeholder="以逗號分隔"></div>
+                                <div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">DOI</label><input type="text" id="lit-doi" class="p-2 w-full text-sm"></div>
+                                <div class="flex flex-col md:col-span-3"><label class="text-xs font-bold text-morandi-dark mb-1">相關理論</label><input type="text" id="lit-theories" class="p-2 w-full text-sm"></div>
+                            </div>
+                        </div>
+
+                        <!-- 區塊2: 變數模型 -->
+                        <div class="mb-4 border-b border-morandi-brown/20 pb-4 bg-gray-50 p-3 rounded">
+                            <h4 class="text-xs font-bold text-morandi-dark uppercase tracking-widest mb-3"><i class="fas fa-project-diagram mr-1"></i> 變數模型 (Methodology)</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
+                                <div class="flex flex-col"><label class="text-xs font-bold text-blue-800 mb-1">自變數 (IV)</label><input type="text" id="lit-method-iv" class="p-2 w-full text-sm"></div>
+                                <div class="flex flex-col"><label class="text-xs font-bold text-red-800 mb-1">因變數 (DV)</label><input type="text" id="lit-method-dv" class="p-2 w-full text-sm"></div>
+                                <div class="flex flex-col"><label class="text-xs font-bold text-green-800 mb-1">中介變數 (Mediator)</label><input type="text" id="lit-method-med" class="p-2 w-full text-sm"></div>
+                                <div class="flex flex-col"><label class="text-xs font-bold text-purple-800 mb-1">調節變數 (Moderator)</label><input type="text" id="lit-method-mod" class="p-2 w-full text-sm"></div>
+                            </div>
+                        </div>
+
+                        <!-- 區塊3: 研究核心 -->
+                        <div class="mb-4">
+                            <h4 class="text-xs font-bold text-morandi-brown uppercase tracking-widest mb-3">研究核心 (Core)</h4>
+                            <div class="space-y-3">
+                                <div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">研究背景</label><textarea id="lit-background" class="p-2 w-full text-sm h-20" placeholder="問題意識..."></textarea></div>
+                                <div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">研究目的</label><textarea id="lit-purpose" class="p-2 w-full text-sm h-16"></textarea></div>
+                                <div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">研究結論</label><textarea id="lit-conclusion" class="p-2 w-full text-sm h-24" placeholder="主要發現..."></textarea></div>
+                                <div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">筆記</label><textarea id="lit-note" class="p-2 w-full text-sm h-16"></textarea></div>
+                                <div class="flex flex-col"><label class="text-xs font-bold text-morandi-dark mb-1">連結</label><input type="text" id="lit-link" class="p-2 w-full text-sm"></div>
+                            </div>
+                        </div>
+
+                        <div class="text-right"><button onclick="addLit()" class="btn-retro px-6 py-2 bg-morandi-dark text-white border-2 border-morandi-dark font-bold hover:bg-gray-800 shadow-retro-sm">儲存</button></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Library List -->
+            <div id="lit-list-container" class="grid grid-cols-1 gap-4 mt-6">
+                <!-- JS Injected Cards -->
+            </div>
         </div>
 
     </main>
 
-    <!-- Notification Toast -->
     <div id="toast" class="fixed bottom-6 right-6 bg-morandi-dark text-white px-6 py-4 border-2 border-white shadow-retro font-bold transform translate-y-32 opacity-0 transition-all duration-300 z-50">Notification</div>
 
     <script>
-        // --- State Management ---
-        let appData = { tasks: [], drinks: [], orders: [], subs: [], debts: [], cameraFund: { target: 50000, entries: [] } };
+        let appData = { tasks: [], drinks: [], orders: [], subs: [], debts: [], cameraFund: { target: 50000, entries: [] }, literature: [] };
         let currentCalendarDate = new Date();
-        let currentDrinkCalendarDate = new Date(); // Separate state for drink calendar
-        let orderSort = 'desc'; 
+        let currentDrinkCalendarDate = new Date();
+        let orderSort = 'desc';
         let orderFilterUnfinished = false;
+        let editingLedgerId = null; // Track ID being edited
+        
         const ORDER_STATUSES = ["確認中", "已匯款", "對帳完成", "韓國端下單", "韓國端出貨", "待集運回台", "已抵台", "抵台整理中", "待面交", "已寄出", "訂單完成"];
+        const SUGAR_LEVELS = ['無/無法調整', '一分糖', '二分糖', '微糖', '半糖', '少糖', '全糖'];
 
-        // --- Initialization ---
         document.addEventListener('DOMContentLoaded', () => {
-            loadData();
-            updateDate();
-            renderTasks();
-            renderCalendar();
-            
-            renderDrinks();
-            renderDrinkCalendar(); // Init drink calendar
-            
-            renderOrders(); // Should be available if tab-purchasing existed
-            
-            updateStats(); // Drink stats
-            
-            renderSubs('service');
-            renderDebts();
-            renderCameraFund();
-            
-            updateLedgerTypeOptions(); // Init ledger type
-            
-            toggleCollapse('matrix-content', 'icon-matrix-view'); // Auto open matrix
-            
-            document.getElementById('drink-date').valueAsDate = new Date();
-            document.getElementById('order-date').valueAsDate = new Date();
-            document.getElementById('task-date').valueAsDate = new Date();
-            document.getElementById('ledger-date').valueAsDate = new Date(); 
-            document.getElementById('sub-date').valueAsDate = new Date();
+            loadData(); 
+            updateDate(); 
+            renderTasks(); 
+            renderCalendar(); 
+            renderDrinks(); 
+            renderDrinkCalendar(); 
+            renderStatusOptions();
+            renderOrders(); 
+            updateStats(); 
+            updatePurchasingStats(); 
+            renderSubs('service'); 
+            renderDebts(); 
+            renderCameraFund(); 
+            updateLedgerTypeOptions(); 
+            renderLiterature(); 
+            toggleCollapse('matrix-content', 'icon-matrix-view');
+
+            const today = new Date();
         });
 
-        function loadData() {
-            const saved = localStorage.getItem('retroDashboardData');
-            if (saved) {
-                const parsed = JSON.parse(saved);
-                appData = { ...appData, ...parsed };
-                // Ensure arrays exist
-                ['tasks','drinks','orders','subs','debts'].forEach(k => { if(!appData[k]) appData[k] = []; });
-                if(!appData.cameraFund) appData.cameraFund = { target: 50000, entries: [] };
-            }
-        }
+        function loadData() { const s=localStorage.getItem('retroDashboardData'); if(s){ const p=JSON.parse(s); appData={...appData,...p}; ['tasks','drinks','orders','subs','debts','literature'].forEach(k=>{if(!appData[k])appData[k]=[]}); if(!appData.cameraFund)appData.cameraFund={target:50000,entries:[]}; } }
         function saveData() { localStorage.setItem('retroDashboardData', JSON.stringify(appData)); }
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            toast.textContent = msg;
-            toast.classList.remove('translate-y-32', 'opacity-0');
-            setTimeout(() => { toast.classList.add('translate-y-32', 'opacity-0'); }, 3000);
-        }
-        function updateDate() {
-            const now = new Date();
-            const dateStr = `${now.getFullYear()}.${String(now.getMonth()+1).padStart(2,'0')}.${String(now.getDate()).padStart(2,'0')}`;
-            const dayStr = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'][now.getDay()];
-            document.getElementById('current-date').innerHTML = `<span class="mr-2">${dateStr}</span><span class="text-xs bg-morandi-brown text-white px-1 rounded">${dayStr}</span>`;
-        }
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if(btn.id === `btn-${tabName}`) btn.classList.add('active');
-            });
-            document.querySelectorAll('.section-content').forEach(section => {
-                section.classList.add('hidden');
-                if(section.id === `tab-${tabName}`) section.classList.remove('hidden');
-            });
-            // Re-render calendars if switching to tabs to ensure layout
-            if(tabName === 'planner') renderCalendar();
-            if(tabName === 'drinks') renderDrinkCalendar();
-        }
-        function toggleCollapse(contentId, iconId) {
-            const content = document.getElementById(contentId);
-            const icon = document.getElementById(iconId);
-            if (content.classList.contains('open')) {
-                content.classList.remove('open');
-                icon.style.transform = 'rotate(0deg)';
-            } else {
-                content.classList.add('open');
-                icon.style.transform = 'rotate(180deg)';
-            }
-        }
-        function toggleTimeInput() { document.getElementById('task-time').disabled = document.getElementById('task-allday').checked; }
+        function showToast(m) { const t=document.getElementById('toast'); t.textContent=m; t.classList.remove('translate-y-32','opacity-0'); setTimeout(()=>{t.classList.add('translate-y-32','opacity-0');},3000); }
+        function updateDate() { const n=new Date(); document.getElementById('current-date').innerHTML = `<span class="mr-2">${n.getFullYear()}.${String(n.getMonth()+1).padStart(2,'0')}.${String(n.getDate()).padStart(2,'0')}</span><span class="text-xs bg-morandi-brown text-white px-1 rounded">${['SUN','MON','TUE','WED','THU','FRI','SAT'][n.getDay()]}</span>`; }
+        function switchTab(t) { document.querySelectorAll('.tab-btn').forEach(b=>{b.classList.remove('active');if(b.id===`btn-${t}`)b.classList.add('active');}); document.querySelectorAll('.section-content').forEach(s=>{s.classList.add('hidden');if(s.id===`tab-${t}`)s.classList.remove('hidden');}); if(t==='planner')renderCalendar(); if(t==='drinks')renderDrinkCalendar(); }
+        function toggleCollapse(c,i) { const el=document.getElementById(c); const ic=document.getElementById(i); if(!el) return; if(el.classList.contains('open')){el.classList.remove('open');if(ic)ic.style.transform='rotate(0deg)';}else{el.classList.add('open');if(ic)ic.style.transform='rotate(180deg)';} }
 
-        // --- Planner Functions ---
-        function addTask() {
-             const date = document.getElementById('task-date').value; const title = document.getElementById('task-title').value;
-             if (!title.trim() || !date) return showToast("請至少輸入日期與標題");
-             const newTask = {
-                id: Date.now(), date, time: document.getElementById('task-time').value, isAllDay: document.getElementById('task-allday').checked,
-                quadrant: document.getElementById('task-priority').value, title, text: title, content: document.getElementById('task-content').value,
-                location: document.getElementById('task-location').value, url: document.getElementById('task-url').value, completed: false
-             };
-             appData.tasks.push(newTask); saveData(); renderTasks(); renderCalendar();
-             
-             document.getElementById('task-title').value = '';
-             document.getElementById('task-content').value = '';
-             document.getElementById('task-location').value = '';
-             document.getElementById('task-url').value = '';
-             showToast("日程已新增");
-        }
-        function renderTasks() {
-            ['q1', 'q2', 'q3', 'q4'].forEach(q => document.getElementById(`list-${q}`).innerHTML = '');
-            appData.tasks.forEach(task => {
-                const displayTitle = task.title || task.text || "未命名任務";
-                const d = new Date(task.date); const m = String(d.getMonth()+1).padStart(2,'0'); const day = String(d.getDate()).padStart(2,'0'); const wd = ['日','一','二','三','四','五','六'][d.getDay()];
-                const displayDate = task.date ? `<span class="text-[10px] text-morandi-brown block mb-1 font-bold"><i class="fas fa-calendar-alt mr-1"></i>${m}/${day} (${wd}) ${task.time || (task.isAllDay ? '全日' : '')}</span>` : '';
+        // Planner
+        function toggleTimeInput(){document.getElementById('task-time').disabled=document.getElementById('task-allday').checked;}
+        // ADDED: Toggle function for new planner form
+        function toggleTaskForm(){const p=document.getElementById('task-form-panel'); if(p.classList.contains('open'))p.classList.remove('open'); else p.classList.add('open');}
+        
+        function addTask(){const d=document.getElementById('task-date').value; const t=document.getElementById('task-title').value; if(!t.trim()||!d)return showToast("請輸入"); appData.tasks.push({id:Date.now(),date:d,time:document.getElementById('task-time').value,isAllDay:document.getElementById('task-allday').checked,quadrant:document.getElementById('task-priority').value,title:t,text:t,content:document.getElementById('task-content').value,location:document.getElementById('task-location').value,url:document.getElementById('task-url').value,completed:false}); saveData(); renderTasks(); renderCalendar(); showToast("OK"); toggleTaskForm();}
+        
+        // --- Updated renderTasks for List View ---
+        function renderTasks(){
+            const list = document.getElementById('all-tasks-list');
+            const emptyMsg = document.getElementById('empty-tasks-msg');
+            if(!list) return;
+            
+            list.innerHTML = '';
+            
+            if(appData.tasks.length === 0) {
+                if(emptyMsg) emptyMsg.classList.remove('hidden');
+                return;
+            } else {
+                if(emptyMsg) emptyMsg.classList.add('hidden');
+            }
+
+            // Sort: Uncompleted first, then by Quadrant (q1, q2, q3, q4), then by Date
+            const sortedTasks = [...appData.tasks].sort((a,b) => {
+                if (a.completed !== b.completed) return a.completed ? 1 : -1;
+                const qOrder = {q1:1, q2:2, q3:3, q4:4};
+                if (qOrder[a.quadrant] !== qOrder[b.quadrant]) return qOrder[a.quadrant] - qOrder[b.quadrant];
+                return new Date(a.date) - new Date(b.date);
+            });
+
+            const qLabels = {
+                q1: { text: "🔥 緊急重要", color: "bg-red-200 text-red-900 border border-red-300" },
+                q2: { text: "⭐ 重要不急", color: "bg-blue-200 text-blue-900 border border-blue-300" },
+                q3: { text: "⚡ 緊急不重", color: "bg-yellow-200 text-yellow-900 border border-yellow-300" },
+                q4: { text: "☕ 不急不重", color: "bg-gray-200 text-gray-800 border border-gray-300" }
+            };
+
+            sortedTasks.forEach(t => {
+                const q = t.quadrant || 'q1';
+                const label = qLabels[q];
                 const li = document.createElement('li');
-                li.className = "flex justify-between items-start group border-b border-dashed border-gray-300 pb-2 last:border-0";
-                li.innerHTML = `<div class="flex items-start gap-3 w-full"><label class="flex items-center cursor-pointer mt-1"><input type="checkbox" ${task.completed ? 'checked' : ''} onchange="toggleTask(${task.id})"></label><div class="w-full">${displayDate}<span class="text-sm font-serif leading-relaxed ${task.completed ? 'line-through text-gray-400' : 'text-morandi-dark font-medium'} w-full break-words pr-2 block">${displayTitle}</span>${task.content ? `<div class="text-xs text-gray-500 mt-1 truncate">${task.content}</div>` : ''}${task.url ? `<a href="${task.url}" target="_blank" class="text-xs text-morandi-blue hover:underline"><i class="fas fa-link"></i> 連結</a>` : ''}</div></div><button onclick="deleteTask(${task.id})" class="text-morandi-brown hover:text-red-500 opacity-0 group-hover:opacity-100 transition px-1"><i class="fas fa-times"></i></button>`;
-                const targetList = task.quadrant ? document.getElementById(`list-${task.quadrant}`) : document.getElementById('list-q1');
-                if(targetList) targetList.appendChild(li);
-            });
-        }
-        function toggleTask(id) { const task = appData.tasks.find(t => t.id === id); if (task) { task.completed = !task.completed; saveData(); renderTasks(); } }
-        function deleteTask(id) { if(confirm("確定刪除？")) { appData.tasks = appData.tasks.filter(t => t.id !== id); saveData(); renderTasks(); renderCalendar(); } }
-
-        function renderCalendar() {
-             const year = currentCalendarDate.getFullYear(); const month = currentCalendarDate.getMonth();
-             document.getElementById('calendar-month-year').textContent = new Date(year, month).toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
-             const firstDay = new Date(year, month, 1).getDay(); const daysInMonth = new Date(year, month + 1, 0).getDate();
-             const grid = document.getElementById('calendar-grid'); grid.innerHTML = '';
-             for(let i=0; i<firstDay; i++) grid.appendChild(document.createElement('div'));
-             for(let day=1; day<=daysInMonth; day++) {
-                 const dayDiv = document.createElement('div'); dayDiv.className = "calendar-day bg-white border border-morandi-brown/20 p-1 flex flex-col items-center cursor-pointer relative";
-                 const checkDate = `${year}-${String(month+1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                 if(day === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear()) dayDiv.classList.add('today');
-                 dayDiv.innerHTML = `<span class="text-xs font-bold text-morandi-dark mb-1">${day}</span>`;
-                 const dayTasks = appData.tasks.filter(t => t.date === checkDate);
-                 const dotContainer = document.createElement('div'); dotContainer.className = "flex gap-1 flex-wrap justify-center";
-                 dayTasks.forEach(t => { const dot = document.createElement('div'); let color = 'bg-gray-400'; if(t.quadrant === 'q1') color = 'bg-morandi-pink'; else if(t.quadrant === 'q2') color = 'bg-morandi-blue'; else if(t.quadrant === 'q3') color = 'bg-yellow-400'; dot.className = `w-2 h-2 rounded-full ${color}`; dotContainer.appendChild(dot); });
-                 dayDiv.appendChild(dotContainer);
-                 dayDiv.onclick = () => { 
-                    document.getElementById('task-date').value = checkDate; 
-                    if(!document.getElementById('add-task-content').classList.contains('open')) toggleCollapse('add-task-content', 'icon-add-task');
-                    document.getElementById('add-task-container').scrollIntoView({behavior:'smooth'}); 
-                 };
-                 grid.appendChild(dayDiv);
-             }
-        }
-        function changeMonth(delta) { currentCalendarDate.setMonth(currentCalendarDate.getMonth() + delta); renderCalendar(); }
-
-        // --- DRINKS LOGIC ---
-        function toggleDrinkForm() {
-            const panel = document.getElementById('drink-form-panel');
-            if(panel.classList.contains('open')) {
-                panel.classList.remove('open');
-            } else {
-                panel.classList.add('open');
-            }
-        }
-
-        function addDrink() {
-            const date = document.getElementById('drink-date').value;
-            let price = Math.round(parseFloat(document.getElementById('drink-price').value));
-            const shop = document.getElementById('drink-shop').value;
-            const name = document.getElementById('drink-name').value;
-            
-            // New Fields
-            const ice = document.getElementById('drink-ice').value;
-            const sugar = document.getElementById('drink-sugar').value;
-            const isTreat = document.getElementById('drink-treat').checked;
-            const isEco = document.getElementById('drink-eco').checked;
-
-            if (!date || isNaN(price) || !shop || !name) {
-                return showToast("請填寫完整飲料資訊");
-            }
-            
-            appData.drinks.unshift({ 
-                id: Date.now(), date, price, shop, name,
-                ice, sugar, isTreat, isEco
-            });
-            saveData();
-            renderDrinks();
-            renderDrinkCalendar(); // Refresh calendar
-            updateStats();
-            
-            // Close form after add
-            toggleDrinkForm();
-            
-            document.getElementById('drink-price').value = '';
-            document.getElementById('drink-shop').value = '';
-            document.getElementById('drink-name').value = '';
-            document.getElementById('drink-treat').checked = false;
-            document.getElementById('drink-eco').checked = false;
-            showToast("飲料紀錄已保存！");
-        }
-
-        function deleteDrink(id) {
-            if(confirm("確定刪除這筆紀錄？")) {
-                appData.drinks = appData.drinks.filter(d => d.id !== id);
-                saveData();
-                renderDrinks();
-                renderDrinkCalendar();
-                updateStats();
-            }
-        }
-
-        function renderDrinks() {
-            const tbody = document.getElementById('drink-list-body');
-            tbody.innerHTML = '';
-            
-            appData.drinks.slice(0, 20).forEach(d => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-morandi-paper/50 transition border-b border-gray-200 last:border-0";
+                li.className = `flex justify-between items-start p-3 md:p-4 hover:bg-gray-50 transition group ${t.completed ? 'opacity-50 bg-gray-50' : ''}`;
                 
-                // Format Price (Strikethrough if treat)
-                let priceDisplay = `NT$${Math.round(d.price)}`;
-                if(d.isTreat) priceDisplay = `<span class="line-through text-gray-400 text-[10px] mr-1">${priceDisplay}</span><span class="text-morandi-pink font-bold text-xs">🎁</span>`;
-                
-                // Tags
-                let tags = [];
-                if(d.ice && d.ice !== '無') tags.push(d.ice);
-                if(d.sugar && d.sugar !== '無') tags.push(d.sugar);
-                if(d.isEco) tags.push('<i class="fas fa-leaf text-green-500"></i>');
-                
-                tr.innerHTML = `
-                    <td class="p-2 md:p-3 text-morandi-brown text-xs font-bold font-display whitespace-nowrap">${d.date}</td>
-                    <td class="p-2 md:p-3 font-bold text-morandi-dark">
-                        <div>${d.shop}</div>
-                        <div class="text-[10px] text-gray-500">${d.name}</div>
-                    </td>
-                    <td class="p-2 md:p-3 text-gray-600 text-xs">
-                        ${tags.length > 0 ? tags.join(' · ') : '-'}
-                    </td>
-                    <td class="p-2 md:p-3 text-morandi-dark font-display font-bold whitespace-nowrap">${priceDisplay}</td>
-                    <td class="p-2 md:p-3 text-center">
-                        <button onclick="deleteDrink(${d.id})" class="text-xs text-gray-400 hover:text-red-500"><i class="fas fa-trash-alt"></i></button>
-                    </td>
+                li.innerHTML = `
+                    <div class="flex items-start gap-3 w-full">
+                        <input type="checkbox" ${t.completed ? 'checked' : ''} onchange="toggleTask(${t.id})" class="cursor-pointer mt-1.5 w-5 h-5 accent-morandi-dark">
+                        <div class="flex-1 min-w-0">
+                            <div class="flex flex-wrap items-center gap-2 mb-1">
+                                <span class="text-[10px] px-2 py-0.5 rounded shadow-sm font-bold tracking-wide ${label.color}">${label.text}</span>
+                                <span class="text-xs text-morandi-brown font-bold bg-morandi-paper/50 px-1 rounded"><i class="far fa-clock mr-1"></i>${t.date} ${t.time || ''}</span>
+                                ${t.location ? `<span class="text-[10px] text-gray-500 bg-gray-100 px-1 rounded"><i class="fas fa-map-marker-alt mr-1"></i>${t.location}</span>` : ''}
+                            </div>
+                            <span class="text-base font-bold text-morandi-dark block break-words ${t.completed ? 'line-through text-gray-400' : ''}">${t.title}</span>
+                            ${t.content ? `<p class="text-sm text-gray-600 mt-1 break-words">${t.content}</p>` : ''}
+                            ${t.url ? `<a href="${t.url}" target="_blank" class="text-xs text-blue-500 hover:underline mt-1 inline-block"><i class="fas fa-link mr-1"></i>相關連結</a>` : ''}
+                        </div>
+                    </div>
+                    <button onclick="deleteTask(${t.id})" class="text-gray-300 hover:text-red-500 p-2 transition-colors"><i class="fas fa-trash-alt"></i></button>
                 `;
-                tbody.appendChild(tr);
+                list.appendChild(li);
             });
         }
 
-        function renderDrinkCalendar() {
-            const year = currentDrinkCalendarDate.getFullYear();
-            const month = currentDrinkCalendarDate.getMonth();
-            
-            document.getElementById('drink-calendar-month-year').textContent = new Date(year, month).toLocaleDateString('en-US', { year: 'numeric', month: 'long' });
-            
-            const firstDay = new Date(year, month, 1).getDay();
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            const grid = document.getElementById('drink-calendar-grid');
-            grid.innerHTML = '';
+        function toggleTask(id){const t=appData.tasks.find(x=>x.id===id); if(t){t.completed=!t.completed;saveData();renderTasks();}}
+        function deleteTask(id){if(confirm("刪除？")){appData.tasks=appData.tasks.filter(x=>x.id!==id);saveData();renderTasks();renderCalendar();}}
+        function renderCalendar(){/* Simplified for brevity */ const g=document.getElementById('calendar-grid'); if(!g)return; g.innerHTML=''; const d=new Date(currentCalendarDate.getFullYear(),currentCalendarDate.getMonth(),1); const m=d.getMonth(); document.getElementById('calendar-month-year').textContent=`${d.getFullYear()} / ${m+1}`; for(let i=0;i<d.getDay();i++){g.innerHTML+='<div></div>';} while(d.getMonth()===m){ const today=new Date(); const isToday=d.getDate()===today.getDate()&&d.getMonth()===today.getMonth()&&d.getFullYear()===today.getFullYear(); const dateStr=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; const hasTask=appData.tasks.some(t=>t.date===dateStr); g.innerHTML+=`<div class="calendar-day p-1 border border-morandi-brown/10 rounded flex flex-col items-center ${isToday?'today':''} ${hasTask?'bg-yellow-50':''}"><span class="text-xs font-bold">${d.getDate()}</span>${hasTask?'<span class="w-1 h-1 bg-red-400 rounded-full mt-1"></span>':''}</div>`; d.setDate(d.getDate()+1); } }
+        function changeMonth(d){currentCalendarDate.setMonth(currentCalendarDate.getMonth()+d); renderCalendar();}
 
-            for(let i=0; i<firstDay; i++) grid.appendChild(document.createElement('div'));
-            
-            for(let day=1; day<=daysInMonth; day++) {
-                const dayDiv = document.createElement('div');
-                dayDiv.className = "calendar-day bg-white border border-morandi-brown/20 p-1 flex flex-col items-center cursor-pointer relative";
-                
-                const checkDate = `${year}-${String(month+1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                
-                // Highlight Today
-                if(day === new Date().getDate() && month === new Date().getMonth() && year === new Date().getFullYear()) {
-                    dayDiv.classList.add('today');
-                }
-
-                dayDiv.innerHTML = `<span class="text-xs font-bold text-morandi-dark mb-1">${day}</span>`;
-                
-                // Find drinks for this day
-                const dayDrinks = appData.drinks.filter(d => d.date === checkDate);
-                
-                const dotContainer = document.createElement('div');
-                dotContainer.className = "flex gap-1 flex-wrap justify-center";
-                dayDrinks.forEach(d => {
-                    const dot = document.createElement('div');
-                    // Special dot for Treat
-                    dot.className = d.isTreat 
-                        ? `w-2 h-2 rounded-full bg-morandi-pink border border-morandi-dark` 
-                        : `w-2 h-2 rounded-full bg-morandi-brown`;
-                    dotContainer.appendChild(dot);
-                });
-                dayDiv.appendChild(dotContainer);
-                
-                // Click to add drink on that date
-                dayDiv.onclick = () => {
-                    document.getElementById('drink-date').value = checkDate;
-                    if(!document.getElementById('drink-form-panel').classList.contains('open')) {
-                        toggleDrinkForm();
-                    }
-                };
-
-                grid.appendChild(dayDiv);
-            }
+        // Drinks
+        function toggleDrinkForm(){const p=document.getElementById('drink-form-panel'); if(p.classList.contains('open'))p.classList.remove('open'); else p.classList.add('open');}
+        function updateSugarDisplay(){document.getElementById('drink-sugar-display').textContent=SUGAR_LEVELS[document.getElementById('drink-sugar').value];}
+        function toggleDrinkPriceState(){const dis=document.getElementById('drink-treat').checked||document.getElementById('drink-meal').checked; const p=document.getElementById('drink-price'); p.disabled=dis; p.placeholder=dis?'不用錢':'50'; if(dis)p.value='';}
+        function addDrink(){ const d=document.getElementById('drink-date').value; const s=document.getElementById('drink-shop').value; const n=document.getElementById('drink-name').value; let p=Math.round(parseFloat(document.getElementById('drink-price').value)); const tr=document.getElementById('drink-treat').checked; const m=document.getElementById('drink-meal').checked; if(!d||!s||!n)return showToast("請輸入"); if(tr||m)p=0; appData.drinks.unshift({id:Date.now(),date:d,price:p,shop:s,name:n,ice:document.getElementById('drink-ice').value,sugar:SUGAR_LEVELS[document.getElementById('drink-sugar').value],isTreat:tr,isMeal:m,isEco:document.getElementById('drink-eco').checked}); saveData(); renderDrinks(); updateStats(); toggleDrinkForm(); showToast("OK"); }
+        
+        // --- Updated renderDrinks for Simplified Columns ---
+        function renderDrinks(){ 
+            const tb=document.getElementById('drink-list-body'); 
+            if(!tb)return; 
+            tb.innerHTML=''; 
+            appData.drinks.slice(0,50).forEach(d=>{ 
+                const tr=document.createElement('tr'); 
+                let p=`NT$${d.price}`; 
+                if(d.isTreat)p='🎁'; 
+                else if(d.isMeal)p='🍱'; 
+                // Columns: Date, Shop, Name, Price, Delete
+                tr.innerHTML=`
+                    <td class="p-2 text-xs border-b border-morandi-dark/10">${d.date}</td>
+                    <td class="p-2 border-b border-morandi-dark/10 text-sm font-bold text-morandi-dark">${d.shop}</td>
+                    <td class="p-2 border-b border-morandi-dark/10 text-sm">${d.name}</td>
+                    <td class="p-2 border-b border-morandi-dark/10 font-bold">${p}</td>
+                    <td class="p-2 border-b border-morandi-dark/10 text-center"><button onclick="deleteDrink(${d.id})" class="text-gray-300 hover:text-red-400"><i class="fas fa-times"></i></button></td>`; 
+                tb.appendChild(tr); 
+            }); 
         }
         
-        function changeDrinkMonth(delta) {
-            currentDrinkCalendarDate.setMonth(currentDrinkCalendarDate.getMonth() + delta);
-            renderDrinkCalendar();
+        // --- Updated updateStats & renderChart for Pie Chart ---
+        function updateStats(){ 
+            const y=new Date().getFullYear(); 
+            const ds=appData.drinks.filter(d=>new Date(d.date).getFullYear()===y); 
+            document.getElementById('stat-total-cost').textContent=`NT$ ${ds.reduce((a,b)=>a+(b.isTreat||b.isMeal?0:b.price),0)}`; 
+            document.getElementById('stat-total-cups').textContent=`共 ${ds.length} 杯`; 
+            // Pass all drinks from this year to renderChart
+            renderChart(ds); 
         }
 
-        function updateStats() {
-            if (appData.drinks.length === 0) {
-                document.getElementById('stat-total-cost').textContent = "NT$ 0";
-                document.getElementById('stat-total-cups').textContent = "共 0 杯";
-                document.getElementById('stat-fav-shop').textContent = "-";
-                document.getElementById('stat-fav-drink').textContent = "-";
-                document.getElementById('chart-bars').innerHTML = '<div class="text-xs text-gray-400 w-full text-center flex items-center justify-center h-full">暫無資料</div>';
+        function renderChart(data){ 
+            const pie = document.getElementById('chart-pie');
+            const legend = document.getElementById('chart-legend');
+            if(!pie || !legend) return;
+
+            let counts = { self: 0, treat: 0, meal: 0 };
+            data.forEach(d => {
+                if (d.isTreat) counts.treat++;
+                else if (d.isMeal) counts.meal++;
+                else counts.self++;
+            });
+
+            const total = data.length;
+            
+            if (total === 0) {
+                pie.style.background = '#f3f4f6'; // gray-100
+                pie.innerHTML = '無資料';
+                legend.innerHTML = '';
+                return;
+            } else {
+                pie.innerHTML = '';
+            }
+
+            const pSelf = (counts.self / total) * 100;
+            const pTreat = (counts.treat / total) * 100;
+            const pMeal = (counts.meal / total) * 100;
+
+            const endSelf = pSelf;
+            const endTreat = endSelf + pTreat;
+
+            // Using Tailwind colors: morandi-green (#8F9E8B), morandi-pink (#C4A8A6), morandi-blue (#8CA0A8)
+            const gradient = `conic-gradient(
+                #8F9E8B 0% ${endSelf}%,
+                #C4A8A6 ${endSelf}% ${endTreat}%,
+                #8CA0A8 ${endTreat}% 100%
+            )`;
+
+            pie.style.background = gradient;
+
+            legend.innerHTML = `
+                <div class="flex items-center gap-2"><span class="w-3 h-3 bg-[#8F9E8B] rounded-full shadow-sm"></span> <span>自費 (${counts.self}) ${Math.round(pSelf)}%</span></div>
+                <div class="flex items-center gap-2"><span class="w-3 h-3 bg-[#C4A8A6] rounded-full shadow-sm"></span> <span>請客 (${counts.treat}) ${Math.round(pTreat)}%</span></div>
+                <div class="flex items-center gap-2"><span class="w-3 h-3 bg-[#8CA0A8] rounded-full shadow-sm"></span> <span>隨餐 (${counts.meal}) ${Math.round(pMeal)}%</span></div>
+            `;
+        }
+        
+        function renderDrinkCalendar(){/* Simplified */ const g=document.getElementById('drink-calendar-grid'); if(!g)return; g.innerHTML=''; const d=new Date(currentDrinkCalendarDate.getFullYear(),currentDrinkCalendarDate.getMonth(),1); const m=d.getMonth(); document.getElementById('drink-calendar-month-year').textContent=`${d.getFullYear()} / ${m+1}`; for(let i=0;i<d.getDay();i++){g.innerHTML+='<div></div>';} while(d.getMonth()===m){ const dateStr=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; const cups=appData.drinks.filter(dr=>dr.date===dateStr).length; g.innerHTML+=`<div class="calendar-day p-1 border border-morandi-brown/10 rounded flex flex-col items-center ${cups>0?'bg-morandi-blue/10':''}"><span class="text-xs font-bold">${d.getDate()}</span>${cups>0?`<span class="text-[10px] font-bold mt-1">🥤${cups}</span>`:''}</div>`; d.setDate(d.getDate()+1); } }
+        function changeDrinkMonth(d){currentDrinkCalendarDate.setMonth(currentDrinkCalendarDate.getMonth()+d); renderDrinkCalendar();}
+
+        // Purchasing
+        
+        // --- Updated: Dynamic Item Rows ---
+        function toggleOrderForm(){
+            const p=document.getElementById('order-form-panel'); 
+            if(p.classList.contains('open')){
+                p.classList.remove('open');
+            } else {
+                p.classList.add('open');
+                // Check if items container is empty, if so add one row
+                const c = document.getElementById('order-items-container');
+                if(c && c.children.length === 0) addOrderItemRow();
+                renderStatusOptions(); // Ensure status options are populated
+            }
+        }
+
+        function renderStatusOptions(){
+            if(document.getElementById('order-status')) {
+                // If it's empty, populate it
+                if (document.getElementById('order-status').children.length === 0) {
+                    document.getElementById('order-status').innerHTML=ORDER_STATUSES.map(s=>`<option>${s}</option>`).join('');
+                }
+            }
+        }
+
+        function addOrderItemRow() {
+            const container = document.getElementById('order-items-container');
+            const div = document.createElement('div');
+            div.className = "item-row grid grid-cols-1 md:grid-cols-12 gap-2 mb-2 bg-gray-50 p-2 rounded relative border border-morandi-brown/10";
+            div.innerHTML = `
+                <input class="p-2 text-sm border-morandi-dark col-span-1 md:col-span-3 item-name" placeholder="商品名稱">
+                <input class="p-2 text-sm border-morandi-dark col-span-1 md:col-span-3 item-spec" placeholder="規格">
+                <div class="flex col-span-1 md:col-span-2 items-center">
+                    <button onclick="changeItemQty(this, -1)" class="w-8 h-full bg-gray-200 text-gray-600 font-bold border border-r-0 border-morandi-dark rounded-l">-</button>
+                    <input type="number" class="p-2 text-sm border-y border-morandi-dark w-full text-center item-qty" value="1" oninput="calcProfit()">
+                    <button onclick="changeItemQty(this, 1)" class="w-8 h-full bg-gray-200 text-gray-600 font-bold border border-l-0 border-morandi-dark rounded-r">+</button>
+                </div>
+                <input type="number" class="p-2 text-sm border-morandi-dark col-span-1 md:col-span-2 item-krw" placeholder="韓幣單價" oninput="calcProfit()">
+                <input type="number" class="p-2 text-sm border-morandi-dark col-span-1 md:col-span-2 item-sell" placeholder="台幣單價" oninput="calcProfit()">
+                <button onclick="removeOrderItemRow(this)" class="absolute -top-2 -right-2 bg-red-400 text-white rounded-full w-5 h-5 flex items-center justify-center text-xs shadow-sm hover:bg-red-600">x</button>
+            `;
+            container.appendChild(div);
+        }
+
+        function removeOrderItemRow(btn) {
+            const row = btn.closest('.item-row');
+            const container = document.getElementById('order-items-container');
+            if(container.children.length > 1) {
+                row.remove();
+                calcProfit();
+            } else {
+                showToast("至少需有一個品項");
+            }
+        }
+
+        function changeItemQty(btn, delta) {
+            const input = btn.parentElement.querySelector('input');
+            let val = parseInt(input.value) || 0;
+            val += delta;
+            if(val < 1) val = 1;
+            input.value = val;
+            calcProfit();
+        }
+        
+        // --- Updated: calcProfit to iterate rows ---
+        function calcProfit() {
+            const rows = document.querySelectorAll('.item-row');
+            const rate = parseFloat(document.getElementById('order-rate').value) || 38;
+            
+            let totalKrw = 0;
+            let totalSell = 0;
+            let totalTwdCost = 0;
+
+            rows.forEach(row => {
+                const qty = parseInt(row.querySelector('.item-qty').value) || 0;
+                const krw = parseInt(row.querySelector('.item-krw').value) || 0;
+                const sell = parseInt(row.querySelector('.item-sell').value) || 0;
+
+                totalKrw += (krw * qty);
+                totalSell += (sell * qty);
+                
+                // Cost for this item
+                totalTwdCost += Math.ceil((krw / rate) * qty);
+            });
+            
+            const profit = totalSell - totalTwdCost;
+            
+            document.getElementById('order-twd-cost').value = totalTwdCost;
+            document.getElementById('order-sell-price').value = totalSell;
+            document.getElementById('order-profit').value = profit;
+        }
+
+        function addOrder(){ 
+            const d = document.getElementById('order-date').value;
+            const shop = document.getElementById('order-shop').value;
+            if(!d) return showToast("請輸入日期");
+
+            // Gather items
+            const itemRows = document.querySelectorAll('.item-row');
+            let items = [];
+            let hasError = false;
+
+            itemRows.forEach(row => {
+                const name = row.querySelector('.item-name').value;
+                if(!name) hasError = true;
+                items.push({
+                    name: name,
+                    spec: row.querySelector('.item-spec').value,
+                    qty: parseInt(row.querySelector('.item-qty').value) || 1,
+                    krw: parseInt(row.querySelector('.item-krw').value) || 0,
+                    sell: parseInt(row.querySelector('.item-sell').value) || 0
+                });
+            });
+
+            if(hasError) return showToast("請輸入商品名稱");
+
+            const rate = parseFloat(document.getElementById('order-rate').value) || 38;
+            const twdCost = parseInt(document.getElementById('order-twd-cost').value) || 0;
+            const sell = parseInt(document.getElementById('order-sell-price').value) || 0;
+            const profit = parseInt(document.getElementById('order-profit').value) || 0;
+
+            appData.orders.unshift({
+                id: Date.now(),
+                date: d,
+                code: document.getElementById('order-code').value,
+                shop: shop,
+                // Store array of items
+                items: items,
+                // Legacy fields fallback (take first item or summary)
+                name: items.map(i => i.name).join(', '), 
+                spec: items.length > 1 ? `共 ${items.length} 品項` : items[0].spec,
+                qty: items.reduce((a,b)=>a+b.qty,0),
+                
+                status: document.getElementById('order-status').value,
+                rate: rate,
+                twdCost: twdCost,
+                sell: sell,
+                profit: profit,
+                paid: document.getElementById('order-paid').checked,
+                shipping: document.getElementById('order-shipping').checked,
+                note: document.getElementById('order-note').value
+            }); 
+            saveData(); 
+            renderOrders(); 
+            updatePurchasingStats();
+            toggleOrderForm();
+            
+            // Reset items
+            document.getElementById('order-items-container').innerHTML = '';
+            addOrderItemRow();
+        }
+
+        function updateOrderDisplaySettings() {
+            orderSort = document.getElementById('order-sort-select').value;
+            orderFilterUnfinished = document.getElementById('order-filter-unfinished').checked;
+            renderOrders();
+        }
+
+        function renderOrders(){ 
+            const tb=document.getElementById('order-list-body'); 
+            if(!tb)return; 
+            tb.innerHTML=''; 
+            
+            let orders = [...appData.orders];
+            
+            if(orderFilterUnfinished) {
+                orders = orders.filter(o => o.status !== "訂單完成");
+            }
+            
+            if(orderSort === 'asc') {
+                orders.sort((a,b) => new Date(a.date) - new Date(b.date));
+            } else {
+                orders.sort((a,b) => new Date(b.date) - new Date(a.date));
+            }
+
+            document.getElementById('order-count-display').innerText = orders.length;
+
+            orders.forEach(o=>{ 
+                const profitClass = o.profit >= 0 ? 'text-morandi-green' : 'text-red-400';
+                
+                // Construct items display string
+                let itemsHtml = '';
+                if (o.items && Array.isArray(o.items)) {
+                    o.items.forEach(i => {
+                        itemsHtml += `<div class="text-xs mb-1">• ${i.name} ${i.spec ? `(${i.spec})` : ''} x${i.qty}</div>`;
+                    });
+                } else {
+                    // Fallback for old data
+                    itemsHtml = `<div class="text-xs">• ${o.name} ${o.spec ? `(${o.spec})` : ''} x${o.qty}</div>`;
+                }
+
+                tb.innerHTML+=`
+                <tr>
+                    <td class="p-2 border-r border-morandi-dark/10 align-top">
+                        <div class="font-bold">${o.date}</div>
+                        <div class="text-xs text-morandi-brown">${o.code || '-'}</div>
+                        <div class="text-xs font-bold text-morandi-dark mt-1">${o.shop}</div>
+                    </td>
+                    <td class="p-2 border-r border-morandi-dark/10 align-top">
+                        ${itemsHtml}
+                        ${o.note ? `<div class="text-[10px] text-gray-400 mt-1 italic">註: ${o.note}</div>` : ''}
+                    </td>
+                    <td class="p-2 border-r border-morandi-dark/10 align-top"><span class="px-2 py-1 bg-morandi-paper rounded text-xs font-bold whitespace-nowrap">${o.status}</span></td>
+                    <td class="p-2 border-r border-morandi-dark/10 text-xs align-top">
+                        <div>售: ${o.sell}</div>
+                        <div>成: ${o.twdCost}</div>
+                        <div class="${o.paid ? 'text-green-600' : 'text-red-400'} font-bold mt-1">${o.paid ? '已收' : '未收'}</div>
+                    </td>
+                    <td class="p-2 border-r border-morandi-dark/10 font-bold ${profitClass} align-top">${o.profit}</td>
+                    <td class="p-2 text-center align-top"><button onclick="deleteOrder(${o.id})" class="text-red-400 hover:text-red-600"><i class="fas fa-times"></i></button></td>
+                </tr>`; 
+            }); 
+        }
+        
+        // --- FIXED: updatePurchasingStats ---
+        function updatePurchasingStats() {
+            let netProfit = 0;
+            let revenue = 0;
+            let cost = 0;
+            let unpaid = 0;
+            let statusCount = {};
+
+            ORDER_STATUSES.forEach(s => statusCount[s] = 0);
+
+            appData.orders.forEach(o => {
+                netProfit += (o.profit || 0);
+                revenue += (o.sell || 0);
+                cost += (o.twdCost || 0);
+                // 這裡的邏輯是：只要「商品已收」沒打勾，就列入未收款，完全不管「運費已匯」有沒有打勾
+                if(!o.paid) unpaid += (o.sell || 0);
+                
+                if(statusCount[o.status] !== undefined) statusCount[o.status]++;
+                else statusCount[o.status] = 1;
+            });
+
+            document.getElementById('stats-net-profit').innerText = `NT$ ${netProfit}`;
+            document.getElementById('stats-revenue').innerText = `NT$ ${revenue}`;
+            document.getElementById('stats-cost').innerText = `NT$ ${cost}`;
+            document.getElementById('stats-total-orders').innerText = appData.orders.length;
+            document.getElementById('stats-unpaid').innerText = `NT$ ${unpaid}`;
+            
+            const margin = revenue > 0 ? Math.round((netProfit / revenue) * 100) : 0;
+            document.getElementById('stats-margin').innerText = `${margin}%`;
+
+            // Update Status Distribution
+            const distContainer = document.getElementById('stats-status-dist');
+            distContainer.innerHTML = '';
+            
+            // Only show statuses with count > 0
+            Object.keys(statusCount).forEach(status => {
+                if(statusCount[status] > 0) {
+                    const percent = Math.round((statusCount[status] / appData.orders.length) * 100);
+                    distContainer.innerHTML += `
+                    <div>
+                        <div class="flex justify-between text-xs font-bold mb-1">
+                            <span>${status} (${statusCount[status]})</span>
+                            <span>${percent}%</span>
+                        </div>
+                        <div class="w-full bg-gray-200 rounded-full h-2">
+                            <div class="bg-morandi-blue h-2 rounded-full" style="width: ${percent}%"></div>
+                        </div>
+                    </div>`;
+                }
+            });
+        }
+
+        // Subs
+        function toggleSubForm(){const p=document.getElementById('sub-form-panel'); if(p.classList.contains('open'))p.classList.remove('open'); else p.classList.add('open');}
+        function addSub(){ appData.subs.push({id:Date.now(),name:document.getElementById('sub-name').value,price:parseFloat(document.getElementById('sub-price').value),person:document.getElementById('sub-person').value,cycle:document.getElementById('sub-cycle').value,date:document.getElementById('sub-date').value,isPaid:false}); saveData(); renderSubs('service'); toggleSubForm(); }
+        
+        // --- Updated: renderSubs with Collapsible Logic & Grouping ---
+        function renderSubs(viewType){ 
+            const container=document.getElementById('sub-list-container'); 
+            if(!container)return; 
+            container.innerHTML=''; 
+            
+            // Set active button styles
+            const btnService = document.getElementById('btn-view-service');
+            const btnPerson = document.getElementById('btn-view-person');
+            if(btnService && btnPerson) {
+                if(viewType === 'service') {
+                    btnService.classList.add('border-morandi-dark', 'bg-morandi-paper');
+                    btnService.classList.remove('border-transparent', 'bg-white');
+                    btnPerson.classList.add('border-transparent', 'bg-white');
+                    btnPerson.classList.remove('border-morandi-dark', 'bg-morandi-paper');
+                } else {
+                    btnPerson.classList.add('border-morandi-dark', 'bg-morandi-paper');
+                    btnPerson.classList.remove('border-transparent', 'bg-white');
+                    btnService.classList.add('border-transparent', 'bg-white');
+                    btnService.classList.remove('border-morandi-dark', 'bg-morandi-paper');
+                }
+            }
+
+            // Grouping Logic
+            const groups = {};
+            appData.subs.forEach(sub => {
+                // Key determines grouping: 'service' -> name, 'person' -> person
+                const rawKey = viewType === 'service' ? sub.name : sub.person;
+                const key = rawKey || (viewType === 'service' ? '未命名服務' : '未指定人員');
+                
+                if (!groups[key]) groups[key] = { total: 0, items: [] };
+                groups[key].items.push(sub);
+                groups[key].total += sub.price;
+            });
+
+            // Helper to get cycle label
+            const getCycleLabel = (c) => {
+                if(c === 'quarterly') return '每季';
+                if(c === 'yearly') return '每年';
+                return '每月';
+            };
+
+            // Helper to format date MM/DD
+            const formatDateMMDD = (dateStr) => {
+                if(!dateStr) return '';
+                const parts = dateStr.split('-');
+                if(parts.length < 3) return dateStr;
+                return `${parts[1]}/${parts[2]}`;
+            };
+
+            const keys = Object.keys(groups);
+            if(keys.length === 0) {
+                container.innerHTML = '<div class="p-4 text-center text-morandi-brown text-sm">目前沒有訂閱資料</div>';
                 return;
             }
 
-            const currentYear = new Date().getFullYear();
-            const thisYearDrinks = appData.drinks.filter(d => new Date(d.date).getFullYear() === currentYear);
-
-            // Total Cost (Exclude treats from cost, but include in count)
-            const total = Math.round(thisYearDrinks.reduce((sum, d) => sum + (d.isTreat ? 0 : (parseFloat(d.price) || 0)), 0));
-            
-            document.getElementById('stat-total-cost').textContent = `NT$ ${total}`;
-            document.getElementById('stat-total-cups').textContent = `共 ${thisYearDrinks.length} 杯`;
-
-            const getMode = (arr) => {
-                const counts = {};
-                let max = 0, res = "-";
-                arr.forEach(a => {
-                    counts[a] = (counts[a] || 0) + 1;
-                    if(counts[a] > max) { max = counts[a]; res = a; }
+            keys.forEach((key, index) => {
+                const group = groups[key];
+                const groupId = `sub-group-${index}`;
+                const iconId = `icon-sub-${index}`;
+                
+                // Create Collapsible Card
+                const card = document.createElement('div');
+                card.className = "border-2 border-morandi-dark shadow-retro-sm bg-white mb-3 overflow-hidden";
+                
+                let itemsHtml = '';
+                group.items.forEach(item => {
+                    // If viewing by service, list shows person; if by person, list shows service
+                    const mainText = viewType === 'service' ? (item.person || '未指定') : item.name;
+                    itemsHtml += `
+                        <div class="flex justify-between items-center border-b border-morandi-brown/10 pb-2 mb-2 last:border-0 last:mb-0 last:pb-0 hover:bg-gray-50 p-2 rounded transition">
+                            <div>
+                                <div class="text-sm font-bold text-morandi-dark">${mainText}</div>
+                                <div class="text-xs text-morandi-brown flex items-center gap-2">
+                                    <span class="bg-morandi-paper px-1 rounded">${formatDateMMDD(item.date)}</span>
+                                    <span>${getCycleLabel(item.cycle)}</span>
+                                </div>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <span class="font-bold text-morandi-dark">$${item.price}</span>
+                                <button onclick="deleteSub(${item.id})" class="text-xs text-gray-300 hover:text-red-400 px-2"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                    `;
                 });
-                return res;
-            }
 
-            document.getElementById('stat-fav-shop').textContent = getMode(thisYearDrinks.map(d => d.shop));
-            document.getElementById('stat-fav-drink').textContent = getMode(thisYearDrinks.map(d => d.name));
-
-            // Chart Logic (Last 7 drinks)
-            const chartContainer = document.getElementById('chart-bars');
-            chartContainer.innerHTML = '';
-            const recent = appData.drinks.slice(0, 7).reverse(); // Last 7
-            const maxPrice = Math.max(...recent.map(d => d.price), 100);
-
-            recent.forEach(d => {
-                const heightPct = (d.price / maxPrice) * 100;
-                const bar = document.createElement('div');
-                bar.className = "flex-1 flex flex-col justify-end items-center group relative";
-                
-                let barColor = 'bg-morandi-green';
-                let priceLabel = `$${Math.round(d.price)}`;
-                
-                // Visual update for treats in chart
-                if (d.isTreat) {
-                    barColor = 'bg-morandi-pink'; // Treat color
-                    priceLabel = '🎁';
-                }
-
-                bar.innerHTML = `
-                    <div class="absolute -top-6 text-[10px] font-bold text-morandi-dark opacity-0 group-hover:opacity-100 transition-opacity bg-white border border-morandi-dark px-1 rounded shadow-retro-sm z-10">${priceLabel}</div>
-                    <div class="w-full ${barColor} border-2 border-morandi-dark hover:opacity-80 transition-all" style="height: ${Math.max(heightPct, 5)}%"></div>
-                    <div class="text-[10px] text-morandi-dark font-bold mt-2 truncate w-full text-center transform -rotate-45 origin-top-left translate-x-2">${d.shop.substring(0,3)}</div>
+                card.innerHTML = `
+                    <button onclick="toggleCollapse('${groupId}', '${iconId}')" class="w-full flex justify-between items-center p-3 bg-morandi-paper border-b-2 border-morandi-dark hover:bg-morandi-brown/20 transition group">
+                        <span class="font-bold text-morandi-dark text-base"><i class="fas ${viewType === 'service' ? 'fa-cube' : 'fa-user'} mr-2 text-xs opacity-50"></i>${key}</span>
+                        <div class="flex items-center gap-3">
+                            <span class="font-bold text-morandi-dark bg-white px-2 py-1 rounded border border-morandi-dark text-xs">總計 $${group.total}</span>
+                            <i id="${iconId}" class="fas fa-chevron-down transition-transform duration-300"></i>
+                        </div>
+                    </button>
+                    <div id="${groupId}" class="collapse-content bg-morandi-bg">
+                        <div class="p-3">
+                            ${itemsHtml}
+                        </div>
+                    </div>
                 `;
-                chartContainer.appendChild(bar);
+                container.appendChild(card);
             });
         }
 
-        // --- PURCHASING / ORDERS LOGIC ---
-        function toggleOrderForm() {
-             const panel = document.getElementById('order-form-panel');
-             if(panel.classList.contains('open')) panel.classList.remove('open');
-             else panel.classList.add('open');
-        }
-
-        function renderStatusOptions() { if(document.getElementById('order-status')) document.getElementById('order-status').innerHTML = ORDER_STATUSES.map(s => `<option value="${s}">${s}</option>`).join(''); }
-        function calcProfit() {
-            const krw = parseFloat(document.getElementById('order-krw-cost').value) || 0; const rate = parseFloat(document.getElementById('order-rate').value) || 1; const sell = parseFloat(document.getElementById('order-sell-price').value) || 0;
-            let twdCost = 0; if (rate > 0) twdCost = Math.round(krw / rate); const profit = Math.round(sell - twdCost);
-            document.getElementById('order-twd-cost').value = twdCost > 0 ? twdCost : ''; document.getElementById('order-profit').value = (sell > 0 && krw > 0) ? `NT$ ${profit}` : '';
-            const profitInput = document.getElementById('order-profit'); if(profit < 0) { profitInput.classList.add('text-red-500'); profitInput.classList.remove('text-morandi-dark'); } else { profitInput.classList.remove('text-red-500'); profitInput.classList.add('text-morandi-dark'); }
-        }
-        function addOrder() {
-            const date = document.getElementById('order-date').value; const code = document.getElementById('order-code').value; const shop = document.getElementById('order-shop').value; const name = document.getElementById('order-name').value; const spec = document.getElementById('order-spec').value; const qty = parseInt(document.getElementById('order-qty').value) || 1; const status = document.getElementById('order-status').value;
-            const krw = Math.round(parseFloat(document.getElementById('order-krw-cost').value)); const rate = parseFloat(document.getElementById('order-rate').value); const sell = Math.round(parseFloat(document.getElementById('order-sell-price').value));
-            const paid = document.getElementById('order-paid').checked; const shipping = document.getElementById('order-shipping').checked; const note = document.getElementById('order-note').value;
-            if(!date || !code || !shop || !name || isNaN(krw) || isNaN(sell)) return showToast("請填寫必填欄位");
-            const twdCost = Math.round(krw / rate); const profit = Math.round(sell - twdCost);
-            appData.orders.unshift({ id: Date.now(), date, code, shop, name, spec, qty, status, krw, rate, twdCost, sell, profit, paid, shipping, note });
-            saveData(); renderOrders(); updatePurchasingStats(); toggleOrderForm();
-            document.getElementById('order-code').value = ''; document.getElementById('order-shop').value = ''; document.getElementById('order-name').value = ''; document.getElementById('order-spec').value = ''; document.getElementById('order-qty').value = '1'; document.getElementById('order-krw-cost').value = ''; document.getElementById('order-sell-price').value = ''; document.getElementById('order-twd-cost').value = ''; document.getElementById('order-profit').value = ''; document.getElementById('order-note').value = ''; document.getElementById('order-paid').checked = false; document.getElementById('order-shipping').checked = false;
-            showToast("訂單已儲存！");
-        }
-        function deleteOrder(id) { if(confirm("確定刪除？")) { appData.orders = appData.orders.filter(o => o.id !== id); saveData(); renderOrders(); updatePurchasingStats(); } }
-        function updateOrderStatus(id, newStatus) { const order = appData.orders.find(o => o.id === id); if(order) { order.status = newStatus; saveData(); updatePurchasingStats(); showToast(`狀態更新：${newStatus}`); } }
-        function updateOrderDisplaySettings() { orderSort = document.getElementById('order-sort-select').value; orderFilterUnfinished = document.getElementById('order-filter-unfinished').checked; renderOrders(); }
-        function renderOrders() {
-            const tbody = document.getElementById('order-list-body'); tbody.innerHTML = ''; let displayOrders = [...appData.orders];
-            if (orderFilterUnfinished) displayOrders = displayOrders.filter(o => o.status !== "訂單完成");
-            displayOrders.sort((a, b) => { const dateA = new Date(a.date); const dateB = new Date(b.date); return orderSort === 'desc' ? dateB - dateA : dateA - dateB; });
-            document.getElementById('order-count-display').textContent = displayOrders.length;
-            const itemsToShow = displayOrders; 
-            if(itemsToShow.length === 0) { const tr = document.createElement('tr'); tr.innerHTML = '<td colspan="6" class="p-8 text-center text-gray-400 text-xs italic">沒有符合條件的訂單</td>'; tbody.appendChild(tr); return; }
-            itemsToShow.forEach(o => {
-                const tr = document.createElement('tr'); tr.className = "hover:bg-morandi-paper/50 transition";
-                const statusOptions = ORDER_STATUSES.map(s => `<option value="${s}" ${o.status === s ? 'selected' : ''}>${s}</option>`).join('');
-                tr.innerHTML = `<td class="p-2 md:p-3 text-morandi-brown text-xs border-r border-morandi-dark/10 whitespace-nowrap"><div class="font-bold">${o.date}</div><div class="text-morandi-dark">${o.code}</div></td><td class="p-2 md:p-3 text-gray-700 text-xs border-r border-morandi-dark/10 min-w-[150px]"><div class="font-bold text-morandi-dark">${o.name}</div><div class="text-[10px] text-gray-500">${o.shop} · ${o.spec} x${o.qty}</div>${o.note ? `<div class="text-[10px] text-morandi-brown italic mt-1">"${o.note}"</div>` : ''}</td><td class="p-2 md:p-3 border-r border-morandi-dark/10 min-w-[100px]"><select onchange="updateOrderStatus(${o.id}, this.value)" class="text-xs p-1 border rounded bg-white w-full cursor-pointer hover:border-morandi-blue">${statusOptions}</select></td><td class="p-2 md:p-3 text-xs border-r border-morandi-dark/10 space-y-1 whitespace-nowrap"><div>${o.paid ? '<span class="text-white bg-morandi-green px-1 rounded text-[10px]">已收</span>' : '<span class="text-white bg-red-300 px-1 rounded text-[10px]">未收</span>'}</div><div>${o.shipping ? '<span class="text-white bg-morandi-blue px-1 rounded text-[10px]">運費OK</span>' : '<span class="text-gray-400 text-[10px]">運費未</span>'}</div></td><td class="p-2 md:p-3 border-r border-morandi-dark/10 whitespace-nowrap"><div class="font-display font-bold text-sm ${o.profit < 0 ? 'text-red-500' : 'text-morandi-green'}">$${Math.round(o.profit)}</div><div class="text-[10px] text-gray-400">成本 $${Math.round(o.twdCost)}</div></td><td class="p-2 md:p-3 text-center"><button onclick="deleteOrder(${o.id})" class="text-xs text-gray-400 hover:text-red-500 p-1"><i class="fas fa-trash-alt"></i></button></td>`;
-                tbody.appendChild(tr);
-            });
-        }
-        function updatePurchasingStats() {
-            const orders = appData.orders; let netProfit = 0, totalRevenue = 0, totalCost = 0, unpaidAmount = 0, statusCounts = {};
-            ORDER_STATUSES.forEach(s => statusCounts[s] = 0);
-            orders.forEach(o => { netProfit += o.profit || 0; totalRevenue += o.sell || 0; totalCost += o.twdCost || 0; if (!o.paid) unpaidAmount += o.sell || 0; const s = o.status || "確認中"; if(statusCounts.hasOwnProperty(s)) statusCounts[s]++; else { if(s === 'completed') statusCounts["訂單完成"] = (statusCounts["訂單完成"] || 0) + 1; else statusCounts["確認中"]++; } });
-            const margin = totalRevenue > 0 ? ((netProfit / totalRevenue) * 100).toFixed(1) : 0;
-            document.getElementById('stats-net-profit').textContent = `NT$ ${Math.round(netProfit)}`; document.getElementById('stats-revenue').textContent = `NT$ ${Math.round(totalRevenue)}`; document.getElementById('stats-cost').textContent = `NT$ ${Math.round(totalCost)}`; document.getElementById('stats-unpaid').textContent = `NT$ ${Math.round(unpaidAmount)}`; document.getElementById('stats-margin').textContent = `${margin}%`; document.getElementById('stats-total-orders').textContent = orders.length;
-            const distContainer = document.getElementById('stats-status-dist'); distContainer.innerHTML = ''; const maxCount = Math.max(...Object.values(statusCounts), 1);
-            ORDER_STATUSES.forEach(status => { const count = statusCounts[status]; if(count > 0) { const percent = (count / maxCount) * 100; const bar = document.createElement('div'); bar.className = "flex items-center text-xs"; bar.innerHTML = `<div class="w-24 text-right font-bold text-morandi-dark mr-2 truncate">${status}</div><div class="flex-1 bg-gray-100 rounded-full h-4 overflow-hidden relative"><div class="bg-morandi-brown absolute top-0 left-0 h-full rounded-full" style="width: ${percent}%"></div></div><div class="w-8 text-left ml-2 text-morandi-brown font-bold">${count}</div>`; distContainer.appendChild(bar); } });
-            if(Object.values(statusCounts).every(c => c === 0)) distContainer.innerHTML = '<div class="text-xs text-gray-400 text-center">暫無分布資料</div>';
-        }
-
-        // --- Subscriptions ---
-        function toggleSubForm() {
-             const panel = document.getElementById('sub-form-panel');
-             if(panel.classList.contains('open')) panel.classList.remove('open');
-             else panel.classList.add('open');
-        }
-        function addSub() {
-            const name = document.getElementById('sub-name').value; const price = parseFloat(document.getElementById('sub-price').value); const person = document.getElementById('sub-person').value || '自己'; const cycle = document.getElementById('sub-cycle').value; const date = document.getElementById('sub-date').value;
-            if(!name || isNaN(price) || !date) return showToast("請填寫完整資訊");
-            appData.subs.push({ id: Date.now(), name, price, person, cycle, date, isPaid: false }); saveData(); renderSubs('service');
-            document.getElementById('sub-name').value = ''; document.getElementById('sub-price').value = ''; toggleSubForm(); showToast("訂閱已新增");
-        }
-        function toggleSubPaid(id) { const s = appData.subs.find(sub => sub.id === id); if(s) { s.isPaid = !s.isPaid; saveData(); renderSubs(); } }
-        function deleteSub(id) { if(confirm("確定刪除？")) { appData.subs = appData.subs.filter(s => s.id !== id); saveData(); renderSubs(); } }
-        let currentSubView = 'service';
-        function renderSubs(view = currentSubView) {
-            currentSubView = view; const container = document.getElementById('sub-list-container'); container.innerHTML = '';
-            if(view === 'service') {
-                const ul = document.createElement('ul'); ul.className = "space-y-3";
-                appData.subs.forEach(s => {
-                    const li = document.createElement('li'); li.className = "bg-white p-3 border border-morandi-dark/20 rounded flex justify-between items-center";
-                    li.innerHTML = `<div class="flex items-center gap-3"><input type="checkbox" ${s.isPaid ? 'checked' : ''} onchange="toggleSubPaid(${s.id})"><div><div class="font-bold text-morandi-dark">${s.name}</div><div class="text-xs text-gray-500">${s.cycle === 'monthly' ? '每月' : '每年'} ${s.date}日 · ${s.person}</div></div></div><div class="flex items-center gap-4"><div class="font-display font-bold text-morandi-dark">NT$ ${s.price}</div><button onclick="deleteSub(${s.id})" class="text-red-300 hover:text-red-500"><i class="fas fa-trash"></i></button></div>`; ul.appendChild(li);
-                }); container.appendChild(ul);
+        // Ledger
+        // --- Updated: Ledger & Camera Fund Editing Logic ---
+        
+        function updateLedgerTypeOptions(){ 
+            const c=document.getElementById('ledger-category').value; 
+            const t=document.getElementById('ledger-type'); 
+            if(c==='general') {
+                t.innerHTML='<option value="income">收入 (Income)</option><option value="expense">支出 (Expense)</option>';
             } else {
-                const byPerson = {}; appData.subs.forEach(s => { if(!byPerson[s.person]) byPerson[s.person] = { total: 0, items: [] }; byPerson[s.person].total += s.price; byPerson[s.person].items.push(s); });
-                Object.keys(byPerson).forEach(person => {
-                    const group = byPerson[person]; const div = document.createElement('div'); div.className = "mb-4 bg-white border-2 border-morandi-dark p-4 shadow-retro-sm";
-                    div.innerHTML = `<div class="flex justify-between items-center mb-2 border-b border-morandi-dark/20 pb-2"><h4 class="font-bold text-morandi-dark text-lg">${person}</h4><span class="font-display font-bold text-morandi-green text-xl">NT$ ${group.total}</span></div><ul class="text-sm space-y-1">${group.items.map(i => `<li class="flex justify-between text-gray-600"><span>${i.name}</span><span>$${i.price}</span></li>`).join('')}</ul>`; container.appendChild(div);
-                });
+                t.innerHTML='<option value="deposit">存入 (Deposit)</option><option value="withdraw">提取 (Withdraw)</option>'; 
             }
         }
 
-        // --- Ledger ---
-        function updateLedgerTypeOptions() {
-            const category = document.getElementById('ledger-category').value; const typeSelect = document.getElementById('ledger-type'); typeSelect.innerHTML = '';
-            if(category === 'general') typeSelect.innerHTML = `<option value="owe">還款</option><option value="lend">收款</option>`; else typeSelect.innerHTML = `<option value="deposit">存入基金</option>`;
+        function resetLedgerForm() {
+            document.getElementById('ledger-date').value = '';
+            document.getElementById('ledger-desc').value = '';
+            document.getElementById('ledger-amount').value = '';
+            editingLedgerId = null;
+            document.getElementById('btn-save-ledger').textContent = '新增';
+            document.getElementById('btn-cancel-ledger').classList.add('hidden');
         }
-        function addLedgerEntry() {
-            const category = document.getElementById('ledger-category').value; const type = document.getElementById('ledger-type').value; const date = document.getElementById('ledger-date').value; const desc = document.getElementById('ledger-desc').value; const amount = parseFloat(document.getElementById('ledger-amount').value);
-            if(!date || !desc || isNaN(amount)) return showToast("請填寫完整資訊");
-            if(category === 'general') { appData.debts.unshift({ id: Date.now(), date, type, person: desc, amount, note: '', status: 'unsettled' }); saveData(); renderDebts(); } else { appData.cameraFund.entries.unshift({ id: Date.now(), date, desc, amount }); saveData(); renderCameraFund(); }
-            document.getElementById('ledger-desc').value = ''; document.getElementById('ledger-amount').value = ''; showToast("紀錄已新增");
-        }
-        function toggleDebtStatus(id) { const d = appData.debts.find(db => db.id === id); if(d) { d.status = d.status === 'settled' ? 'unsettled' : 'settled'; saveData(); renderDebts(); } }
-        function renderDebts() {
-            const ul = document.getElementById('debt-list'); 
-            ul.innerHTML = '';
-            
-            // Calculate Balance for Header
-            let totalOwe = 0;
-            let totalLend = 0;
 
-            appData.debts.forEach(d => {
-                const isPaid = d.status === 'settled';
-                if (!isPaid) {
-                    if (d.type === 'owe') totalOwe += d.amount;
-                    else totalLend += d.amount;
+        function editLedgerEntry(id, category) {
+            let entry;
+            if(category === 'general') {
+                entry = appData.debts.find(d => d.id === id);
+                if(entry) {
+                    document.getElementById('ledger-category').value = 'general';
+                    updateLedgerTypeOptions();
+                    // Map old 'owe'/'lend' to new 'expense'/'income' if needed, or stick to new schema
+                    let type = entry.type;
+                    if(type === 'owe') type = 'expense';
+                    if(type === 'lend') type = 'income';
+                    document.getElementById('ledger-type').value = type;
+                    document.getElementById('ledger-date').value = entry.date;
+                    document.getElementById('ledger-desc').value = entry.person; // legacy field mapping
+                    document.getElementById('ledger-amount').value = entry.amount;
                 }
+            } else {
+                entry = appData.cameraFund.entries.find(e => e.id === id);
+                if(entry) {
+                    document.getElementById('ledger-category').value = 'camera';
+                    updateLedgerTypeOptions();
+                    // Infer type based on sign if not explicitly stored (though for now assume all old are deposits)
+                    // New entries will have 'type' field hopefully or handled by sign.
+                    // Let's assume stored amount is signed? No, stored as positive usually.
+                    // For now, let's look at the object properties.
+                    // Actually, let's just assume deposit for old entries unless we have a 'type' field.
+                    const type = entry.type || (entry.amount < 0 ? 'withdraw' : 'deposit');
+                    document.getElementById('ledger-type').value = type;
+                    document.getElementById('ledger-amount').value = Math.abs(entry.amount);
+                    document.getElementById('ledger-date').value = entry.date;
+                    document.getElementById('ledger-desc').value = entry.desc;
+                }
+            }
+
+            if(entry) {
+                editingLedgerId = { id: id, category: category };
+                document.getElementById('btn-save-ledger').textContent = '更新';
+                document.getElementById('btn-cancel-ledger').classList.remove('hidden');
+                // Scroll to top of form
+                document.getElementById('ledger-form-container').scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function saveLedgerEntry(){ 
+            const category = document.getElementById('ledger-category').value;
+            const type = document.getElementById('ledger-type').value;
+            const date = document.getElementById('ledger-date').value; // Optional
+            const desc = document.getElementById('ledger-desc').value;
+            const amount = parseFloat(document.getElementById('ledger-amount').value);
+
+            if(!desc || isNaN(amount)) return showToast("請輸入項目與金額");
+
+            if (editingLedgerId) {
+                // UPDATE Existing
+                if(editingLedgerId.category === 'general') {
+                    const idx = appData.debts.findIndex(d => d.id === editingLedgerId.id);
+                    if(idx !== -1) {
+                        appData.debts[idx] = { ...appData.debts[idx], date, type, person: desc, amount };
+                    }
+                } else {
+                    const idx = appData.cameraFund.entries.findIndex(e => e.id === editingLedgerId.id);
+                    if(idx !== -1) {
+                        // For camera fund, maybe store signed amount or keep positive + type
+                        // Let's keep consistent: type + positive amount for display, signed for calc
+                        appData.cameraFund.entries[idx] = { ...appData.cameraFund.entries[idx], date, type, desc, amount };
+                    }
+                }
+                showToast("已更新");
+            } else {
+                // CREATE New
+                if(category === 'general') {
+                    appData.debts.unshift({id:Date.now(), date, type, person: desc, amount, status: 'unsettled'}); 
+                } else {
+                    appData.cameraFund.entries.unshift({id:Date.now(), date, type, desc, amount});
+                }
+                showToast("已新增");
+            }
+
+            saveData(); 
+            renderDebts(); 
+            renderCameraFund(); 
+            resetLedgerForm();
+        }
+
+        function deleteLedgerEntry(id, category) {
+            if(!confirm("確定刪除此筆紀錄？")) return;
+            if(category === 'general') {
+                appData.debts = appData.debts.filter(d => d.id !== id);
+            } else {
+                appData.cameraFund.entries = appData.cameraFund.entries.filter(e => e.id !== id);
+            }
+            saveData();
+            renderDebts();
+            renderCameraFund();
+        }
+
+        function renderDebts(){ 
+            const ul=document.getElementById('debt-list'); 
+            if(!ul)return; 
+            ul.innerHTML=''; 
+            let income=0, expense=0; 
+            
+            appData.debts.forEach(d=>{ 
+                // Normalize legacy types
+                const isExpense = (d.type === 'owe' || d.type === 'expense');
+                if(isExpense) expense += d.amount;
+                else income += d.amount;
+
+                const colorClass = isExpense ? 'text-red-500' : 'text-green-600';
+                const sign = isExpense ? '-' : '+';
                 
-                const li = document.createElement('li'); 
-                li.className = `p-3 border-l-4 ${d.type === 'owe' ? 'border-red-400' : 'border-green-400'} bg-white shadow-sm flex justify-between items-center ${isPaid ? 'opacity-50' : ''}`;
-                li.innerHTML = `<div class="flex flex-col"><span class="text-[10px] text-gray-400">${d.date}</span><div class="font-bold text-morandi-dark">${d.type === 'owe' ? '還款' : '收款'} ${d.person} <span class="ml-2 text-lg">$${d.amount}</span></div></div><button onclick="toggleDebtStatus(${d.id})" class="px-2 py-1 text-xs border border-morandi-dark rounded hover:bg-morandi-dark hover:text-white transition">${isPaid ? '已結清' : '標記結清'}</button>`; 
-                ul.appendChild(li);
+                ul.innerHTML+=`
+                    <li class="p-3 bg-white border border-morandi-brown/20 rounded shadow-sm flex justify-between items-center group">
+                        <div class="flex-1">
+                            <div class="font-bold text-morandi-dark text-sm">${d.person}</div>
+                            <div class="text-xs text-gray-400">${d.date || '無日期'}</div>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="${colorClass} font-bold text-sm">${sign}$${d.amount}</span>
+                            <div class="flex gap-1">
+                                <button onclick="editLedgerEntry(${d.id}, 'general')" class="text-xs bg-gray-100 p-1 rounded hover:bg-gray-200 text-gray-600"><i class="fas fa-pen"></i></button>
+                                <button onclick="deleteLedgerEntry(${d.id}, 'general')" class="text-xs bg-red-50 p-1 rounded hover:bg-red-100 text-red-400"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </li>`; 
+            }); 
+            document.getElementById('debt-header-balance').innerText = `(餘額: $${income - expense})`; 
+        }
+
+        function renderCameraFund(){ 
+            let total = 0;
+            const l=document.getElementById('fund-list'); 
+            l.innerHTML=''; 
+            
+            appData.cameraFund.entries.forEach(e=>{ 
+                // Determine if withdraw or deposit
+                // Legacy data might rely on 'amount' sign, new data uses 'type'
+                const isWithdraw = (e.type === 'withdraw');
+                const val = parseFloat(e.amount);
+                
+                if(isWithdraw) total -= val;
+                else total += val;
+
+                const colorClass = isWithdraw ? 'text-red-500' : 'text-morandi-green';
+                const sign = isWithdraw ? '-' : '+';
+
+                l.innerHTML+=`
+                    <li class="flex justify-between items-center border-b border-dashed border-gray-200 py-2 last:border-0 hover:bg-gray-50 px-2 rounded transition">
+                        <div class="flex-1">
+                            <span class="text-sm font-bold text-morandi-dark block">${e.desc}</span>
+                            <span class="text-[10px] text-gray-400 block">${e.date || ''}</span>
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <span class="font-bold ${colorClass}">${sign}$${val}</span>
+                            <div class="flex gap-1">
+                                <button onclick="editLedgerEntry(${e.id}, 'camera')" class="text-xs text-gray-400 hover:text-gray-600"><i class="fas fa-pen"></i></button>
+                                <button onclick="deleteLedgerEntry(${e.id}, 'camera')" class="text-xs text-gray-300 hover:text-red-400"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                    </li>`; 
+            }); 
+            
+            document.getElementById('camera-current').textContent=total; 
+            document.getElementById('camera-bar').style.width=Math.min(total/50000*100,100)+'%'; 
+            document.getElementById('camera-percent').textContent=Math.round(total/50000*100)+'%'; 
+            document.getElementById('camera-header-balance').textContent=`(存$${total})`; 
+        }
+
+        // Literature
+        function addLit(){
+            appData.literature.unshift({
+                id: Date.now(),
+                title: document.getElementById('lit-title').value,
+                author: document.getElementById('lit-author').value,
+                date: document.getElementById('lit-date').value,
+                type: document.getElementById('lit-type').value,
+                status: document.getElementById('lit-status').value,
+                link: document.getElementById('lit-link').value,
+                note: document.getElementById('lit-note').value,
+                
+                // New Fields
+                field: document.getElementById('lit-field').value,
+                keywords: document.getElementById('lit-keywords').value,
+                doi: document.getElementById('lit-doi').value,
+                theories: document.getElementById('lit-theories').value,
+                
+                // Methodology
+                iv: document.getElementById('lit-method-iv').value,
+                dv: document.getElementById('lit-method-dv').value,
+                med: document.getElementById('lit-method-med').value,
+                mod: document.getElementById('lit-method-mod').value,
+                
+                // Core
+                background: document.getElementById('lit-background').value,
+                purpose: document.getElementById('lit-purpose').value,
+                conclusion: document.getElementById('lit-conclusion').value
             });
-            
-            // Update Header Text
-            const balanceText = [];
-            if(totalLend > 0) balanceText.push(`待收 $${totalLend}`);
-            if(totalOwe > 0) balanceText.push(`待付 $${totalOwe}`);
-            document.getElementById('debt-header-balance').textContent = balanceText.length ? `(${balanceText.join(' / ')})` : '';
+            saveData();
+            renderLiterature();
+            toggleCollapse('lit-form-panel','icon-add-lit');
         }
 
-        function renderCameraFund() {
-            const current = appData.cameraFund.entries.reduce((sum, e) => sum + e.amount, 0); const target = appData.cameraFund.target; const percent = Math.min((current / target) * 100, 100).toFixed(1);
-            
-            // Update Header Balance
-            document.getElementById('camera-header-balance').textContent = `(目前存額 $${current})`;
-
-            document.getElementById('camera-current').textContent = current; document.getElementById('camera-target-display').textContent = target; document.getElementById('camera-percent').textContent = percent + '%'; document.getElementById('camera-bar').style.width = percent + '%';
-            const ul = document.getElementById('fund-list'); ul.innerHTML = '';
-            appData.cameraFund.entries.forEach(e => { const li = document.createElement('li'); li.className = "flex justify-between border-b border-dashed border-gray-200 pb-1"; li.innerHTML = `<span>${e.date} ${e.desc}</span><span class="font-bold text-morandi-green">+$${e.amount}</span>`; ul.appendChild(li); });
-        }
-
-        // --- Tools & Export ---
-        function generateQR() {
-            const input = document.getElementById('qr-input').value; const container = document.getElementById('qrcode'); container.innerHTML = '';
-            if(!input) return showToast("請輸入內容");
-            new QRCode(container, { text: input, width: 150, height: 150, colorDark : "#4A4238", colorLight : "#ffffff", correctLevel : QRCode.CorrectLevel.H });
-        }
-        function shortenUrl() {
-            const input = document.getElementById('url-input').value; const output = document.getElementById('short-url-output');
-            if(!input) return showToast("請輸入網址");
-            showToast("模擬縮網址中..."); setTimeout(() => { const hash = Math.random().toString(36).substring(7); output.value = `https://s.url/${hash}`; showToast("已產生演示用短網址"); }, 500);
-        }
-        function copyUrl() { const copyText = document.getElementById("short-url-output"); copyText.select(); document.execCommand("copy"); showToast("已複製到剪貼簿"); }
-        function exportData() { const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData)); const link = document.createElement('a'); link.href = dataStr; link.download = "backup.json"; link.click(); }
-        function importData(input) { const file = input.files[0]; if(!file) return; const reader = new FileReader(); reader.onload = e => { try { appData = JSON.parse(e.target.result); saveData(); location.reload(); } catch(err) { showToast("錯誤"); } }; reader.readAsText(file); }
-        function clearAllData() { if(confirm("確定清除？")) { localStorage.removeItem('retroDashboardData'); location.reload(); } }
+        function deleteLit(id){if(confirm("刪除？")){appData.literature=appData.literature.filter(x=>x.id!==id);saveData();renderLiterature();}}
         
-        // Export Functions
-        function exportTasks() { if(appData.tasks.length===0)return showToast("無資料"); const a=document.createElement('a'); a.href="data:text/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(appData.tasks)); a.download="tasks.json"; a.click(); }
-        function importTasks(input) { const f=input.files[0]; if(!f)return; const r=new FileReader(); r.onload=e=>{ try{ const j=JSON.parse(e.target.result); if(Array.isArray(j)){ appData.tasks=[...j,...appData.tasks]; saveData(); renderTasks(); renderCalendar(); showToast("匯入成功"); } }catch(e){showToast("錯誤");} }; r.readAsText(f); input.value=''; }
+        function renderLiterature(){ 
+            const c=document.getElementById('lit-list-container'); 
+            if(!c)return; 
+            c.innerHTML=''; 
+            
+            appData.literature.forEach(l=>{ 
+                const cardId = `lit-card-${l.id}`;
+                const detailId = `lit-detail-${l.id}`;
+                
+                const d=document.createElement('div'); 
+                d.className="bg-white border-2 border-morandi-dark shadow-retro-sm overflow-hidden"; 
+                
+                // Content Construction
+                d.innerHTML = `
+                    <div class="p-4 border-b border-morandi-dark/10">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <h4 class="font-bold text-lg text-morandi-dark leading-snug">${l.title}</h4>
+                                <p class="text-xs text-morandi-brown mt-1">${l.author} · ${l.date}</p>
+                            </div>
+                            <div class="flex flex-col items-end gap-1">
+                                <span class="px-2 py-1 bg-morandi-paper rounded text-xs whitespace-nowrap font-bold">${l.type}</span>
+                                <span class="px-2 py-1 bg-morandi-green text-white rounded text-xs whitespace-nowrap font-bold">${l.status}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="flex flex-wrap gap-2 mb-3">
+                            ${l.field ? `<span class="text-[10px] border border-morandi-dark rounded-full px-2 py-0.5 text-morandi-dark bg-white"><i class="fas fa-tag mr-1"></i>${l.field}</span>` : ''}
+                            ${l.keywords ? l.keywords.split(/,|，/).map(k => `<span class="text-[10px] bg-gray-100 rounded px-2 py-0.5 text-gray-600">#${k.trim()}</span>`).join('') : ''}
+                        </div>
+
+                        <div class="flex justify-between items-center mt-4">
+                            <button onclick="toggleCollapse('${detailId}', 'icon-${detailId}')" class="text-xs font-bold text-morandi-dark hover:text-morandi-accent flex items-center group">
+                                <i id="icon-${detailId}" class="fas fa-book-reader mr-2 transition-transform"></i> 📖 查看詳情
+                            </button>
+                            <div class="flex gap-3">
+                                ${l.link ? `<a href="${l.link}" target="_blank" class="text-morandi-blue text-xs hover:underline"><i class="fas fa-external-link-alt"></i></a>` : ''}
+                                <button onclick="deleteLit(${l.id})" class="text-red-400 text-xs hover:text-red-600"><i class="fas fa-trash"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="${detailId}" class="collapse-content bg-morandi-bg/30">
+                        <div class="p-4 space-y-4 text-sm text-gray-700">
+                            
+                            <!-- Methodology Grid -->
+                            ${ (l.iv || l.dv || l.med || l.mod) ? `
+                            <div class="bg-white p-3 border border-morandi-dark/20 rounded shadow-sm">
+                                <h5 class="text-xs font-bold text-morandi-brown uppercase mb-2 border-b border-gray-100 pb-1">變數模型</h5>
+                                <div class="grid grid-cols-2 gap-2 text-xs">
+                                    ${l.iv ? `<div><span class="font-bold text-blue-800">IV:</span> ${l.iv}</div>` : ''}
+                                    ${l.dv ? `<div><span class="font-bold text-red-800">DV:</span> ${l.dv}</div>` : ''}
+                                    ${l.med ? `<div><span class="font-bold text-green-800">Med:</span> ${l.med}</div>` : ''}
+                                    ${l.mod ? `<div><span class="font-bold text-purple-800">Mod:</span> ${l.mod}</div>` : ''}
+                                </div>
+                            </div>` : ''}
+
+                            <!-- Core Content -->
+                            ${l.background ? `<div><h5 class="font-bold text-xs text-morandi-dark mb-1">背景</h5><p class="bg-white p-2 rounded border border-gray-100">${l.background}</p></div>` : ''}
+                            ${l.purpose ? `<div><h5 class="font-bold text-xs text-morandi-dark mb-1">目的</h5><p class="bg-white p-2 rounded border border-gray-100">${l.purpose}</p></div>` : ''}
+                            ${l.conclusion ? `<div><h5 class="font-bold text-xs text-morandi-dark mb-1">結論</h5><p class="bg-white p-2 rounded border border-gray-100">${l.conclusion}</p></div>` : ''}
+                            
+                            <!-- Meta -->
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs text-gray-500 pt-2 border-t border-gray-200">
+                                ${l.doi ? `<div><strong>DOI:</strong> ${l.doi}</div>` : ''}
+                                ${l.theories ? `<div><strong>理論:</strong> ${l.theories}</div>` : ''}
+                            </div>
+
+                            ${l.note ? `<div class="bg-yellow-50 p-3 text-xs italic border-l-4 border-yellow-200 text-gray-600 mt-2">"${l.note}"</div>` : ''}
+                        </div>
+                    </div>
+                `;
+                c.appendChild(d); 
+            }); 
+        }
+
+        function exportLit(){ const a=document.createElement('a'); a.href="data:text/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(appData.literature)); a.download="literature.json"; a.click(); }
+        function importLit(input){ const f=input.files[0]; if(!f)return; const r=new FileReader(); r.onload=e=>{ appData.literature=[...JSON.parse(e.target.result),...appData.literature]; saveData(); renderLiterature(); }; r.readAsText(f); input.value=''; }
+
+        // Common & Helpers
+        function deleteDrink(id){if(confirm("刪除？")){appData.drinks=appData.drinks.filter(x=>x.id!==id);saveData();renderDrinks();updateStats();}} 
+        function deleteOrder(id){if(confirm("刪除訂單？")){appData.orders=appData.orders.filter(x=>x.id!==id);saveData();renderOrders();updatePurchasingStats();}} 
+        function deleteSub(id){if(confirm("刪除訂閱？")){appData.subs=appData.subs.filter(x=>x.id!==id);saveData();renderSubs();}} 
+        function toggleDebtStatus(id){const d=appData.debts.find(x=>x.id===id); if(d){d.status=d.status==='settled'?'unsettled':'settled'; saveData(); renderDebts();}}
+        // function deleteDebt(id){if(confirm("刪除此筆帳務？")){appData.debts=appData.debts.filter(x=>x.id!==id);saveData();renderDebts();}} // Replaced by deleteLedgerEntry
         
-        function exportDrinks() { if(appData.drinks.length===0)return showToast("無資料"); const a=document.createElement('a'); a.href="data:text/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(appData.drinks)); a.download="drinks.json"; a.click(); }
-        function importDrinks(input) { const f=input.files[0]; if(!f)return; const r=new FileReader(); r.onload=e=>{ try{ const j=JSON.parse(e.target.result); if(Array.isArray(j)){ appData.drinks=[...j,...appData.drinks]; saveData(); renderDrinks(); renderDrinkCalendar(); updateStats(); showToast("匯入成功"); } }catch(e){showToast("錯誤");} }; r.readAsText(f); input.value=''; }
+        // Export/Import Placeholders (Functional)
+        function exportData(key, filename) { const a=document.createElement('a'); a.href="data:text/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(appData[key])); a.download=filename; a.click(); }
+        function importData(input, key, renderFn) { const f=input.files[0]; if(!f)return; const r=new FileReader(); r.onload=e=>{ appData[key]=[...JSON.parse(e.target.result),...appData[key]]; saveData(); renderFn(); }; r.readAsText(f); input.value=''; }
 
-        function exportOrders() { if(appData.orders.length===0)return showToast("無資料"); const a=document.createElement('a'); a.href="data:text/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(appData.orders)); a.download="orders.json"; a.click(); }
-        function importOrders(input) { const f=input.files[0]; if(!f)return; const r=new FileReader(); r.onload=e=>{ try{ const j=JSON.parse(e.target.result); if(Array.isArray(j)){ const now=Date.now(); const imported=j.map((o,i)=>{ let s="確認中"; if(o.status==="completed")s="訂單完成"; else if(ORDER_STATUSES.includes(o.status))s=o.status; if(o.clientCode!==undefined){ return { id:o.id||(now+i), date:o.date, code:o.clientCode, shop:o.store, name:o.productName, spec:o.spec||'', qty:o.quantity||1, status:s, krw:Math.round(o.costKRW||0), rate:o.exchangeRate||1, twdCost:Math.round(o.costTWD||0), sell:Math.round(o.price||0), profit:Math.round((o.price||0)-(o.costTWD||0)), paid:o.isPaid||false, shipping:o.isShippingPaid||false, note:o.note||'' }; } else { return { ...o, id:o.id?o.id:(now+i), status:s, krw:Math.round(o.krw||0), twdCost:Math.round(o.twdCost||0), sell:Math.round(o.sell||0), profit:Math.round(o.profit||0) }; } }); appData.orders=[...imported,...appData.orders]; saveData(); renderOrders(); updatePurchasingStats(); showToast("匯入成功"); } }catch(e){showToast("錯誤");} }; r.readAsText(f); input.value=''; }
+        function exportTasks(){exportData('tasks','tasks.json')} function importTasks(i){importData(i,'tasks',()=>{renderTasks();renderCalendar();})}
+        function exportDrinks(){exportData('drinks','drinks.json')} function importDrinks(i){importData(i,'drinks',()=>{renderDrinks();updateStats();})}
+        function exportOrders(){exportData('orders','orders.json')} function importOrders(i){importData(i,'orders',()=>{renderOrders();updatePurchasingStats();})}
+        function exportSubs(){exportData('subs','subs.json')} function importSubs(i){importData(i,'subs',()=>{renderSubs('service');})}
+        function exportTracker(){/* Exports debt+camera */ const data={debts:appData.debts,cameraFund:appData.cameraFund}; const a=document.createElement('a'); a.href="data:text/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(data)); a.download="investment.json"; a.click();} 
+        
+        // --- Updated Import Tracker for Legacy Compatibility ---
+        function importTracker(i){
+            const f=i.files[0];
+            if(!f)return;
+            const r=new FileReader();
+            r.onload=e=>{
+                const d=JSON.parse(e.target.result);
+                
+                // 1. Handle Legacy Debts (General Ledger)
+                if(d.debts && Array.isArray(d.debts)) {
+                    const newDebts = d.debts.map(old => ({
+                        id: old.id || Date.now() + Math.random(),
+                        date: old.date || '',
+                        type: (old.type === 'debt') ? 'expense' : (old.type === 'repayment' ? 'income' : old.type),
+                        person: old.item || old.person, // Map 'item' to 'person' (description)
+                        amount: parseFloat(old.amount),
+                        status: 'unsettled'
+                    }));
+                    appData.debts = [...newDebts, ...appData.debts];
+                }
 
-        function exportSubs() { if(appData.subs.length===0)return showToast("無資料"); const a=document.createElement('a'); a.href="data:text/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(appData.subs)); a.download="subs.json"; a.click(); }
-        function importSubs(input) { const f=input.files[0]; if(!f)return; const r=new FileReader(); r.onload=e=>{ try{ const j=JSON.parse(e.target.result); if(Array.isArray(j)){ appData.subs=[...j,...appData.subs]; saveData(); renderSubs(); showToast("匯入成功"); } }catch(e){showToast("錯誤");} }; r.readAsText(f); input.value=''; }
+                // 2. Handle Legacy Camera Fund
+                if(d.cameraFund && Array.isArray(d.cameraFund)) {
+                    const newFundEntries = d.cameraFund.map(old => ({
+                        id: old.id || Date.now() + Math.random(),
+                        date: old.date || '',
+                        type: old.type, // 'deposit' or 'withdraw' matches
+                        desc: old.item || old.desc, // Map 'item' to 'desc'
+                        amount: parseFloat(old.amount)
+                    }));
+                    // Check if appData.cameraFund is object (new) or array (old logic fallback, though we init as object)
+                    if (!appData.cameraFund.entries) appData.cameraFund = { target: 50000, entries: [] };
+                    appData.cameraFund.entries = [...newFundEntries, ...appData.cameraFund.entries];
+                }
 
-        function exportTracker() { const d={debts:appData.debts, cameraFund:appData.cameraFund}; const a=document.createElement('a'); a.href="data:text/json;charset=utf-8,"+encodeURIComponent(JSON.stringify(d)); a.download="tracker.json"; a.click(); }
-        function importTracker(input) { const f=input.files[0]; if(!f)return; const r=new FileReader(); r.onload=e=>{ try{ const j=JSON.parse(e.target.result); if(Array.isArray(j)){ const imported=j.map(i=>({ id:i.id||Date.now(), date:i.id?new Date(i.id).toLocaleDateString('zh-TW',{year:'numeric',month:'2-digit',day:'2-digit'}).replace(/\//g,'-'):new Date().toLocaleDateString('zh-TW',{year:'numeric',month:'2-digit',day:'2-digit'}).replace(/\//g,'-'), type:i.type==='repayment'?'owe':'owe', person:i.item||'未命名', amount:i.amount||0, note:i.type==='repayment'?'(舊匯入)':'', status:'unsettled' })); appData.debts=[...imported,...appData.debts]; } else if(j.debts||j.cameraFund){ if(j.debts)appData.debts=[...j.debts,...appData.debts]; if(j.cameraFund&&j.cameraFund.entries)appData.cameraFund.entries=[...j.cameraFund.entries,...appData.cameraFund.entries]; } saveData(); renderDebts(); renderCameraFund(); showToast("匯入成功"); }catch(e){showToast("錯誤");} }; r.readAsText(f); input.value=''; }
+                // 3. Handle Legacy Subs (Flattening) - Optional if user imports full backup here
+                if(d.subs && Array.isArray(d.subs)) {
+                     const newSubs = [];
+                     d.subs.forEach(service => {
+                         if(service.members && Array.isArray(service.members)) {
+                             service.members.forEach(member => {
+                                 newSubs.push({
+                                     id: Date.now() + Math.random(),
+                                     name: service.name,
+                                     price: parseFloat(service.costPerPerson),
+                                     person: member.name,
+                                     date: member.startDate,
+                                     cycle: 'yearly' // Default legacy to yearly
+                                 });
+                             });
+                         }
+                     });
+                     appData.subs = [...newSubs, ...appData.subs];
+                }
+
+                saveData();
+                renderDebts();
+                renderCameraFund();
+                renderSubs('service'); // Refresh subs if any
+                showToast("匯入成功！");
+            };
+            r.readAsText(i);
+            i.value='';
+        }
     </script>
 </body>
 </html>
