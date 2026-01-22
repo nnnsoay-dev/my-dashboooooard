@@ -363,8 +363,8 @@
 
                 <!-- Tab: Resources -->
                 <div id="tab-resources" class="section-content hidden fade-in space-y-8">
-                     <!-- Recent Source -->
-                     <section>
+                      <!-- Recent Source -->
+                      <section>
                         <h3 class="text-lg font-bold mb-3 flex items-center border-b border-notion-border pb-2">
                             <span class="mr-2">📄</span> Recent Sources (From Literature)
                         </h3>
@@ -373,8 +373,8 @@
                         </div>
                     </section>
 
-                     <!-- File Archive -->
-                     <section>
+                      <!-- File Archive -->
+                      <section>
                         <h3 class="text-lg font-bold mb-3 flex items-center border-b border-notion-border pb-2">
                             <span class="mr-2">📂</span> 歸檔紀錄 (File Log)
                         </h3>
@@ -743,7 +743,7 @@
 
                 <!-- Tab 4: Subs -->
                 <div id="tab-subs" class="section-content hidden fade-in">
-                     <div class="flex justify-end mb-4">
+                      <div class="flex justify-end mb-4">
                         <button onclick="toggleSubForm()" class="btn-notion btn-notion-primary"><i class="fas fa-plus mr-1"></i> 新增訂閱</button>
                     </div>
 
@@ -1022,20 +1022,6 @@
             hideMoreMenu();
         }
 
-        // Toggle Collapse Generic
-        function toggleCollapse(c, i) { 
-            const el=document.getElementById(c); 
-            const ic=document.getElementById(i); 
-            if(!el) return; 
-            if(el.classList.contains('open')){
-                el.classList.remove('open');
-                if(ic) ic.style.transform='rotate(0deg)';
-            }else{
-                el.classList.add('open');
-                if(ic) ic.style.transform='rotate(180deg)';
-            } 
-        }
-
         // --- DASHBOARD ---
         function renderDashboard() {
             const todayStr = new Date().toISOString().split('T')[0];
@@ -1196,7 +1182,7 @@
         function toggleTimeInput(){document.getElementById('task-time').disabled=document.getElementById('task-allday').checked;}
         function toggleTaskForm(){
             const p=document.getElementById('task-form-panel'); 
-            p.classList.toggle('hidden');
+            p.classList.toggle('open');
         }
         function addTask(){
             const d=document.getElementById('task-date').value; 
@@ -1240,7 +1226,7 @@
         function changeMonth(d){currentCalendarDate.setMonth(currentCalendarDate.getMonth()+d); renderCalendar();}
 
         // --- ACADEMIA ---
-        function toggleCourseForm(){ const p=document.getElementById('course-form-panel'); p.classList.toggle('hidden'); 
+        function toggleCourseForm(){ const p=document.getElementById('course-form-panel'); p.classList.toggle('open'); 
             // Set form semester to current view semester
             if(document.getElementById('course-semester')) {
                 document.getElementById('course-semester').value = currentSemester;
@@ -1432,7 +1418,7 @@
         }
 
         // --- DRINKS ---
-        function toggleDrinkForm(){ document.getElementById('drink-form-panel').classList.toggle('hidden'); }
+        function toggleDrinkForm(){ document.getElementById('drink-form-panel').classList.toggle('open'); }
         function toggleDrinkPriceState(){const dis=document.getElementById('drink-treat').checked||document.getElementById('drink-meal').checked; const p=document.getElementById('drink-price'); p.disabled=dis; if(dis)p.value='';}
         function updateSugarDisplay(){document.getElementById('drink-sugar-display').innerText = SUGAR_LEVELS[document.getElementById('drink-sugar').value];}
         function addDrink(){
@@ -1472,7 +1458,7 @@
         function changeDrinkMonth(d){currentDrinkCalendarDate.setMonth(currentDrinkCalendarDate.getMonth()+d); renderDrinkCalendar();}
 
         // --- PURCHASING ---
-        function toggleOrderForm(){ document.getElementById('order-form-panel').classList.toggle('hidden'); renderStatusOptions(); }
+        function toggleOrderForm(){ document.getElementById('order-form-panel').classList.toggle('open'); renderStatusOptions(); }
         function renderStatusOptions(){ const s=document.getElementById('order-status'); if(s && s.children.length===0) s.innerHTML=ORDER_STATUSES.map(o=>`<option>${o}</option>`).join(''); }
         function addOrderItemRow(){ 
             const c=document.getElementById('order-items-container');
@@ -1517,7 +1503,7 @@
         function deleteOrder(id){ if(confirm("刪除？")){appData.orders=appData.orders.filter(o=>o.id!==id); saveData(); renderOrders(); updatePurchasingStats();} }
 
         // --- SUBSCRIPTIONS ---
-        function toggleSubForm(){ document.getElementById('sub-form-panel').classList.toggle('hidden'); }
+        function toggleSubForm(){ document.getElementById('sub-form-panel').classList.toggle('open'); }
         function addSub(){
              appData.subs.push({
                  id:Date.now(),
@@ -1589,7 +1575,7 @@
                 author:document.getElementById('lit-author').value,
                 status:document.getElementById('lit-status').value
             });
-            saveData(); renderLiterature(); document.getElementById('lit-form-panel').classList.add('hidden');
+            saveData(); renderLiterature(); toggleCollapse('lit-form-panel', 'icon-add-lit');
         }
         function renderLiterature(){
             const c=document.getElementById('lit-list-container'); c.innerHTML='';
@@ -1651,8 +1637,8 @@
                 try {
                     const d = JSON.parse(e.target.result);
                     if(d.debts && Array.isArray(d.debts) && !d.tasks) {
-                         if(d.debts) appData.debts = [...d.debts.map(x=>({...x, person:x.item, status:'unsettled'})), ...appData.debts];
-                         if(d.cameraFund) appData.cameraFund.entries = [...d.cameraFund.map(x=>({...x, desc:x.item})), ...appData.cameraFund.entries];
+                          if(d.debts) appData.debts = [...d.debts.map(x=>({...x, person:x.item, status:'unsettled'})), ...appData.debts];
+                          if(d.cameraFund) appData.cameraFund.entries = [...d.cameraFund.map(x=>({...x, desc:x.item})), ...appData.cameraFund.entries];
                     } else {
                         appData = { ...appData, ...d };
                     }
