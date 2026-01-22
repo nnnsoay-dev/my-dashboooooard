@@ -679,7 +679,7 @@
                     </div>
 
                     <div id="order-form-panel" class="bg-notion-gray-bg rounded-md border border-notion-border">
-                        <h4 class="font-bold mb-4">建立新訂單</h4>
+                        <h4 class="font-bold mb-4">建立/編輯訂單</h4>
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                             <input type="date" id="order-date">
                             <input type="text" id="order-code" placeholder="代號">
@@ -706,7 +706,10 @@
                                 <label class="text-sm"><input type="checkbox" id="order-shipping"> 運費已匯</label>
                             </div>
                         </div>
-                        <button onclick="addOrder()" class="btn-notion btn-notion-primary w-full">儲存訂單</button>
+                        <div class="flex gap-2">
+                            <button onclick="resetOrderForm(); toggleOrderForm()" class="btn-notion flex-1">取消</button>
+                            <button id="btn-save-order" onclick="saveOrder()" class="btn-notion btn-notion-primary flex-1">儲存訂單</button>
+                        </div>
                     </div>
 
                     <!-- Purchasing Stats -->
@@ -942,6 +945,7 @@
         let orderFilterUnfinished = false;
         let editingLedgerId = null; 
         let currentEditingCourseId = null;
+        let currentEditingOrderId = null; // New state for editing orders
         
         const ORDER_STATUSES = ["確認中", "已匯款", "對帳完成", "韓國端下單", "韓國端出貨", "待集運回台", "已抵台", "抵台整理中", "待面交", "已寄出", "訂單完成"];
         const SUGAR_LEVELS = ['無/無法調整', '一分糖', '二分糖', '微糖', '半糖', '少糖', '全糖'];
@@ -1495,33 +1499,28 @@
         // --- PURCHASING ---
         function toggleOrderForm(){ document.getElementById('order-form-panel').classList.toggle('open'); renderStatusOptions(); }
         function renderStatusOptions(){ const s=document.getElementById('order-status'); if(s && s.children.length===0) s.innerHTML=ORDER_STATUSES.map(o=>`<option>${o}</option>`).join(''); }
-        function addOrderItemRow(){ 
+        function addOrderItemRow(name='', qty=1, krw=''){ 
             const c=document.getElementById('order-items-container');
-            const d=document.createElement('div'); d.className="grid grid-cols-4 gap-2 mb-2 item-row";
-            d.innerHTML=`<input class="col-span-2 item-name" placeholder="品名"><input type="number" class="item-qty" placeholder="數" value="1" oninput="calcProfit()"><input type="number" class="item-krw" placeholder="₩" oninput="calcProfit()">`;
+            const d=document.createElement('div'); d.className="flex gap-2 mb-2 item-row items-center";
+            d.innerHTML=`
+                <input class="flex-1 bg-transparent border border-notion-border rounded px-2 py-1 text-sm item-name" placeholder="品名" value="${name}">
+                <input type="number" class="w-16 bg-transparent border border-notion-border rounded px-2 py-1 text-sm item-qty" placeholder="數" value="${qty}" oninput="calcProfit()">
+                <input type="number" class="w-20 bg-transparent border border-notion-border rounded px-2 py-1 text-sm item-krw" placeholder="₩" value="${krw}" oninput="calcProfit()">
+                <button onclick="this.parentElement.remove(); calcProfit()" class="text-gray-400 hover:text-red-500 w-6"><i class="fas fa-times"></i></button>
+            `;
             c.appendChild(d);
         }
-        function calcProfit(useInputTotal = false){
+        function calcProfit(){
             const rate=parseFloat(document.getElementById('order-rate').value)||38;
             let tk=0; 
-            let rowSellTotal = 0; // Track sell sum from rows
             document.querySelectorAll('.item-row').forEach(r=>{ 
                 const q = parseFloat(r.querySelector('.item-qty').value)||0;
                 tk+= (parseFloat(r.querySelector('.item-krw').value)||0) * q; 
-                // We don't have item-sell input in rows anymore based on previous request simplification? 
-                // Wait, previous code had item-sell in rows. Let's check addOrderItemRow.
-                // The current addOrderItemRow only has item-name, item-qty, item-krw. 
-                // So profit calculation depends purely on total sell price manually input.
             });
             const cost = Math.ceil(tk/rate);
             document.getElementById('order-twd-cost').innerText = cost;
 
-            const totalSellInput = document.getElementById('order-sell-price');
-            const totalSell = parseFloat(totalSellInput.innerText) || 0; // Use innerText because it's a span/div usually? No it's an input in previous form?
-            // Let's check form HTML for sell price.
-            // <div class="bg-white p-2 rounded border">售價: <span id="order-sell-price" class="font-bold" contenteditable="true" oninput="calculateProfitManual()">0</span></div>
-            // It is a span with contenteditable.
-            
+            const totalSell = parseFloat(document.getElementById('order-sell-price').innerText) || 0;
             const profit = totalSell - cost;
             document.getElementById('order-profit').innerText = profit;
         }
@@ -1532,32 +1531,118 @@
             document.getElementById('order-profit').innerText = sell - cost;
         }
 
-        function addOrder(){
+        function resetOrderForm() {
+            document.getElementById('order-date').value = '';
+            document.getElementById('order-code').value = '';
+            document.getElementById('order-shop').value = '';
+            document.getElementById('order-rate').value = '38';
+            document.getElementById('order-status').value = ORDER_STATUSES[0];
+            document.getElementById('order-items-container').innerHTML = '';
+            document.getElementById('order-sell-price').innerText = '0';
+            document.getElementById('order-twd-cost').innerText = '0';
+            document.getElementById('order-profit').innerText = '0';
+            document.getElementById('order-note').value = '';
+            document.getElementById('order-paid').checked = false;
+            document.getElementById('order-shipping').checked = false;
+            
+            // Reset Edit State
+            currentEditingOrderId = null;
+            document.getElementById('btn-save-order').innerText = '儲存訂單';
+        }
+
+        function editOrder(id) {
+            const order = appData.orders.find(o => o.id === id);
+            if (!order) return;
+
+            currentEditingOrderId = id;
+            
+            // Populate form
+            document.getElementById('order-date').value = order.date;
+            document.getElementById('order-code').value = order.code || '';
+            document.getElementById('order-shop').value = order.shop || '';
+            document.getElementById('order-rate').value = order.rate || 38; // Should save rate in order data ideally, assuming 38 default if not saved
+            document.getElementById('order-status').value = order.status;
+            document.getElementById('order-note').value = order.note || '';
+            document.getElementById('order-paid').checked = order.paid;
+            document.getElementById('order-shipping').checked = false; // Add field to order data if needed to persist
+
+            // Populate Items
+            const container = document.getElementById('order-items-container');
+            container.innerHTML = '';
+            if (order.items && order.items.length > 0) {
+                order.items.forEach(item => {
+                    addOrderItemRow(item.name, item.qty, item.krw);
+                });
+            } else {
+                // Fallback for old data structure
+                addOrderItemRow(order.name, 1, 0); 
+            }
+
+            // Populate Financials
+            document.getElementById('order-sell-price').innerText = order.sell || 0;
+            calcProfit(); // Recalculate cost based on items
+
+            // Update UI State
+            document.getElementById('btn-save-order').innerText = '更新訂單';
+            
+            // Show Form if hidden
+            const panel = document.getElementById('order-form-panel');
+            if (!panel.classList.contains('open')) {
+                panel.classList.add('open');
+            }
+            
+            // Scroll to form
+            panel.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function saveOrder(){
              const d=document.getElementById('order-date').value;
              if(!d) return showToast("請輸入日期");
+             
              let items = [];
              document.querySelectorAll('.item-row').forEach(row => {
                  items.push({name: row.querySelector('.item-name').value, qty: row.querySelector('.item-qty').value, krw: row.querySelector('.item-krw').value});
              });
              
-             // Get sell price from contenteditable span
              const sellPrice = parseFloat(document.getElementById('order-sell-price').innerText) || 0;
              const costPrice = parseFloat(document.getElementById('order-twd-cost').innerText) || 0;
              const profitVal = parseFloat(document.getElementById('order-profit').innerText) || 0;
+             const rateVal = parseFloat(document.getElementById('order-rate').value) || 38;
 
-             appData.orders.unshift({
-                 id:Date.now(), date:d, 
-                 code:document.getElementById('order-code').value,
-                 shop:document.getElementById('order-shop').value,
-                 status:document.getElementById('order-status').value,
+             const orderData = {
+                 id: currentEditingOrderId ? currentEditingOrderId : Date.now(), // Use existing ID if editing
+                 date: d, 
+                 code: document.getElementById('order-code').value,
+                 shop: document.getElementById('order-shop').value,
+                 status: document.getElementById('order-status').value,
                  items: items,
                  sell: sellPrice,
                  twdCost: costPrice,
                  profit: profitVal,
+                 rate: rateVal,
                  paid: document.getElementById('order-paid').checked,
                  note: document.getElementById('order-note').value
-             });
-             saveData(); renderOrders(); updatePurchasingStats(); toggleOrderForm();
+             };
+
+             if (currentEditingOrderId) {
+                 // Update existing
+                 const index = appData.orders.findIndex(o => o.id === currentEditingOrderId);
+                 if (index !== -1) {
+                     appData.orders[index] = orderData;
+                     showToast("訂單已更新");
+                 }
+             } else {
+                 // Add new
+                 appData.orders.unshift(orderData);
+                 showToast("訂單已新增");
+             }
+             
+             saveData(); 
+             renderOrders(); 
+             updatePurchasingStats(); 
+             resetOrderForm();
+             // Close form only if adding new, or maybe keep open? Let's toggle close.
+             toggleOrderForm();
         }
         
         function renderOrders(){
@@ -1587,7 +1672,12 @@
                         <div class="${o.paid?'text-green-600':'text-red-500'} font-bold mt-1">${o.paid?'已收':'未收'}</div>
                     </td>
                     <td class="p-2 font-bold text-green-600 align-top">${o.profit||0}</td>
-                    <td class="p-2 text-center align-top"><button onclick="deleteOrder(${o.id})" class="text-gray-300 hover:text-red-500"><i class="fas fa-trash"></i></button></td>
+                    <td class="p-2 text-center align-top">
+                        <div class="flex flex-col gap-2 items-center">
+                            <button onclick="editOrder(${o.id})" class="text-gray-400 hover:text-blue-500" title="編輯"><i class="fas fa-edit"></i></button>
+                            <button onclick="deleteOrder(${o.id})" class="text-gray-300 hover:text-red-500" title="刪除"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
                 </tr>`;
             });
         }
