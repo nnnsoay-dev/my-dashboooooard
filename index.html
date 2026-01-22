@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>my dashboard</title>
+    <title>個人手札 (Notion Style)</title>
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Inter Font (Standard Notion) & Gaegu (Korean Handwritten) -->
@@ -363,8 +363,8 @@
 
                 <!-- Tab: Resources -->
                 <div id="tab-resources" class="section-content hidden fade-in space-y-8">
-                      <!-- Recent Source -->
-                      <section>
+                     <!-- Recent Source -->
+                     <section>
                         <h3 class="text-lg font-bold mb-3 flex items-center border-b border-notion-border pb-2">
                             <span class="mr-2">📄</span> Recent Sources (From Literature)
                         </h3>
@@ -373,8 +373,8 @@
                         </div>
                     </section>
 
-                      <!-- File Archive -->
-                      <section>
+                     <!-- File Archive -->
+                     <section>
                         <h3 class="text-lg font-bold mb-3 flex items-center border-b border-notion-border pb-2">
                             <span class="mr-2">📂</span> 歸檔紀錄 (File Log)
                         </h3>
@@ -478,6 +478,7 @@
                             <!-- New Grade Inputs -->
                             <input type="number" id="course-target-grade" placeholder="目標成績">
                             <input type="number" id="course-grade" placeholder="實際成績">
+                            <input type="number" id="course-gpa" placeholder="單科GPA (e.g. 4.3)" step="0.1">
                             
                             <!-- Type Selector -->
                             <select id="course-type">
@@ -695,7 +696,7 @@
                         </div>
                         <div class="grid grid-cols-3 gap-4 mb-4 text-sm">
                             <div class="bg-white p-2 rounded border">成本: <span id="order-twd-cost" class="font-bold">0</span></div>
-                            <div class="bg-white p-2 rounded border">售價: <span id="order-sell-price" class="font-bold">0</span></div>
+                            <div class="bg-white p-2 rounded border">售價: <span id="order-sell-price" class="font-bold" contenteditable="true" oninput="calculateProfitManual()">0</span></div>
                             <div class="bg-notion-green-bg p-2 rounded border border-green-200">利潤: <span id="order-profit" class="font-bold text-green-700">0</span></div>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -734,7 +735,14 @@
                     <div class="overflow-x-auto">
                         <table class="w-full text-sm text-left">
                             <thead class="text-notion-dim text-xs bg-notion-gray-bg">
-                                <tr><th class="p-2 rounded-l">資訊</th><th class="p-2">明細</th><th class="p-2">狀態</th><th class="p-2">財務</th><th class="p-2">利潤</th><th class="p-2 rounded-r w-8"></th></tr>
+                                <tr>
+                                    <th class="p-2 rounded-l">資訊 (店家)</th>
+                                    <th class="p-2">明細</th>
+                                    <th class="p-2">狀態</th>
+                                    <th class="p-2">財務</th>
+                                    <th class="p-2">利潤</th>
+                                    <th class="p-2 rounded-r w-8"></th>
+                                </tr>
                             </thead>
                             <tbody id="order-list-body" class="divide-y divide-notion-border"></tbody>
                         </table>
@@ -743,7 +751,7 @@
 
                 <!-- Tab 4: Subs -->
                 <div id="tab-subs" class="section-content hidden fade-in">
-                      <div class="flex justify-end mb-4">
+                     <div class="flex justify-end mb-4">
                         <button onclick="toggleSubForm()" class="btn-notion btn-notion-primary"><i class="fas fa-plus mr-1"></i> 新增訂閱</button>
                     </div>
 
@@ -813,10 +821,12 @@
                 <!-- Tab 6: Literature -->
                 <div id="tab-literature" class="section-content hidden fade-in">
                     <div class="flex justify-end mb-4">
-                        <button onclick="toggleCollapse('lit-form-panel', 'icon-add-lit')" class="btn-notion btn-notion-primary"><i class="fas fa-plus mr-1"></i> 新增文獻</button>
+                        <!-- Added id="icon-add-lit" and transition class for rotation effect -->
+                        <button onclick="toggleCollapse('lit-form-panel', 'icon-add-lit')" class="btn-notion btn-notion-primary"><i id="icon-add-lit" class="fas fa-plus mr-1 transition-transform duration-300"></i> 新增文獻</button>
                     </div>
 
-                    <div id="lit-form-panel" class="bg-notion-gray-bg rounded-md border border-notion-border hidden mb-8">
+                    <!-- Removed 'hidden' class from here so toggleCollapse works correctly -->
+                    <div id="lit-form-panel" class="bg-notion-gray-bg rounded-md border border-notion-border mb-8">
                         <h4 class="text-xs font-bold text-notion-dim mb-4 uppercase">基本資訊</h4>
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
                             <input type="text" id="lit-title" placeholder="標題" class="md:col-span-2 font-bold">
@@ -1020,6 +1030,20 @@
             if(t==='notebook') { renderNotebook(); }
             
             hideMoreMenu();
+        }
+
+        // Toggle Collapse Generic
+        function toggleCollapse(c, i) { 
+            const el=document.getElementById(c); 
+            const ic=document.getElementById(i); 
+            if(!el) return; 
+            if(el.classList.contains('open')){
+                el.classList.remove('open');
+                if(ic) ic.style.transform='rotate(0deg)';
+            }else{
+                el.classList.add('open');
+                if(ic) ic.style.transform='rotate(180deg)';
+            } 
         }
 
         // --- DASHBOARD ---
@@ -1276,6 +1300,7 @@
                 id:Date.now(), name:n, credits:parseInt(document.getElementById('course-credits').value)||0,
                 grade:parseFloat(document.getElementById('course-grade').value)||0, 
                 target:parseFloat(document.getElementById('course-target-grade').value)||0, // NEW field
+                gpaPoints:parseFloat(document.getElementById('course-gpa').value)||0, // NEW field
                 day:parseInt(document.getElementById('course-day').value),
                 start:parseInt(document.getElementById('course-start').value), end:parseInt(document.getElementById('course-end').value),
                 semester: currentSemester, // Use global current semester
@@ -1383,6 +1408,15 @@
             });
 
             allCourses.forEach(c=>{
+                // Prepare actual display: "Score (GPA)"
+                let actualDisplay = '-';
+                if (c.grade > 0) {
+                    actualDisplay = `${c.grade}`;
+                    if (c.gpaPoints) {
+                        actualDisplay += ` <span class="text-xs text-notion-dim">(${c.gpaPoints})</span>`;
+                    }
+                }
+                
                 tbody.innerHTML+=`
                 <tr class="hover:bg-notion-hover border-b border-notion-border last:border-0">
                     <td class="p-3 font-bold text-notion-dim">${c.semester || '-'}</td>
@@ -1390,7 +1424,7 @@
                     <td class="p-3 text-xs text-notion-dim">${c.type || '未分類'}</td>
                     <td class="p-3 text-sm">${c.credits}</td>
                     <td class="p-3 text-sm font-mono text-notion-dim">${c.target > 0 ? c.target : '-'}</td>
-                    <td class="p-3 text-sm font-mono font-bold">${c.grade > 0 ? c.grade : '-'}</td>
+                    <td class="p-3 text-sm font-mono font-bold">${actualDisplay}</td>
                     <td class="p-3 text-right">
                         <div class="flex justify-end gap-2">
                              <button onclick="openCourseNote(${c.id})" class="text-gray-400 hover:text-notion-text" title="筆記"><i class="fas fa-edit"></i></button>
@@ -1408,8 +1442,9 @@
             appData.courses.forEach(c=>{ 
                 const cred = parseInt(c.credits) || 0;
                 tc += cred; 
-                if(c.grade > 0){
-                    ws += (c.grade * cred); 
+                // Use GPA Points for calculation if available
+                if(c.gpaPoints > 0){
+                    ws += (c.gpaPoints * cred); 
                     vc += cred;
                 } 
             });
@@ -1466,12 +1501,37 @@
             d.innerHTML=`<input class="col-span-2 item-name" placeholder="品名"><input type="number" class="item-qty" placeholder="數" value="1" oninput="calcProfit()"><input type="number" class="item-krw" placeholder="₩" oninput="calcProfit()">`;
             c.appendChild(d);
         }
-        function calcProfit(){
+        function calcProfit(useInputTotal = false){
             const rate=parseFloat(document.getElementById('order-rate').value)||38;
-            let tk=0; document.querySelectorAll('.item-row').forEach(r=>{ tk+= (parseFloat(r.querySelector('.item-krw').value)||0) * (parseFloat(r.querySelector('.item-qty').value)||0); });
+            let tk=0; 
+            let rowSellTotal = 0; // Track sell sum from rows
+            document.querySelectorAll('.item-row').forEach(r=>{ 
+                const q = parseFloat(r.querySelector('.item-qty').value)||0;
+                tk+= (parseFloat(r.querySelector('.item-krw').value)||0) * q; 
+                // We don't have item-sell input in rows anymore based on previous request simplification? 
+                // Wait, previous code had item-sell in rows. Let's check addOrderItemRow.
+                // The current addOrderItemRow only has item-name, item-qty, item-krw. 
+                // So profit calculation depends purely on total sell price manually input.
+            });
             const cost = Math.ceil(tk/rate);
             document.getElementById('order-twd-cost').innerText = cost;
+
+            const totalSellInput = document.getElementById('order-sell-price');
+            const totalSell = parseFloat(totalSellInput.innerText) || 0; // Use innerText because it's a span/div usually? No it's an input in previous form?
+            // Let's check form HTML for sell price.
+            // <div class="bg-white p-2 rounded border">售價: <span id="order-sell-price" class="font-bold" contenteditable="true" oninput="calculateProfitManual()">0</span></div>
+            // It is a span with contenteditable.
+            
+            const profit = totalSell - cost;
+            document.getElementById('order-profit').innerText = profit;
         }
+        
+        function calculateProfitManual() {
+            const cost = parseFloat(document.getElementById('order-twd-cost').innerText) || 0;
+            const sell = parseFloat(document.getElementById('order-sell-price').innerText) || 0;
+            document.getElementById('order-profit').innerText = sell - cost;
+        }
+
         function addOrder(){
              const d=document.getElementById('order-date').value;
              if(!d) return showToast("請輸入日期");
@@ -1479,26 +1539,77 @@
              document.querySelectorAll('.item-row').forEach(row => {
                  items.push({name: row.querySelector('.item-name').value, qty: row.querySelector('.item-qty').value, krw: row.querySelector('.item-krw').value});
              });
+             
+             // Get sell price from contenteditable span
+             const sellPrice = parseFloat(document.getElementById('order-sell-price').innerText) || 0;
+             const costPrice = parseFloat(document.getElementById('order-twd-cost').innerText) || 0;
+             const profitVal = parseFloat(document.getElementById('order-profit').innerText) || 0;
+
              appData.orders.unshift({
                  id:Date.now(), date:d, 
                  code:document.getElementById('order-code').value,
                  shop:document.getElementById('order-shop').value,
                  status:document.getElementById('order-status').value,
                  items: items,
-                 sell: parseFloat(document.getElementById('order-sell-price')?.value) || 0,
-                 paid: document.getElementById('order-paid').checked
+                 sell: sellPrice,
+                 twdCost: costPrice,
+                 profit: profitVal,
+                 paid: document.getElementById('order-paid').checked,
+                 note: document.getElementById('order-note').value
              });
              saveData(); renderOrders(); updatePurchasingStats(); toggleOrderForm();
         }
+        
         function renderOrders(){
             const b=document.getElementById('order-list-body'); if(!b)return; b.innerHTML='';
             appData.orders.slice(0,20).forEach(o=>{
-                 b.innerHTML+=`<tr class="hover:bg-notion-hover"><td class="p-2 border-b border-notion-border"><div class="font-medium">${o.date}</div><div class="text-xs text-notion-dim">${o.code||''}</div></td><td class="p-2 border-b border-notion-border text-sm">${o.items?o.items.map(i=>i.name).join(', '):o.name}</td><td class="p-2 border-b border-notion-border"><span class="bg-notion-gray-bg px-2 py-0.5 rounded text-xs">${o.status}</span></td><td class="p-2 border-b border-notion-border text-sm">${o.paid?'已收':'<span class="text-red-500">未收</span>'}</td><td class="p-2 border-b border-notion-border font-bold text-green-600">${o.profit||0}</td><td class="p-2 border-b border-notion-border"><button onclick="deleteOrder(${o.id})" class="text-gray-300 hover:text-red-500"><i class="fas fa-trash"></i></button></td></tr>`;
+                 // Status Select
+                 const statusOptions = ORDER_STATUSES.map(s => `<option value="${s}" ${s===o.status?'selected':''}>${s}</option>`).join('');
+                 
+                 b.innerHTML+=`<tr class="hover:bg-notion-hover border-b border-notion-border last:border-0">
+                    <td class="p-2 align-top">
+                        <div class="font-medium">${o.date}</div>
+                        <div class="text-xs text-notion-dim">${o.code||''}</div>
+                        <div class="text-xs font-bold text-blue-600 mt-1">${o.shop||'-'}</div>
+                    </td>
+                    <td class="p-2 text-sm align-top">
+                        ${o.items?o.items.map(i=>`<div>${i.name} x${i.qty}</div>`).join(''):o.name}
+                        ${o.note ? `<div class="text-xs text-gray-400 mt-1 italic">註: ${o.note}</div>` : ''}
+                    </td>
+                    <td class="p-2 align-top">
+                        <select onchange="updateOrderStatus(${o.id}, this.value)" class="bg-notion-gray-bg border-none text-xs rounded p-1 w-full cursor-pointer">
+                            ${statusOptions}
+                        </select>
+                    </td>
+                    <td class="p-2 text-sm align-top text-xs">
+                        <div>售: ${o.sell}</div>
+                        <div class="text-notion-dim">本: ${o.twdCost||0}</div>
+                        <div class="${o.paid?'text-green-600':'text-red-500'} font-bold mt-1">${o.paid?'已收':'未收'}</div>
+                    </td>
+                    <td class="p-2 font-bold text-green-600 align-top">${o.profit||0}</td>
+                    <td class="p-2 text-center align-top"><button onclick="deleteOrder(${o.id})" class="text-gray-300 hover:text-red-500"><i class="fas fa-trash"></i></button></td>
+                </tr>`;
             });
         }
+        
+        function updateOrderStatus(id, newStatus) {
+            const order = appData.orders.find(o => o.id === id);
+            if (order) {
+                order.status = newStatus;
+                saveData();
+                updatePurchasingStats(); // Stats might depend on status later
+                showToast("狀態已更新");
+            }
+        }
+
         function updatePurchasingStats(){
             const unpaid = appData.orders.filter(o=>!o.paid).reduce((a,b)=>a+(b.sell||0),0);
             document.getElementById('stats-unpaid').innerText = unpaid;
+            
+            const net = appData.orders.reduce((a,b)=>a+(b.profit||0),0);
+            document.getElementById('stats-net-profit').innerText = net;
+            
+            document.getElementById('stats-total-orders').innerText = appData.orders.length;
         }
         function deleteOrder(id){ if(confirm("刪除？")){appData.orders=appData.orders.filter(o=>o.id!==id); saveData(); renderOrders(); updatePurchasingStats();} }
 
@@ -1637,8 +1748,8 @@
                 try {
                     const d = JSON.parse(e.target.result);
                     if(d.debts && Array.isArray(d.debts) && !d.tasks) {
-                          if(d.debts) appData.debts = [...d.debts.map(x=>({...x, person:x.item, status:'unsettled'})), ...appData.debts];
-                          if(d.cameraFund) appData.cameraFund.entries = [...d.cameraFund.map(x=>({...x, desc:x.item})), ...appData.cameraFund.entries];
+                         if(d.debts) appData.debts = [...d.debts.map(x=>({...x, person:x.item, status:'unsettled'})), ...appData.debts];
+                         if(d.cameraFund) appData.cameraFund.entries = [...d.cameraFund.map(x=>({...x, desc:x.item})), ...appData.cameraFund.entries];
                     } else {
                         appData = { ...appData, ...d };
                     }
