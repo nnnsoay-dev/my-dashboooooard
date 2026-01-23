@@ -714,18 +714,69 @@
         function renderDashboard() {
             const todayStr = new Date().toISOString().split('T')[0];
             const dashTasks = document.getElementById('dashboard-tasks');
+            const dueList = document.getElementById('dash-due-dates');
+
+            // 1. Dashboard To-Do List (Left)
             if(dashTasks) {
                 dashTasks.innerHTML = '';
-                const todayTasks = appData.tasks.filter(t => t.date === todayStr && !t.completed);
-                const q1Tasks = appData.tasks.filter(t => t.quadrant === 'q1' && !t.completed && t.date !== todayStr);
-                const combinedTasks = [...todayTasks, ...q1Tasks].slice(0, 10); 
-                if(combinedTasks.length === 0) dashTasks.innerHTML = '<div class="text-sm text-notion-dim pl-2 italic">無緊急待辦</div>';
+                const todos = appData.tasks.filter(t => (!t.type || t.type === 'todo') && !t.completed);
+                
+                todos.sort((a, b) => {
+                    if (a.date !== b.date) return new Date(a.date) - new Date(b.date);
+                    return (a.quadrant || 'q4').localeCompare(b.quadrant || 'q4');
+                });
+
+                if(todos.length === 0) dashTasks.innerHTML = '<div class="text-sm text-notion-dim pl-2 italic">無待辦事項</div>';
                 else {
-                    combinedTasks.forEach(t => {
-                        dashTasks.innerHTML += `<div class="flex items-start gap-2 p-1 hover:bg-notion-hover rounded cursor-default"><input type="checkbox" onclick="toggleTask(${t.id}); renderDashboard()" class="mt-1 cursor-pointer"><div class="flex-1 min-w-0"><div class="text-sm font-medium text-black truncate">${t.title}</div><div class="text-[10px] text-notion-dim">${t.date}</div></div></div>`;
+                    todos.forEach(t => {
+                        const qLabels = { q1: "🔥", q2: "⭐", q3: "⚡", q4: "☕" };
+                        const label = qLabels[t.quadrant] || "";
+                        dashTasks.innerHTML += `
+                        <div class="flex items-start gap-2 p-1 hover:bg-notion-hover rounded cursor-default">
+                             <input type="checkbox" onclick="toggleTask(${t.id}); renderDashboard()" class="mt-1 cursor-pointer">
+                             <div class="flex-1 min-w-0">
+                                <div class="text-sm font-medium text-notion-text truncate">${label} ${t.title}</div>
+                                <div class="text-[10px] text-notion-dim">${t.date} ${t.time || ''}</div>
+                             </div>
+                        </div>`;
                     });
                 }
             }
+            
+            // 2. Dashboard Upcoming & Due (Right)
+            if(dueList) {
+                dueList.innerHTML = '';
+                const upcoming = appData.tasks.filter(t => t.date >= todayStr && (t.type === 'event' || !t.completed));
+                
+                upcoming.sort((a, b) => {
+                    const dateA = new Date(a.date + (a.time ? 'T'+a.time : 'T00:00'));
+                    const dateB = new Date(b.date + (b.time ? 'T'+b.time : 'T00:00'));
+                    return dateA - dateB;
+                });
+
+                const displayList = upcoming.slice(0, 10);
+
+                if(displayList.length === 0) dueList.innerHTML = '<div class="text-sm text-notion-dim pl-2 italic">無近期事項</div>';
+                else {
+                    displayList.forEach(t => {
+                        const icon = t.type === 'event' ? '📅' : '📝';
+                        const diffTime = new Date(t.date) - new Date(todayStr);
+                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                        let badgeText = diffDays === 0 ? '今天' : (diffDays === 1 ? '明天' : `${diffDays}天後`);
+                        if(diffDays < 0) badgeText = "已過期"; 
+
+                        dueList.innerHTML += `
+                        <div class="flex justify-between items-center text-sm p-1 border-b border-gray-50 last:border-0 hover:bg-notion-hover rounded">
+                            <div class="flex items-center gap-2 overflow-hidden">
+                                <span class="text-xs flex-shrink-0">${icon}</span>
+                                <span class="truncate text-notion-text">${t.title}</span>
+                            </div>
+                            <span class="text-[10px] bg-notion-gray-bg text-notion-dim px-1.5 py-0.5 rounded whitespace-nowrap flex-shrink-0 ml-2">${badgeText}</span>
+                        </div>`;
+                    });
+                }
+            }
+
             renderBookmarks(); renderDriveFiles(); renderRecentSources();
         }
 
@@ -1425,89 +1476,20 @@
         function changeMonth(d){currentCalendarDate.setMonth(currentCalendarDate.getMonth()+d); renderCalendar();}
         function toggleTimeInput(){document.getElementById('task-time').disabled=document.getElementById('task-allday').checked;}
         function toggleTaskForm(){ const p=document.getElementById('task-form-panel'); p.classList.toggle('open'); }
-        function toggleTaskTypeUI() {
-             const type = document.querySelector('input[name="task-type"]:checked').value;
-             const prioritySelect = document.getElementById('task-priority');
-             if(type === 'event') {
-                 prioritySelect.classList.add('hidden');
-             } else {
-                 prioritySelect.classList.remove('hidden');
-             }
-        }
-
         function addTask(){
             const d=document.getElementById('task-date').value; const t=document.getElementById('task-title').value; 
-            const type = document.querySelector('input[name="task-type"]:checked').value;
             if(!t.trim()||!d)return showToast("請輸入日期與標題"); 
-            appData.tasks.push({
-                id:Date.now(),
-                date:d, 
-                time:document.getElementById('task-time').value, 
-                isAllDay:document.getElementById('task-allday').checked, 
-                quadrant:document.getElementById('task-priority').value, 
-                title:t,
-                text:t, 
-                content:document.getElementById('task-content').value, 
-                location:document.getElementById('task-location').value, 
-                url:document.getElementById('task-url').value, 
-                completed:false,
-                type: type // 'todo' or 'event'
-            }); 
+            appData.tasks.push({id:Date.now(),date:d, time:document.getElementById('task-time').value, isAllDay:document.getElementById('task-allday').checked, quadrant:document.getElementById('task-priority').value, title:t,text:t, content:document.getElementById('task-content').value, location:document.getElementById('task-location').value, url:document.getElementById('task-url').value, completed:false}); 
             saveData(); renderTasks(); renderCalendar(); showToast("已新增"); toggleTaskForm();
         }
-        
         function renderTasks(){
-            const todoList = document.getElementById('planner-todo-list'); 
-            const eventList = document.getElementById('planner-event-list');
-            const todoCountEl = document.getElementById('todo-count');
-            const eventCountEl = document.getElementById('event-count');
-            
-            if(!todoList || !eventList) return; 
-            
-            todoList.innerHTML = '';
-            eventList.innerHTML = '';
-            
-            let todoCount = 0;
-            let eventCount = 0;
-            
-            const sortedTasks = [...appData.tasks].sort((a,b) => {
-                 if (a.completed !== b.completed) return a.completed ? 1 : -1; 
-                 return new Date(a.date) - new Date(b.date); 
+            const list = document.getElementById('all-tasks-list'); if(!list) return; list.innerHTML = '';
+            if(appData.tasks.length === 0) { document.getElementById('empty-tasks-msg').classList.remove('hidden'); return; }
+            document.getElementById('empty-tasks-msg').classList.add('hidden');
+            [...appData.tasks].sort((a,b) => (a.completed===b.completed)?(new Date(a.date)-new Date(b.date)):(a.completed?1:-1)).forEach(t => {
+                list.innerHTML += `<li class="p-3 hover:bg-notion-hover transition flex gap-3 items-start ${t.completed ? 'opacity-50 line-through' : ''}"><input type="checkbox" ${t.completed ? 'checked' : ''} onchange="toggleTask(${t.id})" class="mt-1 cursor-pointer"><div class="flex-1"><div class="text-sm font-medium text-notion-text">${t.title}</div><div class="text-xs text-notion-dim mt-0.5">${t.date}</div></div><button onclick="deleteTask(${t.id})" class="text-gray-300 hover:text-red-400"><i class="fas fa-trash-alt"></i></button></li>`;
             });
-
-            sortedTasks.forEach(t => {
-                if (t.type === 'event') {
-                    eventCount++;
-                    eventList.innerHTML += `
-                    <li class="p-3 hover:bg-notion-hover transition flex gap-3 items-start">
-                        <div class="mt-1 text-notion-dim"><i class="far fa-calendar-alt"></i></div>
-                        <div class="flex-1">
-                            <div class="text-sm font-medium text-notion-text">${t.title}</div>
-                            <div class="text-xs text-notion-dim mt-0.5">${t.date} ${t.time || ''} ${t.location ? '@'+t.location : ''}</div>
-                            ${t.content ? `<div class="text-xs text-gray-500 mt-1">${t.content}</div>` : ''}
-                        </div>
-                        <button onclick="deleteTask(${t.id})" class="text-gray-300 hover:text-red-400"><i class="fas fa-trash-alt"></i></button>
-                    </li>`;
-                } else {
-                    // Default to todo if type is undefined (for old data)
-                    todoCount++;
-                    const qLabels = { q1: "🔥", q2: "⭐", q3: "⚡", q4: "☕" };
-                    todoList.innerHTML += `
-                    <li class="p-3 hover:bg-notion-hover transition flex gap-3 items-start ${t.completed ? 'opacity-50 line-through' : ''}">
-                        <input type="checkbox" ${t.completed ? 'checked' : ''} onchange="toggleTask(${t.id})" class="mt-1 cursor-pointer">
-                        <div class="flex-1">
-                            <div class="text-sm font-medium text-notion-text">${qLabels[t.quadrant]||''} ${t.title}</div>
-                            <div class="text-xs text-notion-dim mt-0.5">${t.date} ${t.time || ''}</div>
-                        </div>
-                        <button onclick="deleteTask(${t.id})" class="text-gray-300 hover:text-red-400"><i class="fas fa-trash-alt"></i></button>
-                    </li>`;
-                }
-            });
-            
-            if(todoCountEl) todoCountEl.innerText = todoCount;
-            if(eventCountEl) eventCountEl.innerText = eventCount;
         }
-        
         function showMoreMenu(){ document.getElementById('mobile-more-menu').classList.remove('hidden'); }
         function hideMoreMenu(){ document.getElementById('mobile-more-menu').classList.add('hidden'); }
         function uploadCover(input) { const file = input.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = function(e) { appData.coverImage = e.target.result; saveData(); renderCover(); }; reader.readAsDataURL(file); input.value = ''; }
