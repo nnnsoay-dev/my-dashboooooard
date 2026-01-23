@@ -125,11 +125,8 @@
 
     <!-- Sidebar -->
     <aside class="w-60 bg-notion-sidebar border-r border-notion-border flex-shrink-0 flex flex-col h-full transition-all duration-300 hidden md:flex">
-        
-        <!-- Sidebar Top: Date & Backup Actions -->
         <div class="p-4 border-b border-notion-border/50">
             <div id="sidebar-date-display" class="font-bold text-xl text-notion-text mb-4 px-1 tracking-tight leading-tight min-h-[3rem]"></div>
-            
             <div class="flex gap-2">
                  <button onclick="backupAllData()" class="btn-notion flex-1 justify-center text-xs text-notion-dim hover:text-notion-text" title="匯出">
                     <i class="fas fa-download mr-1"></i>匯出
@@ -140,7 +137,6 @@
                 </label>
             </div>
         </div>
-
         <div class="flex-1 overflow-y-auto px-2 py-2 space-y-0.5 custom-scroll">
             <div class="text-xs font-semibold text-notion-dim px-3 py-2 mt-2">FAVORITES</div>
             <div onclick="switchTab('dashboard')" id="btn-dashboard" class="nav-item active"><span class="emoji">🏠</span>Dashboard</div>
@@ -235,23 +231,28 @@
                     </div>
 
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- Swapped Columns: Left -> Upcoming & Due, Right -> To Do List -->
+                        <div class="space-y-8">
+                             <section>
+                                <h3 class="text-lg font-bold mb-3 flex items-center border-b border-notion-border pb-2"><span class="mr-2">📅</span> Upcoming & Due</h3>
+                                <ul id="dash-due-dates" class="space-y-2"><li class="text-sm text-notion-dim pl-2">無近期事項</li></ul>
+                            </section>
+                            <section>
+                                <!-- Course Notebook placeholder or removed -->
+                                <!-- (kept hidden or removed as per request) -->
+                            </section>
+                        </div>
                         <div class="space-y-8">
                             <section>
                                 <h3 class="text-lg font-bold mb-3 flex items-center border-b border-notion-border pb-2"><span class="mr-2">🏠</span> To Do List</h3>
                                 <div id="dashboard-tasks" class="space-y-1"><div class="text-sm text-notion-dim pl-2">載入中...</div></div>
                             </section>
-                        </div>
-                        <div class="space-y-8">
                             <section>
                                 <div class="flex justify-between items-center mb-3 border-b border-notion-border pb-2">
                                     <h3 class="text-lg font-bold flex items-center"><span class="mr-2">🔖</span> Bookmarks</h3>
                                     <button onclick="addBookmark()" class="text-notion-dim hover:text-notion-text"><i class="fas fa-plus"></i></button>
                                 </div>
                                 <ul id="dash-bookmarks" class="space-y-1"><li class="text-sm text-notion-dim pl-2">暫無書籤</li></ul>
-                            </section>
-                            <section>
-                                <h3 class="text-lg font-bold mb-3 flex items-center border-b border-notion-border pb-2"><span class="mr-2">📅</span> Upcoming & Due</h3>
-                                <ul id="dash-due-dates" class="space-y-2"><li class="text-sm text-notion-dim pl-2">無近期事項</li></ul>
                             </section>
                         </div>
                     </div>
@@ -467,8 +468,8 @@
                         <h4 class="font-bold mb-4">建立/編輯訂單</h4>
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                             <input type="date" id="order-date">
-                            <input type="text" id="order-code" placeholder="代號">
                             <input type="text" id="order-shop" placeholder="店家" class="md:col-span-2">
+                            <input type="text" id="order-code" placeholder="代號">
                             <input type="number" id="order-rate" placeholder="匯率 (38)" value="38" oninput="calcProfit()">
                             <select id="order-status" class="md:col-span-3"></select>
                         </div>
@@ -656,7 +657,8 @@
         let currentEditingCourseId = null;
         let currentEditingOrderId = null;
         let currentNoteCourseId = null; 
-        let editingLedgerId = null; // New variable for finance editing
+        let editingLedgerId = null; 
+        let currentSelectedDate = null; // New variable for calendar filtering
 
         document.addEventListener('DOMContentLoaded', () => {
             loadData(); 
@@ -716,7 +718,8 @@
             const dashTasks = document.getElementById('dashboard-tasks');
             const dueList = document.getElementById('dash-due-dates');
 
-            // 1. Dashboard To-Do List (Left)
+            // 1. Dashboard To-Do List (Left) - NOW ON RIGHT IN HTML, but logic here
+            // Logic: All incomplete Todos, sorted by date then priority
             if(dashTasks) {
                 dashTasks.innerHTML = '';
                 const todos = appData.tasks.filter(t => (!t.type || t.type === 'todo') && !t.completed);
@@ -743,7 +746,8 @@
                 }
             }
             
-            // 2. Dashboard Upcoming & Due (Right)
+            // 2. Dashboard Upcoming & Due (Right) - NOW ON LEFT IN HTML
+            // Logic: Events & Incomplete Todos >= Today
             if(dueList) {
                 dueList.innerHTML = '';
                 const upcoming = appData.tasks.filter(t => t.date >= todayStr && (t.type === 'event' || !t.completed));
@@ -913,6 +917,33 @@
             document.getElementById('course-end').value = c.end || 1; document.getElementById('btn-save-course').innerText = '更新課程';
             const p=document.getElementById('course-form-panel'); if(!p.classList.contains('open')) p.classList.add('open');
             p.scrollIntoView({behavior: 'smooth'});
+        }
+
+        // --- COURSE NOTES (FIXED) ---
+        function openCourseNote(id) {
+            currentNoteCourseId = id;
+            const course = appData.courses.find(c => c.id === id);
+            if (!course) return;
+            document.getElementById('modal-course-title').innerText = `筆記: ${course.name}`;
+            document.getElementById('modal-course-content').value = course.note || '';
+            document.getElementById('course-note-modal').classList.remove('hidden');
+        }
+
+        function closeCourseNote() {
+            document.getElementById('course-note-modal').classList.add('hidden');
+            currentNoteCourseId = null;
+        }
+
+        function saveCurrentCourseNote() {
+            if (!currentNoteCourseId) return;
+            const content = document.getElementById('modal-course-content').value;
+            const idx = appData.courses.findIndex(c => c.id === currentNoteCourseId);
+            if (idx !== -1) {
+                appData.courses[idx].note = content;
+                saveData();
+                showToast('筆記已儲存');
+                closeCourseNote();
+            }
         }
 
         function renderSchedule(containerId) {
@@ -1196,7 +1227,7 @@
             // Or 'sell' price where status isn't complete? Usually 'isPaid' is the tracker.
             // Using 'sell' as per typical agent usage (receivable from customer)
             const net = appData.orders.reduce((acc, o) => acc + (o.profit || 0), 0);
-            const unpaid = appData.orders.filter(o => !o.isPaid).reduce((acc, o) => acc + (o.cost || 0), 0); // Estimate unpaid cost
+            const unpaid = appData.orders.filter(o => !o.isPaid).reduce((acc, o) => acc + (o.sell || 0), 0); 
             document.getElementById('stats-net-profit').innerText = net;
             document.getElementById('stats-unpaid').innerText = unpaid;
             document.getElementById('stats-total-orders').innerText = appData.orders.length;
@@ -1290,11 +1321,12 @@
              const date = document.getElementById('ledger-date').value;
              const desc = document.getElementById('ledger-desc').value;
              
-             if (!amount || !date || !desc) return showToast("請填寫完整資訊");
+             // Removed date check
+             if (!amount || !desc) return showToast("請填寫完整資訊");
 
              const newItem = {
                  id: editingLedgerId ? editingLedgerId : Date.now(), 
-                 date: date, 
+                 date: date || ' ', 
                  desc: desc, 
                  amount: amount, 
                  type: type
@@ -1349,7 +1381,7 @@
             sortedDebts.forEach(h => {
                 c.innerHTML += `
                     <div class="flex justify-between items-center border-b border-notion-border py-2 text-sm">
-                        <span class="text-notion-dim font-mono text-xs w-24">${h.date}</span>
+                        <span class="text-notion-dim font-mono text-xs w-24">${h.date || '-'}</span>
                         <div class="flex-1 px-2 font-medium truncate">${h.desc}</div>
                         <span class="${h.type==='owe'?'text-red-500':'text-green-600'} font-bold w-20 text-right">
                             ${h.type==='owe'?'借':'還'} $${h.amount}
@@ -1379,7 +1411,7 @@
             sortedEntries.forEach(e=>{ 
                 l.innerHTML+=`
                 <li class="flex justify-between p-2 border-b border-notion-border text-sm items-center">
-                    <span class="text-notion-dim text-xs font-mono w-24">${e.date}</span>
+                    <span class="text-notion-dim text-xs font-mono w-24">${e.date || '-'}</span>
                     <span class="flex-1 truncate px-2">${e.desc}</span>
                     <span class="${e.type=='withdraw'?'text-red-500':'text-green-600'} font-bold w-20 text-right">$${e.amount}</span>
                     <div class="flex gap-2 ml-2">
@@ -1468,28 +1500,116 @@
             for(let i=0;i<d.getDay();i++){g.innerHTML+='<div></div>';} 
             while(d.getMonth()===m){ 
                 const dateStr=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; 
-                const hasTask=appData.tasks.some(t=>t.date===dateStr && !t.completed); 
-                g.innerHTML+=`<div class="h-16 border border-notion-border rounded p-1 text-xs relative ${hasTask?'bg-notion-yellow-bg':''}"><span class="font-bold">${d.getDate()}</span>${hasTask ? '<div class="w-1.5 h-1.5 bg-red-400 rounded-full absolute top-1.5 right-1.5"></div>' : ''}</div>`; 
+                const hasTask=appData.tasks.some(t=>t.date===dateStr);
+                
+                // Highlight logic
+                let bgClass = hasTask ? 'bg-notion-yellow-bg' : '';
+                if(currentSelectedDate === dateStr) bgClass = 'bg-notion-text text-white'; // Override for selected
+
+                g.innerHTML+=`<div onclick="selectDate('${dateStr}')" class="h-16 border border-notion-border rounded p-1 text-xs relative cursor-pointer hover:bg-gray-100 ${bgClass}"><span class="font-bold">${d.getDate()}</span>${hasTask && currentSelectedDate !== dateStr ? '<div class="w-1.5 h-1.5 bg-red-400 rounded-full absolute top-1.5 right-1.5"></div>' : ''}</div>`; 
                 d.setDate(d.getDate()+1); 
             } 
         }
+        
+        function selectDate(dateStr) {
+            if(currentSelectedDate === dateStr) currentSelectedDate = null; // Toggle off
+            else currentSelectedDate = dateStr;
+            renderCalendar();
+            renderTasks();
+        }
+
         function changeMonth(d){currentCalendarDate.setMonth(currentCalendarDate.getMonth()+d); renderCalendar();}
         function toggleTimeInput(){document.getElementById('task-time').disabled=document.getElementById('task-allday').checked;}
         function toggleTaskForm(){ const p=document.getElementById('task-form-panel'); p.classList.toggle('open'); }
+        function toggleTaskTypeUI() {
+             const type = document.querySelector('input[name="task-type"]:checked').value;
+             const prioritySelect = document.getElementById('task-priority');
+             if(type === 'event') {
+                 prioritySelect.classList.add('hidden');
+             } else {
+                 prioritySelect.classList.remove('hidden');
+             }
+        }
+
         function addTask(){
             const d=document.getElementById('task-date').value; const t=document.getElementById('task-title').value; 
+            const type = document.querySelector('input[name="task-type"]:checked').value;
             if(!t.trim()||!d)return showToast("請輸入日期與標題"); 
-            appData.tasks.push({id:Date.now(),date:d, time:document.getElementById('task-time').value, isAllDay:document.getElementById('task-allday').checked, quadrant:document.getElementById('task-priority').value, title:t,text:t, content:document.getElementById('task-content').value, location:document.getElementById('task-location').value, url:document.getElementById('task-url').value, completed:false}); 
+            appData.tasks.push({
+                id:Date.now(),
+                date:d, 
+                time:document.getElementById('task-time').value, 
+                isAllDay:document.getElementById('task-allday').checked, 
+                quadrant:document.getElementById('task-priority').value, 
+                title:t,
+                text:t, 
+                content:document.getElementById('task-content').value, 
+                location:document.getElementById('task-location').value, 
+                url:document.getElementById('task-url').value, 
+                completed:false,
+                type: type // 'todo' or 'event'
+            }); 
             saveData(); renderTasks(); renderCalendar(); showToast("已新增"); toggleTaskForm();
         }
+        
         function renderTasks(){
-            const list = document.getElementById('all-tasks-list'); if(!list) return; list.innerHTML = '';
-            if(appData.tasks.length === 0) { document.getElementById('empty-tasks-msg').classList.remove('hidden'); return; }
-            document.getElementById('empty-tasks-msg').classList.add('hidden');
-            [...appData.tasks].sort((a,b) => (a.completed===b.completed)?(new Date(a.date)-new Date(b.date)):(a.completed?1:-1)).forEach(t => {
-                list.innerHTML += `<li class="p-3 hover:bg-notion-hover transition flex gap-3 items-start ${t.completed ? 'opacity-50 line-through' : ''}"><input type="checkbox" ${t.completed ? 'checked' : ''} onchange="toggleTask(${t.id})" class="mt-1 cursor-pointer"><div class="flex-1"><div class="text-sm font-medium text-notion-text">${t.title}</div><div class="text-xs text-notion-dim mt-0.5">${t.date}</div></div><button onclick="deleteTask(${t.id})" class="text-gray-300 hover:text-red-400"><i class="fas fa-trash-alt"></i></button></li>`;
+            const todoList = document.getElementById('planner-todo-list'); 
+            const eventList = document.getElementById('planner-event-list');
+            const todoCountEl = document.getElementById('todo-count');
+            const eventCountEl = document.getElementById('event-count');
+            
+            if(!todoList || !eventList) return; 
+            
+            todoList.innerHTML = '';
+            eventList.innerHTML = '';
+            
+            let todoCount = 0;
+            let eventCount = 0;
+            
+            // Filter by date if selected
+            let tasksToRender = [...appData.tasks];
+            if (currentSelectedDate) {
+                tasksToRender = tasksToRender.filter(t => t.date === currentSelectedDate);
+            }
+
+            const sortedTasks = tasksToRender.sort((a,b) => {
+                 if (a.completed !== b.completed) return a.completed ? 1 : -1; 
+                 return new Date(a.date) - new Date(b.date); 
             });
+
+            sortedTasks.forEach(t => {
+                if (t.type === 'event') {
+                    eventCount++;
+                    eventList.innerHTML += `
+                    <li class="p-3 hover:bg-notion-hover transition flex gap-3 items-start border-b border-notion-border last:border-0">
+                        <div class="mt-1 text-notion-dim"><i class="far fa-calendar-alt"></i></div>
+                        <div class="flex-1">
+                            <div class="text-sm font-medium text-notion-text">${t.title}</div>
+                            <div class="text-xs text-notion-dim mt-0.5">${t.date} ${t.time || ''} ${t.location ? '@'+t.location : ''}</div>
+                            ${t.content ? `<div class="text-xs text-gray-500 mt-1">${t.content}</div>` : ''}
+                        </div>
+                        <button onclick="deleteTask(${t.id})" class="text-gray-300 hover:text-red-400"><i class="fas fa-trash-alt"></i></button>
+                    </li>`;
+                } else {
+                    // Default to todo if type is undefined (for old data)
+                    todoCount++;
+                    const qLabels = { q1: "🔥", q2: "⭐", q3: "⚡", q4: "☕" };
+                    todoList.innerHTML += `
+                    <li class="p-3 hover:bg-notion-hover transition flex gap-3 items-start border-b border-notion-border last:border-0 ${t.completed ? 'opacity-50 line-through' : ''}">
+                        <input type="checkbox" ${t.completed ? 'checked' : ''} onchange="toggleTask(${t.id})" class="mt-1 cursor-pointer">
+                        <div class="flex-1">
+                            <div class="text-sm font-medium text-notion-text">${qLabels[t.quadrant]||''} ${t.title}</div>
+                            <div class="text-xs text-notion-dim mt-0.5">${t.date} ${t.time || ''}</div>
+                        </div>
+                        <button onclick="deleteTask(${t.id})" class="text-gray-300 hover:text-red-400"><i class="fas fa-trash-alt"></i></button>
+                    </li>`;
+                }
+            });
+            
+            if(todoCountEl) todoCountEl.innerText = todoCount;
+            if(eventCountEl) eventCountEl.innerText = eventCount;
         }
+        
         function showMoreMenu(){ document.getElementById('mobile-more-menu').classList.remove('hidden'); }
         function hideMoreMenu(){ document.getElementById('mobile-more-menu').classList.add('hidden'); }
         function uploadCover(input) { const file = input.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = function(e) { appData.coverImage = e.target.result; saveData(); renderCover(); }; reader.readAsDataURL(file); input.value = ''; }
