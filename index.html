@@ -91,11 +91,11 @@
         .collapse-content.open { max-height: 3000px; }
         
         /* Transitions for Forms */
-        #task-form-panel, #drink-form-panel, #order-form-panel, #sub-form-panel, #lit-form-panel, #course-form-panel {
+        #task-form-panel, #drink-form-panel, #order-form-panel, #sub-form-panel, #lit-form-panel, #course-form-panel, #ledger-form-panel {
             transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out, margin 0.4s, padding 0.4s;
             max-height: 0; opacity: 0; overflow: hidden; padding: 0; margin: 0; border: none;
         }
-        #task-form-panel.open, #drink-form-panel.open, #order-form-panel.open, #sub-form-panel.open, #lit-form-panel.open, #course-form-panel.open {
+        #task-form-panel.open, #drink-form-panel.open, #order-form-panel.open, #sub-form-panel.open, #lit-form-panel.open, #course-form-panel.open, #ledger-form-panel.open {
             max-height: 2000px; opacity: 1; margin-bottom: 1.5rem; padding: 1.5rem; border: 1px solid #E9E9E7; border-radius: 6px;
         }
 
@@ -117,19 +117,15 @@
             background-size: cover;
             background-position: center;
         }
-        #page-cover-container:hover #change-cover-btn { opacity: 1; }
-        #change-cover-btn { opacity: 0; transition: opacity 0.2s ease-in-out; }
+        /* Buttons are now handled via Tailwind classes in HTML to avoid conflict */
     </style>
 </head>
 <body class="h-screen flex overflow-hidden bg-notion-bg text-notion-text">
 
     <!-- Sidebar -->
     <aside class="w-60 bg-notion-sidebar border-r border-notion-border flex-shrink-0 flex flex-col h-full transition-all duration-300 hidden md:flex">
-        
-        <!-- Sidebar Top: Date & Backup Actions -->
         <div class="p-4 border-b border-notion-border/50">
             <div id="sidebar-date-display" class="font-bold text-xl text-notion-text mb-4 px-1 tracking-tight leading-tight min-h-[3rem]"></div>
-            
             <div class="flex gap-2">
                  <button onclick="backupAllData()" class="btn-notion flex-1 justify-center text-xs text-notion-dim hover:text-notion-text" title="匯出">
                     <i class="fas fa-download mr-1"></i>匯出
@@ -140,7 +136,6 @@
                 </label>
             </div>
         </div>
-
         <div class="flex-1 overflow-y-auto px-2 py-2 space-y-0.5 custom-scroll">
             <div class="text-xs font-semibold text-notion-dim px-3 py-2 mt-2">FAVORITES</div>
             <div onclick="switchTab('dashboard')" id="btn-dashboard" class="nav-item active"><span class="emoji">🏠</span>Dashboard</div>
@@ -156,7 +151,7 @@
         </div>
     </aside>
 
-    <!-- Mobile Nav Bar (Bottom) -->
+    <!-- Mobile Nav Bar (Bottom) - Removed Notebook -->
     <div class="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-notion-border z-50 flex justify-around items-center px-2">
         <button onclick="switchTab('dashboard')" class="flex flex-col items-center justify-center w-full h-full text-notion-dim hover:text-notion-text"><i class="fas fa-home text-lg mb-1"></i><span class="text-[10px]">Home</span></button>
         <button onclick="switchTab('planner')" class="flex flex-col items-center justify-center w-full h-full text-notion-dim hover:text-notion-text"><i class="fas fa-calendar-alt text-lg mb-1"></i><span class="text-[10px]">Planner</span></button>
@@ -192,12 +187,14 @@
     <main class="flex-1 h-full overflow-y-auto relative bg-white">
         <!-- Top Cover Image Area (Fixed Layout) -->
         <div id="page-cover-container" class="bg-gradient-to-r from-pink-100 via-purple-100 to-indigo-100 opacity-90 group relative w-full h-48 md:h-64">
-            <!-- Fixed: Always visible on mobile (opacity-100), fade effect only on desktop (md:...) -->
-            <label id="change-cover-btn" class="absolute bottom-2 right-4 btn-notion text-xs bg-white/80 hover:bg-white cursor-pointer shadow-sm z-10 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200">
-                <i class="fas fa-image mr-1"></i> 更換封面
-                <input type="file" class="hidden" accept="image/*" onchange="uploadCover(this)">
-            </label>
-            <button onclick="removeCover()" class="absolute bottom-2 right-28 btn-notion text-xs bg-white/80 hover:bg-white shadow-sm z-10 text-red-500 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200" title="移除封面"><i class="fas fa-times"></i></button>
+            <!-- Fixed: Grouped buttons in a container, z-20 to be above image -->
+            <div class="absolute bottom-2 right-4 flex gap-2 z-20 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200">
+                <button onclick="removeCover()" class="btn-notion text-xs bg-white/80 hover:bg-white shadow-sm text-red-500" title="移除封面"><i class="fas fa-times"></i></button>
+                <label class="btn-notion text-xs bg-white/80 hover:bg-white cursor-pointer shadow-sm">
+                    <i class="fas fa-image mr-1"></i> 更換封面
+                    <input type="file" class="hidden" accept="image/*" onchange="uploadCover(this)">
+                </label>
+            </div>
         </div>
         
         <div class="max-w-5xl mx-auto px-4 md:px-12 pb-24 md:pb-12 relative z-10">
@@ -470,19 +467,9 @@
                              <label><input type="checkbox" id="order-filter-unfinished" onchange="updateOrderDisplaySettings()"> 僅未完成</label>
                         </div>
                     </div>
-                    <!-- Order Ledger Container: Table for Desktop, Cards for Mobile -->
-                    <div id="order-list-container" class="space-y-4 md:space-y-0">
-                        <!-- Desktop Table Header (Hidden on Mobile) -->
-                        <div class="hidden md:grid md:grid-cols-6 text-notion-dim text-xs bg-notion-gray-bg p-2 rounded-t font-bold">
-                            <div>資訊 (店家)</div>
-                            <div>明細</div>
-                            <div>狀態</div>
-                            <div>財務</div>
-                            <div>利潤</div>
-                            <div class="text-right">操作</div>
-                        </div>
-                        <!-- Content injected by JS -->
-                        <div id="order-list-body" class="md:divide-y md:divide-notion-border"></div>
+                    <!-- Updated Order List Layout: Grid Cards -->
+                    <div id="order-list-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <!-- Content injected by JS (renderOrders) -->
                     </div>
                 </div>
 
@@ -508,7 +495,7 @@
 
                 <div id="tab-debt" class="section-content hidden fade-in space-y-8">
                     <div id="ledger-form-container" class="bg-notion-gray-bg p-4 rounded-md border border-notion-border">
-                        <h3 class="text-sm font-bold mb-3">新增紀錄</h3>
+                        <h3 class="text-sm font-bold mb-3">新增/編輯紀錄</h3>
                         <div class="grid grid-cols-1 md:grid-cols-5 gap-3">
                              <div class="md:col-span-2 flex gap-2">
                                 <select id="ledger-category" onchange="updateLedgerTypeOptions()" class="flex-1"><option value="general">一般帳務</option><option value="camera">相機夢</option></select>
@@ -519,24 +506,40 @@
                             <input type="number" id="ledger-amount" placeholder="金額">
                         </div>
                         <div class="flex gap-2 mt-3 justify-end">
+                            <button id="btn-cancel-ledger" onclick="resetLedgerForm()" class="btn-notion hidden">取消</button>
                             <button id="btn-save-ledger" onclick="saveLedgerEntry()" class="btn-notion btn-notion-primary">新增</button>
                         </div>
                     </div>
+                    
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div>
-                            <h3 class="text-base font-bold mb-3 flex items-center justify-between border-b border-notion-border pb-2">
-                                <span>一般帳務</span>
-                                <span id="debt-total-balance" class="text-xs font-normal bg-notion-gray-bg px-2 py-1 rounded">結餘: 0</span>
-                            </h3>
-                            <div id="debt-list" class="space-y-2"></div>
+                            <!-- Collapsible General Debt Section -->
+                            <details class="group border border-notion-border rounded bg-white overflow-hidden mb-4" open>
+                                <summary class="flex justify-between items-center p-3 cursor-pointer hover:bg-notion-hover list-none bg-notion-gray-bg select-none">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-chevron-right text-xs text-gray-400 group-open:rotate-90 transition-transform"></i>
+                                        <span class="font-bold text-base">一般帳務 (欠款/還款)</span>
+                                    </div>
+                                    <span id="debt-total-balance" class="text-xs font-normal bg-white border border-notion-border px-2 py-1 rounded">結餘: 0</span>
+                                </summary>
+                                <div id="debt-list" class="p-0 border-t border-notion-border"></div>
+                            </details>
                         </div>
                         <div>
-                             <h3 class="text-base font-bold mb-3 flex items-center justify-between border-b border-notion-border pb-2">
-                                <span>相機夢基金</span>
-                                <span id="camera-header-balance" class="text-xs font-normal text-green-600 bg-green-50 px-2 py-1 rounded">存: 0</span>
-                            </h3>
-                             <div class="w-full bg-gray-100 rounded-full h-2 mb-4 overflow-hidden"><div id="camera-bar" class="bg-green-500 h-full transition-all duration-500" style="width: 0%"></div></div>
-                            <ul id="fund-list" class="space-y-2 max-h-96 overflow-y-auto custom-scroll"></ul>
+                            <!-- Collapsible Camera Fund Section -->
+                            <details class="group border border-notion-border rounded bg-white overflow-hidden mb-4" open>
+                                <summary class="flex justify-between items-center p-3 cursor-pointer hover:bg-notion-hover list-none bg-notion-gray-bg select-none">
+                                    <div class="flex items-center gap-2">
+                                        <i class="fas fa-chevron-right text-xs text-gray-400 group-open:rotate-90 transition-transform"></i>
+                                        <span class="font-bold text-base">相機夢基金</span>
+                                    </div>
+                                    <span id="camera-header-balance" class="text-xs font-normal text-green-600 bg-white border border-notion-border px-2 py-1 rounded">存: 0</span>
+                                </summary>
+                                <div class="p-3 border-t border-notion-border">
+                                    <div class="w-full bg-gray-100 rounded-full h-2 mb-4 overflow-hidden"><div id="camera-bar" class="bg-green-500 h-full transition-all duration-500" style="width: 0%"></div></div>
+                                    <ul id="fund-list" class="space-y-0 max-h-96 overflow-y-auto custom-scroll"></ul>
+                                </div>
+                            </details>
                         </div>
                     </div>
                 </div>
@@ -612,6 +615,7 @@
         let currentEditingCourseId = null;
         let currentEditingOrderId = null;
         let currentNoteCourseId = null; 
+        let editingLedgerId = null; // New variable for finance editing
 
         document.addEventListener('DOMContentLoaded', () => {
             loadData(); 
@@ -914,7 +918,6 @@
                     <td class="p-3 text-right">
                         <div class="flex justify-end gap-2">
                              <button onclick="editCourse(${c.id})" class="text-gray-400 hover:text-blue-500"><i class="fas fa-edit"></i></button>
-                             <button onclick="openCourseNote(${c.id})" class="text-gray-400 hover:text-notion-text"><i class="fas fa-book-open"></i></button>
                              <button onclick="deleteCourse(${c.id})" class="text-gray-300 hover:text-red-500"><i class="fas fa-trash"></i></button>
                         </div>
                     </td>
@@ -936,7 +939,6 @@
                     </div>
                     <div class="border-t border-notion-border pt-2 flex justify-end gap-3 mt-1">
                         <button onclick="editCourse(${c.id})" class="text-xs text-blue-500 flex items-center gap-1"><i class="fas fa-edit"></i> 編輯</button>
-                        <button onclick="openCourseNote(${c.id})" class="text-xs text-gray-500 flex items-center gap-1"><i class="fas fa-book"></i> 筆記</button>
                         <button onclick="deleteCourse(${c.id})" class="text-xs text-red-500 flex items-center gap-1"><i class="fas fa-trash"></i> 刪除</button>
                     </div>
                 </div>`;
@@ -1017,21 +1019,56 @@
             document.getElementById('order-twd-cost').innerText = '0'; document.getElementById('order-sell-price').innerText = '0';
             document.getElementById('order-profit').innerText = '0'; document.getElementById('order-note').value = '';
             document.getElementById('order-paid').checked = false; document.getElementById('order-shipping').checked = false;
+            document.getElementById('btn-save-order').innerText = '儲存訂單';
+        }
+
+        function editOrder(id) {
+            const order = appData.orders.find(o => o.id === id);
+            if (!order) return;
+
+            currentEditingOrderId = id;
+            document.getElementById('order-date').value = order.date;
+            document.getElementById('order-code').value = order.code || '';
+            document.getElementById('order-shop').value = order.shop || '';
+            document.getElementById('order-rate').value = order.rate || 38;
+            document.getElementById('order-status').value = order.status;
+            document.getElementById('order-note').value = order.note || '';
+            document.getElementById('order-paid').checked = order.isPaid;
+            document.getElementById('order-shipping').checked = order.isShippingPaid;
+            
+            const container = document.getElementById('order-items-container');
+            container.innerHTML = '';
+            if (order.items && order.items.length > 0) {
+                order.items.forEach(item => {
+                    addOrderItemRow(item.name, item.qty, item.krw);
+                });
+            } else {
+                addOrderItemRow(order.name, 1, 0); 
+            }
+
+            document.getElementById('order-sell-price').innerText = order.sell || 0;
+            calcProfit(); 
+            document.getElementById('btn-save-order').innerText = '更新訂單';
+            
+            const panel = document.getElementById('order-form-panel');
+            if (!panel.classList.contains('open')) {
+                panel.classList.add('open');
+            }
+            panel.scrollIntoView({ behavior: 'smooth' });
         }
 
         function renderOrders() {
-            const tbody = document.getElementById('order-list-body'); if(!tbody) return; tbody.innerHTML = '';
+            const tbody = document.getElementById('order-list-container'); if(!tbody) return; tbody.innerHTML = '';
             let list = [...appData.orders];
             if (orderSort === 'asc') list.sort((a,b) => new Date(a.date) - new Date(b.date)); else list.sort((a,b) => new Date(b.date) - new Date(a.date));
             if (orderFilterUnfinished) list = list.filter(o => o.status !== '訂單完成');
             
             list.forEach(o => {
-                const itemsStr = o.items.map(i => `${i.name} x${i.qty}`).join(', ');
+                const itemsStr = o.items.map(i => `<div class="truncate">${i.name} <span class="text-gray-400">x${i.qty}</span></div>`).join('');
                 const statusOptions = ORDER_STATUSES.map(s => `<option value="${s}" ${s===o.status?'selected':''}>${s}</option>`).join('');
                 
-                // Card View for Mobile (Using flex-col and responsive visibility)
                 const cardHtml = `
-                    <div class="md:hidden bg-white border border-notion-border rounded p-3 mb-2 shadow-sm relative">
+                    <div class="bg-white border border-notion-border rounded p-3 shadow-sm relative flex flex-col h-full">
                         <div class="flex justify-between items-start mb-2">
                             <div>
                                 <div class="font-bold text-lg text-notion-text">${o.shop}</div>
@@ -1042,39 +1079,37 @@
                                 <div class="text-xs text-notion-dim">利潤</div>
                             </div>
                         </div>
-                        <div class="text-sm text-gray-700 mb-2 border-b border-gray-100 pb-2">${itemsStr}</div>
-                        <div class="flex flex-wrap gap-2 items-center justify-between">
-                            <select onchange="updateOrderStatus(${o.id}, this.value)" class="bg-gray-100 text-xs rounded p-1 border-none cursor-pointer flex-1 min-w-[100px]">
+                        <div class="text-sm text-gray-700 mb-3 border-b border-gray-100 pb-2 flex-1 overflow-y-auto max-h-32">
+                            ${itemsStr}
+                            ${o.note ? `<div class="text-xs text-gray-400 mt-1 italic">註: ${o.note}</div>` : ''}
+                        </div>
+                        <div class="flex flex-col gap-2 mt-auto">
+                            <select onchange="updateOrderStatus(${o.id}, this.value)" class="bg-gray-100 text-xs rounded p-1 border-none cursor-pointer w-full">
                                 ${statusOptions}
                             </select>
-                            <div class="flex gap-2">
-                                <span class="text-xs px-2 py-1 rounded ${o.isPaid?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}">${o.isPaid?'已收':'未收'}</span>
-                                <span class="text-xs px-2 py-1 rounded ${o.isShippingPaid?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}">${o.isShippingPaid?'運OK':'運未'}</span>
+                            <div class="flex justify-between items-center">
+                                <div class="flex gap-1">
+                                    <span class="text-xs px-2 py-1 rounded cursor-pointer ${o.isPaid?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}" onclick="toggleOrderPaid(${o.id}, 'paid')">${o.isPaid?'已收':'未收'}</span>
+                                    <span class="text-xs px-2 py-1 rounded cursor-pointer ${o.isShippingPaid?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}" onclick="toggleOrderPaid(${o.id}, 'shipping')">${o.isShippingPaid?'運OK':'運未'}</span>
+                                </div>
+                                <div class="flex gap-3">
+                                     <button onclick="editOrder(${o.id})" class="text-gray-400 hover:text-blue-500"><i class="fas fa-edit"></i></button>
+                                     <button onclick="deleteOrder(${o.id})" class="text-gray-300 hover:text-red-500"><i class="fas fa-trash"></i></button>
+                                </div>
                             </div>
                         </div>
-                        <div class="absolute top-3 right-1/2 translate-x-1/2 flex gap-3">
-                             <button onclick="editOrder(${o.id})" class="text-gray-400 hover:text-blue-500"><i class="fas fa-edit"></i></button>
-                             <button onclick="deleteOrder(${o.id})" class="text-gray-300 hover:text-red-500"><i class="fas fa-trash"></i></button>
-                        </div>
                     </div>
                 `;
-
-                // Table Row for Desktop (Hidden on Mobile)
-                const rowHtml = `
-                    <div class="hidden md:contents">
-                        <div class="p-2 border-b border-notion-border grid grid-cols-6 items-start gap-2 hover:bg-notion-hover">
-                            <div class="align-top"><div class="font-bold">${o.shop}</div><div class="text-xs text-notion-dim">${o.code || '-'}</div><div class="text-xs text-gray-400">${o.date}</div></div>
-                            <div class="align-top text-xs text-notion-text col-span-1">${itemsStr}</div>
-                            <div class="align-top"><select onchange="updateOrderStatus(${o.id}, this.value)" class="bg-notion-gray-bg border-none text-xs rounded p-1 w-full cursor-pointer">${statusOptions}</select></div>
-                            <div class="align-top text-xs"><div class="${o.isPaid?'text-green-600':'text-red-500'}">款: ${o.isPaid?'OK':'未'}</div><div class="${o.isShippingPaid?'text-green-600':'text-red-500'}">運: ${o.isShippingPaid?'OK':'未'}</div></div>
-                            <div class="align-top font-bold text-green-700">$${o.profit}</div>
-                            <div class="align-top text-right"><button onclick="editOrder(${o.id})" class="text-gray-400 hover:text-blue-500 mr-2"><i class="fas fa-edit"></i></button><button onclick="deleteOrder(${o.id})" class="text-gray-300 hover:text-red-500"><i class="fas fa-trash"></i></button></div>
-                        </div>
-                    </div>
-                `;
-                
-                tbody.innerHTML += cardHtml + rowHtml;
+                tbody.innerHTML += cardHtml;
             });
+        }
+        function toggleOrderPaid(id, type) {
+            const order = appData.orders.find(o => o.id === id);
+            if(order) {
+                if(type === 'paid') order.isPaid = !order.isPaid;
+                else order.isShippingPaid = !order.isShippingPaid;
+                saveData(); renderOrders(); updatePurchasingStats();
+            }
         }
         function deleteOrder(id) { if(confirm("刪除？")) { appData.orders = appData.orders.filter(o => o.id !== id); saveData(); renderOrders(); updatePurchasingStats(); } }
         function updateOrderStatus(id, newStatus) { const order = appData.orders.find(o => o.id === id); if(order){ order.status = newStatus; saveData(); showToast("狀態已更新"); } }
@@ -1138,66 +1173,118 @@
             const c=document.getElementById('ledger-category').value; const t=document.getElementById('ledger-type'); 
             if(c==='general') t.innerHTML='<option value="owe">欠款 (Owe)</option><option value="repay">還款 (Repay)</option>'; else t.innerHTML='<option value="deposit">存入 (Deposit)</option><option value="withdraw">提取 (Withdraw)</option>'; 
         }
+
+        function resetLedgerForm() {
+            document.getElementById('ledger-date').value = '';
+            document.getElementById('ledger-desc').value = '';
+            document.getElementById('ledger-amount').value = '';
+            document.getElementById('btn-save-ledger').innerText = '新增';
+            document.getElementById('btn-cancel-ledger').classList.add('hidden');
+            editingLedgerId = null;
+        }
+
+        function editLedgerEntry(id, category) {
+            let entry;
+            if (category === 'general') {
+                entry = appData.debts.find(d => d.id === id);
+            } else {
+                entry = appData.cameraFund.entries.find(e => e.id === id);
+            }
+            if (!entry) return;
+
+            editingLedgerId = id;
+            document.getElementById('ledger-category').value = category;
+            updateLedgerTypeOptions();
+            document.getElementById('ledger-type').value = entry.type;
+            document.getElementById('ledger-date').value = entry.date;
+            document.getElementById('ledger-desc').value = entry.desc;
+            document.getElementById('ledger-amount').value = entry.amount;
+            
+            document.getElementById('btn-save-ledger').innerText = '更新';
+            document.getElementById('btn-cancel-ledger').classList.remove('hidden');
+            
+            const p = document.getElementById('ledger-form-container');
+            p.scrollIntoView({ behavior: 'smooth' });
+        }
+
         function saveLedgerEntry(){
-             const type = document.getElementById('ledger-type').value; const amount = parseFloat(document.getElementById('ledger-amount').value);
-             const item = {id:Date.now(), date:document.getElementById('ledger-date').value, desc:document.getElementById('ledger-desc').value, amount: amount, type: type};
-             if(document.getElementById('ledger-category').value === 'general') appData.debts.unshift(item); else appData.cameraFund.entries.unshift(item);
-             saveData(); renderDebts(); renderCameraFund(); document.getElementById('ledger-desc').value=''; document.getElementById('ledger-amount').value='';
+             const category = document.getElementById('ledger-category').value;
+             const type = document.getElementById('ledger-type').value; 
+             const amount = parseFloat(document.getElementById('ledger-amount').value);
+             const date = document.getElementById('ledger-date').value;
+             const desc = document.getElementById('ledger-desc').value;
+             
+             if (!amount || !date || !desc) return showToast("請填寫完整資訊");
+
+             const newItem = {
+                 id: editingLedgerId ? editingLedgerId : Date.now(), 
+                 date: date, 
+                 desc: desc, 
+                 amount: amount, 
+                 type: type
+             };
+             
+             if (editingLedgerId) {
+                 // Update Existing
+                 if (category === 'general') {
+                     const idx = appData.debts.findIndex(d => d.id === editingLedgerId);
+                     if (idx !== -1) appData.debts[idx] = newItem;
+                 } else {
+                     const idx = appData.cameraFund.entries.findIndex(e => e.id === editingLedgerId);
+                     if (idx !== -1) appData.cameraFund.entries[idx] = newItem;
+                 }
+                 showToast("紀錄已更新");
+             } else {
+                 // Create New
+                 if(category === 'general') appData.debts.unshift(newItem); 
+                 else appData.cameraFund.entries.unshift(newItem);
+                 showToast("紀錄已新增");
+             }
+             
+             saveData(); 
+             renderDebts(); 
+             renderCameraFund(); 
+             resetLedgerForm();
         }
         
-        // --- UPDATED DEBT RENDER (GROUPED & COLLAPSED) ---
         function renderDebts(){
             const c=document.getElementById('debt-list'); c.innerHTML='';
-            const groups = {}; 
-            let totalGeneralBalance = 0;
-
-            appData.debts.forEach(d => { 
-                if(!groups[d.desc]) groups[d.desc] = { owe: 0, repay: 0, history: [] }; 
-                if(d.type === 'owe') groups[d.desc].owe += d.amount; else groups[d.desc].repay += d.amount; 
-                groups[d.desc].history.push(d); 
+            
+            // List all debts in one big list for now, but user requested collapsing General vs Camera.
+            // So here we list ALL general debts.
+            // Sorting by date descending
+            const sortedDebts = [...appData.debts].sort((a,b) => new Date(b.date) - new Date(a.date));
+            
+            // Calculate total balance
+            let totalBalance = 0;
+            appData.debts.forEach(d => {
+                if(d.type === 'owe') totalBalance += d.amount;
+                else totalBalance -= d.amount;
             });
-
-            for(let person in groups) {
-                const g = groups[person]; 
-                const balance = g.owe - g.repay;
-                totalGeneralBalance += balance;
-                
-                const balanceClass = balance > 0 ? 'text-red-500' : 'text-green-600';
-                const balanceText = balance > 0 ? `欠: $${balance}` : `餘: $${Math.abs(balance)}`;
-
-                const details = document.createElement('details'); 
-                details.className = "group border border-notion-border rounded bg-white overflow-hidden mb-2";
-                // Default collapsed (no 'open' attribute)
-                details.innerHTML = `
-                    <summary class="flex justify-between items-center p-3 cursor-pointer hover:bg-notion-hover list-none select-none">
-                        <div class="flex items-center gap-2">
-                            <i class="fas fa-chevron-right text-xs text-gray-400 group-open:rotate-90 transition-transform"></i>
-                            <span class="font-bold text-sm">${person}</span>
-                        </div>
-                        <span class="text-sm font-mono ${balanceClass}">${balanceText}</span>
-                    </summary>
-                    <div class="p-3 bg-notion-gray-bg/30 text-xs border-t border-notion-border space-y-2">
-                        ${g.history.sort((a,b)=>new Date(b.date)-new Date(a.date)).map(h => `
-                            <div class="flex justify-between items-center border-b border-gray-100 pb-1 last:border-0">
-                                <span class="text-notion-dim font-mono text-[10px] w-20">${h.date}</span>
-                                <span class="${h.type==='owe'?'text-red-500':'text-green-600'} flex-1 text-right mr-2 font-medium">
-                                    ${h.type==='owe'?'借入':'還款'} $${h.amount}
-                                </span>
-                                <button onclick="deleteDebt(${h.id})" class="text-gray-300 hover:text-red-500 ml-2"><i class="fas fa-trash"></i></button>
-                            </div>
-                        `).join('')}
-                    </div>
-                `;
-                c.appendChild(details);
-            }
             
             // Update Header Balance
             const headerEl = document.getElementById('debt-total-balance');
             if(headerEl) {
-                const totalText = totalGeneralBalance > 0 ? `總欠款: $${totalGeneralBalance}` : `總結餘: $${Math.abs(totalGeneralBalance)}`;
-                headerEl.innerText = totalText;
-                headerEl.className = `text-xs font-bold px-2 py-1 rounded ${totalGeneralBalance > 0 ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'}`;
+                headerEl.innerText = `總欠款: $${totalBalance}`;
+                headerEl.className = `text-xs font-bold px-2 py-1 rounded ${totalBalance > 0 ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'}`;
             }
+
+            // Render Items
+            sortedDebts.forEach(h => {
+                c.innerHTML += `
+                    <div class="flex justify-between items-center border-b border-notion-border py-2 text-sm">
+                        <span class="text-notion-dim font-mono text-xs w-24">${h.date}</span>
+                        <div class="flex-1 px-2 font-medium truncate">${h.desc}</div>
+                        <span class="${h.type==='owe'?'text-red-500':'text-green-600'} font-bold w-20 text-right">
+                            ${h.type==='owe'?'借':'還'} $${h.amount}
+                        </span>
+                        <div class="flex gap-2 ml-2">
+                            <button onclick="editLedgerEntry(${h.id}, 'general')" class="text-gray-400 hover:text-blue-500"><i class="fas fa-edit"></i></button>
+                            <button onclick="deleteDebt(${h.id})" class="text-gray-300 hover:text-red-500"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
+                `;
+            });
         }
         
         function renderCameraFund(){
@@ -1211,16 +1298,25 @@
             if(headerEl) headerEl.innerText = `存: $${total}`;
             
             // Render List with Date
-            appData.cameraFund.entries.forEach(e=>{ 
+            const sortedEntries = [...appData.cameraFund.entries].sort((a,b) => new Date(b.date) - new Date(a.date));
+            
+            sortedEntries.forEach(e=>{ 
                 l.innerHTML+=`
                 <li class="flex justify-between p-2 border-b border-notion-border text-sm items-center">
-                    <span class="text-notion-dim text-xs font-mono w-20">${e.date}</span>
+                    <span class="text-notion-dim text-xs font-mono w-24">${e.date}</span>
                     <span class="flex-1 truncate px-2">${e.desc}</span>
-                    <span class="${e.type=='withdraw'?'text-red-500':'text-green-600'} font-bold">$${e.amount}</span>
+                    <span class="${e.type=='withdraw'?'text-red-500':'text-green-600'} font-bold w-20 text-right">$${e.amount}</span>
+                    <div class="flex gap-2 ml-2">
+                        <button onclick="editLedgerEntry(${e.id}, 'camera')" class="text-gray-400 hover:text-blue-500"><i class="fas fa-edit"></i></button>
+                        <button onclick="deleteCameraEntry(${e.id})" class="text-gray-300 hover:text-red-500"><i class="fas fa-trash"></i></button>
+                    </div>
                 </li>`; 
             });
             document.getElementById('camera-bar').style.width = Math.min((total/50000)*100, 100) + '%'; 
         }
+        
+        function deleteCameraEntry(id) { if(confirm("刪除？")) { appData.cameraFund.entries = appData.cameraFund.entries.filter(e => e.id !== id); saveData(); renderCameraFund(); } }
+
 
         // --- LITERATURE ---
         function renderLiterature(){
