@@ -4,10 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>個人手札 (Notion Style)</title>
+    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Inter Font (Standard Notion) & Gaegu (Korean Handwritten) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Gaegu:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
     <script>
@@ -16,12 +19,12 @@
                 extend: {
                     colors: {
                         notion: {
-                            bg: '#FFFFFF',          
-                            sidebar: '#F7F7F5',     
-                            text: '#37352F',        
-                            dim: 'rgba(55, 53, 47, 0.6)', 
-                            border: '#E9E9E7',      
-                            hover: '#EFEFED',       
+                            bg: '#FFFFFF',          /* 主背景 */
+                            sidebar: '#F7F7F5',     /* 側邊欄 */
+                            text: '#37352F',        /* 主要文字 */
+                            dim: 'rgba(55, 53, 47, 0.6)', /* 次要文字 */
+                            border: '#E9E9E7',      /* 邊框 */
+                            hover: '#EFEFED',       /* 懸停背景 */
                             'red-bg': '#FDEBEC',
                             'blue-bg': '#E6F3F7',
                             'green-bg': '#EDF3EC',
@@ -33,7 +36,7 @@
                         }
                     },
                     fontFamily: {
-                        sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+                        sans: ['Inter', 'ui-sans-serif', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'Helvetica Neue', 'Arial', 'sans-serif'],
                         korean: ['"Gaegu"', 'cursive'], 
                     }
                 }
@@ -41,42 +44,92 @@
         }
     </script>
     <style>
-        body { font-family: 'Inter', sans-serif; color: #37352F; background-color: #FFFFFF; }
+        body {
+            font-family: 'Inter', sans-serif;
+            color: #37352F;
+            background-color: #FFFFFF;
+        }
+
+        /* Custom Scrollbar */
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #D3D1CB; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #AEACA6; }
+
+        /* Animations */
         .fade-in { animation: fadeIn 0.3s ease-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-        .nav-item { display: flex; align-items: center; padding: 6px 12px; margin-bottom: 2px; border-radius: 4px; color: #37352F; font-weight: 500; font-size: 14px; transition: background-color 0.1s; cursor: pointer; user-select: none; }
+
+        /* Notion-like UI */
+        .nav-item {
+            display: flex; align-items: center; padding: 6px 12px; margin-bottom: 2px;
+            border-radius: 4px; color: #37352F; font-weight: 500; font-size: 14px;
+            transition: background-color 0.1s; cursor: pointer; user-select: none;
+        }
         .nav-item:hover { background-color: #EFEFED; }
         .nav-item.active { background-color: #EFEFED; font-weight: 600; }
         .nav-item i, .nav-item .emoji { margin-right: 10px; width: 20px; text-align: center; font-size: 16px; color: #787774; }
-        input, select, textarea { background-color: transparent; border: 1px solid #E9E9E7; color: #37352F; border-radius: 4px; padding: 6px 10px; font-size: 14px; transition: all 0.2s; }
+
+        input, select, textarea {
+            background-color: transparent; border: 1px solid #E9E9E7; color: #37352F;
+            border-radius: 4px; padding: 6px 10px; font-size: 14px; transition: all 0.2s;
+        }
         input:focus, select:focus, textarea:focus { border-color: #A4A29E; outline: none; box-shadow: 0 0 0 2px rgba(46, 170, 220, 0.1); }
-        .btn-notion { display: inline-flex; align-items: center; justify-content: center; padding: 4px 10px; font-size: 13px; border-radius: 4px; font-weight: 500; transition: background-color 0.1s; cursor: pointer; border: 1px solid rgba(55, 53, 47, 0.16); color: #37352F; background: white; }
+        input::placeholder, textarea::placeholder { color: rgba(55, 53, 47, 0.4); }
+        
+        .btn-notion {
+            display: inline-flex; align-items: center; justify-content: center;
+            padding: 4px 10px; font-size: 13px; border-radius: 4px; font-weight: 500;
+            transition: background-color 0.1s; cursor: pointer; border: 1px solid rgba(55, 53, 47, 0.16);
+            color: #37352F; background: white;
+        }
         .btn-notion:hover { background-color: #EFEFED; }
         .btn-notion-primary { background-color: #2383E2; color: white; border: 1px solid #2383E2; }
         .btn-notion-primary:hover { background-color: #1D70C2; }
-        .collapse-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; }
+
+        .collapse-content { max-height: 0; overflow: hidden; transition: max-height 0.3s ease-out; border-top: 0px solid #4A4238; }
         .collapse-content.open { max-height: 3000px; }
-        #task-form-panel, #drink-form-panel, #order-form-panel, #sub-form-panel, #lit-form-panel, #course-form-panel { transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out, margin 0.4s, padding 0.4s; max-height: 0; opacity: 0; overflow: hidden; padding: 0; margin: 0; border: none; }
-        #task-form-panel.open, #drink-form-panel.open, #order-form-panel.open, #sub-form-panel.open, #lit-form-panel.open, #course-form-panel.open { max-height: 2000px; opacity: 1; margin-bottom: 1.5rem; padding: 1.5rem; border: 1px solid #E9E9E7; border-radius: 6px; }
+        
+        /* Transitions for Forms */
+        #task-form-panel, #drink-form-panel, #order-form-panel, #sub-form-panel, #lit-form-panel, #course-form-panel {
+            transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out, margin 0.4s, padding 0.4s;
+            max-height: 0; opacity: 0; overflow: hidden; padding: 0; margin: 0; border: none;
+        }
+        #task-form-panel.open, #drink-form-panel.open, #order-form-panel.open, #sub-form-panel.open, #lit-form-panel.open, #course-form-panel.open {
+            max-height: 2000px; opacity: 1; margin-bottom: 1.5rem; padding: 1.5rem; border: 1px solid #E9E9E7; border-radius: 6px;
+        }
+
         .notion-callout { padding: 16px; border-radius: 4px; display: flex; align-items: flex-start; }
         #drop-zone.dragover { background-color: #E6F3F7; border-color: #2383E2; }
+
         .schedule-cell { min-height: 60px; border-bottom: 1px solid #E9E9E7; border-right: 1px solid #E9E9E7; position: relative; }
         .course-block { position: absolute; left: 2px; right: 2px; top: 2px; bottom: 2px; border-radius: 4px; padding: 4px; font-size: 11px; font-weight: 500; color: #37352F; display: flex; flex-direction: column; justify-content: center; text-align: center; z-index: 10; overflow: hidden; text-overflow: ellipsis; }
+        
         .grid-schedule { display: grid; grid-template-columns: 85px repeat(5, 1fr); }
-        #page-cover-container { position: relative; width: 100%; height: 200px; background-color: #F1F1EF; overflow: hidden; background-size: cover; background-position: center; }
+        
+        /* Cover Image Styles - Updated for Mobile Visibility */
+        #page-cover-container {
+            position: relative;
+            width: 100%;
+            height: 200px; 
+            background-color: #F1F1EF; 
+            overflow: hidden;
+            background-size: cover;
+            background-position: center;
+        }
         #page-cover-container:hover #change-cover-btn { opacity: 1; }
         #change-cover-btn { opacity: 0; transition: opacity 0.2s ease-in-out; }
     </style>
 </head>
 <body class="h-screen flex overflow-hidden bg-notion-bg text-notion-text">
 
+    <!-- Sidebar -->
     <aside class="w-60 bg-notion-sidebar border-r border-notion-border flex-shrink-0 flex flex-col h-full transition-all duration-300 hidden md:flex">
+        
+        <!-- Sidebar Top: Date & Backup Actions -->
         <div class="p-4 border-b border-notion-border/50">
             <div id="sidebar-date-display" class="font-bold text-xl text-notion-text mb-4 px-1 tracking-tight leading-tight min-h-[3rem]"></div>
+            
             <div class="flex gap-2">
                  <button onclick="backupAllData()" class="btn-notion flex-1 justify-center text-xs text-notion-dim hover:text-notion-text" title="匯出">
                     <i class="fas fa-download mr-1"></i>匯出
@@ -87,6 +140,7 @@
                 </label>
             </div>
         </div>
+
         <div class="flex-1 overflow-y-auto px-2 py-2 space-y-0.5 custom-scroll">
             <div class="text-xs font-semibold text-notion-dim px-3 py-2 mt-2">FAVORITES</div>
             <div onclick="switchTab('dashboard')" id="btn-dashboard" class="nav-item active"><span class="emoji">🏠</span>Dashboard</div>
@@ -95,7 +149,6 @@
             <div onclick="switchTab('drinks')" id="btn-drinks" class="nav-item"><span class="emoji">🧋</span>Drinks Log</div>
             <div onclick="switchTab('debt')" id="btn-debt" class="nav-item"><span class="emoji">💰</span>Finance</div>
             <div onclick="switchTab('literature')" id="btn-literature" class="nav-item"><span class="emoji">📚</span>Literature</div>
-            <div onclick="switchTab('notebook')" id="btn-notebook" class="nav-item"><span class="emoji">📓</span>Notebook</div>
             <div onclick="switchTab('planner')" id="btn-planner" class="nav-item"><span class="emoji">📅</span>Planner</div>
             <div onclick="switchTab('purchasing')" id="btn-purchasing" class="nav-item"><span class="emoji">🛍️</span>Purchase Agent</div>
             <div onclick="switchTab('resources')" id="btn-resources" class="nav-item"><span class="emoji">📂</span>Resources</div>
@@ -103,16 +156,28 @@
         </div>
     </aside>
 
+    <!-- Mobile Nav Bar (Bottom) -->
     <div class="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-notion-border z-50 flex justify-around items-center px-2">
         <button onclick="switchTab('dashboard')" class="flex flex-col items-center justify-center w-full h-full text-notion-dim hover:text-notion-text"><i class="fas fa-home text-lg mb-1"></i><span class="text-[10px]">Home</span></button>
-        <button onclick="switchTab('notebook')" class="flex flex-col items-center justify-center w-full h-full text-notion-dim hover:text-notion-text"><i class="fas fa-book text-lg mb-1"></i><span class="text-[10px]">Notes</span></button>
         <button onclick="switchTab('planner')" class="flex flex-col items-center justify-center w-full h-full text-notion-dim hover:text-notion-text"><i class="fas fa-calendar-alt text-lg mb-1"></i><span class="text-[10px]">Planner</span></button>
         <button onclick="switchTab('resources')" class="flex flex-col items-center justify-center w-full h-full text-notion-dim hover:text-notion-text"><i class="fas fa-folder text-lg mb-1"></i><span class="text-[10px]">Files</span></button>
         <button onclick="showMoreMenu()" class="flex flex-col items-center justify-center w-full h-full text-notion-dim hover:text-notion-text"><i class="fas fa-ellipsis-h text-lg mb-1"></i><span class="text-[10px]">More</span></button>
     </div>
 
+    <!-- Mobile More Menu -->
     <div id="mobile-more-menu" class="hidden md:hidden fixed inset-0 bg-black/50 z-50" onclick="hideMoreMenu()">
         <div class="absolute bottom-16 right-4 bg-white rounded-lg shadow-xl w-48 py-2 overflow-hidden animate-fade-in-up" onclick="event.stopPropagation()">
+            <!-- Added Data Actions to Mobile Menu -->
+            <div class="border-b border-gray-100 pb-1 mb-1">
+                <div class="px-4 py-2 hover:bg-notion-hover flex items-center gap-3 cursor-pointer text-sm" onclick="backupAllData(); hideMoreMenu()">
+                    <i class="fas fa-download w-4 text-center text-gray-400"></i> 匯出資料
+                </div>
+                <label class="px-4 py-2 hover:bg-notion-hover flex items-center gap-3 cursor-pointer text-sm">
+                    <i class="fas fa-upload w-4 text-center text-gray-400"></i> 匯入備份
+                    <input type="file" class="hidden" onchange="importAllData(this)">
+                </label>
+            </div>
+            
             <div onclick="switchTab('academia'); hideMoreMenu()" class="px-4 py-3 hover:bg-notion-hover flex items-center gap-3 border-b border-gray-100"><span>🎓</span> Academia</div>
             <div onclick="switchTab('drinks'); hideMoreMenu()" class="px-4 py-3 hover:bg-notion-hover flex items-center gap-3 border-b border-gray-100"><span>🧋</span> Drinks</div>
             <div onclick="switchTab('debt'); hideMoreMenu()" class="px-4 py-3 hover:bg-notion-hover flex items-center gap-3 border-b border-gray-100"><span>💰</span> Finance</div>
@@ -122,17 +187,22 @@
         </div>
     </div>
 
+
+    <!-- Main Content Area -->
     <main class="flex-1 h-full overflow-y-auto relative bg-white">
+        <!-- Top Cover Image Area (Fixed Layout) -->
         <div id="page-cover-container" class="bg-gradient-to-r from-pink-100 via-purple-100 to-indigo-100 opacity-90 group relative w-full h-48 md:h-64">
-            <label id="change-cover-btn" class="absolute bottom-2 right-4 btn-notion text-xs bg-white/80 hover:bg-white cursor-pointer shadow-sm z-10">
+            <!-- Fixed: Always visible on mobile (opacity-100), fade effect only on desktop (md:...) -->
+            <label id="change-cover-btn" class="absolute bottom-2 right-4 btn-notion text-xs bg-white/80 hover:bg-white cursor-pointer shadow-sm z-10 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200">
                 <i class="fas fa-image mr-1"></i> 更換封面
                 <input type="file" class="hidden" accept="image/*" onchange="uploadCover(this)">
             </label>
-            <button onclick="removeCover()" class="absolute bottom-2 right-28 btn-notion text-xs bg-white/80 hover:bg-white shadow-sm z-10 text-red-500" title="移除封面"><i class="fas fa-times"></i></button>
+            <button onclick="removeCover()" class="absolute bottom-2 right-28 btn-notion text-xs bg-white/80 hover:bg-white shadow-sm z-10 text-red-500 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity duration-200" title="移除封面"><i class="fas fa-times"></i></button>
         </div>
         
         <div class="max-w-5xl mx-auto px-4 md:px-12 pb-24 md:pb-12 relative z-10">
-            <div class="text-6xl md:text-7xl mb-4 select-none -mt-10 md:-mt-12">📒</div>
+            <!-- Dynamic Page Icon with ID -->
+            <div id="page-icon" class="text-6xl md:text-7xl mb-4 select-none -mt-10 md:-mt-12">🏠</div>
             <div class="mb-8 border-b border-notion-border pb-4 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                 <div>
                     <h1 class="text-3xl md:text-4xl font-bold text-notion-text mb-1" id="page-title">Dashboard</h1>
@@ -140,28 +210,35 @@
                         <span>最後更新: <span id="dashboard-date">--</span></span>
                     </div>
                 </div>
+                
+                <!-- Mobile Only Actions (Header) -->
+                <div class="flex gap-2 md:hidden">
+                    <button onclick="backupAllData()" class="btn-notion hover:bg-notion-gray-bg text-notion-dim text-xs">
+                        <i class="fas fa-download mr-1"></i>匯出
+                    </button>
+                    <label class="btn-notion hover:bg-notion-gray-bg text-notion-dim cursor-pointer text-xs">
+                        <i class="fas fa-upload mr-1"></i>匯入
+                        <input type="file" class="hidden" onchange="importAllData(this)">
+                    </label>
+                </div>
             </div>
 
+            <!-- Content Container -->
             <div id="content-area">
+                
+                <!-- Tab 0: Dashboard -->
                 <div id="tab-dashboard" class="section-content fade-in space-y-8">
                     <div class="bg-notion-gray-bg rounded-md p-6 flex flex-col md:flex-row items-center justify-between">
                         <div class="flex-1 border-l-4 border-notion-text pl-4 py-1">
                             <p class="text-xl font-korean text-notion-text leading-relaxed">"멈춰서도 괜찮아 아무 이유도 모르는 채 달릴 필요 없이"</p>
                         </div>
-                         <div id="dash-next-sub-header" class="text-sm text-right mt-4 md:mt-0 md:border-l border-gray-300 md:pl-6 md:ml-6 flex-shrink-0">
-                             <div class="text-xs text-notion-dim font-bold uppercase tracking-wider">近期扣款</div>
-                             <div id="dash-next-sub-content" class="font-medium text-notion-text text-lg">無</div>
-                         </div>
                     </div>
+
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div class="space-y-8">
                             <section>
-                                <h3 class="text-lg font-bold mb-3 flex items-center border-b border-notion-border pb-2"><span class="mr-2">📝</span> To Do List</h3>
+                                <h3 class="text-lg font-bold mb-3 flex items-center border-b border-notion-border pb-2"><span class="mr-2">🏠</span> To Do List</h3>
                                 <div id="dashboard-tasks" class="space-y-1"><div class="text-sm text-notion-dim pl-2">載入中...</div></div>
-                            </section>
-                            <section>
-                                <h3 class="text-lg font-bold mb-3 flex items-center border-b border-notion-border pb-2"><span class="mr-2">📓</span> Course Notebook</h3>
-                                <div id="dash-course-list-notes" class="space-y-1"><div class="text-sm text-notion-dim pl-2 italic">請先至「學業與課表」新增課程</div></div>
                             </section>
                         </div>
                         <div class="space-y-8">
@@ -173,16 +250,17 @@
                                 <ul id="dash-bookmarks" class="space-y-1"><li class="text-sm text-notion-dim pl-2">暫無書籤</li></ul>
                             </section>
                             <section>
-                                <h3 class="text-lg font-bold mb-3 flex items-center border-b border-notion-border pb-2"><span class="mr-2">⏳</span> Upcoming & Due</h3>
+                                <h3 class="text-lg font-bold mb-3 flex items-center border-b border-notion-border pb-2"><span class="mr-2">📅</span> Upcoming & Due</h3>
                                 <ul id="dash-due-dates" class="space-y-2"><li class="text-sm text-notion-dim pl-2">無近期事項</li></ul>
                             </section>
                         </div>
                     </div>
                 </div>
 
+                <!-- Tab: Resources -->
                 <div id="tab-resources" class="section-content hidden fade-in space-y-8">
                      <section>
-                        <h3 class="text-lg font-bold mb-3 flex items-center border-b border-notion-border pb-2"><span class="mr-2">📄</span> Recent Sources</h3>
+                        <h3 class="text-lg font-bold mb-3 flex items-center border-b border-notion-border pb-2"><span class="mr-2">📚</span> Recent Sources</h3>
                         <div id="dash-recent-sources" class="space-y-1 overflow-y-auto custom-scroll"><div class="text-sm text-notion-dim">尚無文獻資料</div></div>
                     </section>
                      <section>
@@ -196,51 +274,32 @@
                     </section>
                 </div>
 
+                <!-- Tab 1: Planner -->
                 <div id="tab-planner" class="section-content hidden fade-in">
-                    <div class="flex justify-end mb-4">
-                        <button onclick="toggleTaskForm()" class="btn-notion btn-notion-primary"><i class="fas fa-plus mr-1"></i> 新增待辦</button>
-                    </div>
+                    <div class="flex justify-end mb-4"><button onclick="toggleTaskForm()" class="btn-notion btn-notion-primary"><i class="fas fa-plus mr-1"></i> 新增待辦</button></div>
                     <div id="task-form-panel" class="bg-notion-gray-bg rounded-md border border-notion-border">
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                             <input type="date" id="task-date" class="w-full">
-                            <div class="flex items-center gap-2">
-                                <input type="time" id="task-time" class="w-full">
-                                <label class="text-sm text-notion-dim whitespace-nowrap"><input type="checkbox" id="task-allday" onchange="toggleTimeInput()"> 全日</label>
-                            </div>
-                            <select id="task-priority" class="md:col-span-2">
-                                <option value="q1">🔥 緊急且重要</option><option value="q2">⭐ 重要但不緊急</option>
-                                <option value="q3">⚡ 緊急但不重要</option><option value="q4">☕ 不重要不緊急</option>
-                            </select>
+                            <div class="flex items-center gap-2"><input type="time" id="task-time" class="w-full"><label class="text-sm text-notion-dim whitespace-nowrap"><input type="checkbox" id="task-allday" onchange="toggleTimeInput()"> 全日</label></div>
+                            <select id="task-priority" class="md:col-span-2"><option value="q1">🔥 緊急且重要</option><option value="q2">⭐ 重要但不緊急</option><option value="q3">⚡ 緊急但不重要</option><option value="q4">☕ 不重要不緊急</option></select>
                         </div>
                         <input type="text" id="task-title" placeholder="任務標題" class="w-full font-bold mb-4">
                         <textarea id="task-content" rows="3" placeholder="詳細內容..." class="w-full mb-4"></textarea>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                            <input type="text" id="task-location" placeholder="地點">
-                            <input type="text" id="task-url" placeholder="相關連結">
-                        </div>
-                        <div class="flex justify-end gap-2">
-                            <button onclick="toggleTaskForm()" class="btn-notion">取消</button>
-                            <button onclick="addTask()" class="btn-notion btn-notion-primary">確認新增</button>
-                        </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"><input type="text" id="task-location" placeholder="地點"><input type="text" id="task-url" placeholder="相關連結"></div>
+                        <div class="flex justify-end gap-2"><button onclick="toggleTaskForm()" class="btn-notion">取消</button><button onclick="addTask()" class="btn-notion btn-notion-primary">確認新增</button></div>
                     </div>
-                    <div class="flex justify-between items-center mb-4 mt-8">
-                        <button onclick="changeMonth(-1)" class="btn-notion"><i class="fas fa-chevron-left"></i></button>
-                        <h2 id="calendar-month-year" class="text-xl font-bold"></h2>
-                        <button onclick="changeMonth(1)" class="btn-notion"><i class="fas fa-chevron-right"></i></button>
-                    </div>
+                    <div class="flex justify-between items-center mb-4 mt-8"><button onclick="changeMonth(-1)" class="btn-notion"><i class="fas fa-chevron-left"></i></button><h2 id="calendar-month-year" class="text-xl font-bold"></h2><button onclick="changeMonth(1)" class="btn-notion"><i class="fas fa-chevron-right"></i></button></div>
                     <div class="grid grid-cols-7 text-center text-xs font-semibold text-notion-dim mb-2 border-b border-notion-border pb-2"><div>日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div></div>
                     <div id="calendar-grid" class="grid grid-cols-7 gap-1"></div>
                     <h3 class="text-lg font-bold mt-8 mb-4 border-b border-notion-border pb-2">待辦清單</h3>
                     <div class="bg-notion-gray-bg/50 p-2 rounded">
-                        <div class="flex justify-between items-center p-2">
-                             <span class="text-sm font-semibold text-notion-dim">所有事項</span>
-                             <button onclick="toggleCollapse('all-tasks-list', 'icon-matrix-view')" class="text-notion-dim hover:text-notion-text"><i id="icon-matrix-view" class="fas fa-chevron-down"></i></button>
-                        </div>
+                        <div class="flex justify-between items-center p-2"><span class="text-sm font-semibold text-notion-dim">所有事項</span><button onclick="toggleCollapse('all-tasks-list', 'icon-matrix-view')" class="text-notion-dim hover:text-notion-text"><i id="icon-matrix-view" class="fas fa-chevron-down"></i></button></div>
                         <ul id="all-tasks-list" class="divide-y divide-notion-border collapse-content open"></ul>
                         <div id="empty-tasks-msg" class="hidden p-8 text-center text-notion-dim text-sm">目前沒有待辦事項</div>
                     </div>
                 </div>
 
+                <!-- Tab 1.5: Academia -->
                 <div id="tab-academia" class="section-content hidden fade-in">
                     <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
                         <div class="flex flex-col md:flex-row gap-4 items-start md:items-center w-full md:w-auto overflow-x-auto">
@@ -251,12 +310,8 @@
                                 <button onclick="switchSemester('115-2')" id="sem-btn-115-2" class="px-3 py-1 rounded text-sm font-bold text-notion-dim hover:bg-white/50 transition">115-2</button>
                             </div>
                             <div class="flex gap-2 shrink-0">
-                                <div class="notion-callout bg-notion-blue-bg py-1 px-3 flex items-center text-sm">
-                                    <span class="mr-2">🎓</span> <span id="acad-gpa" class="font-bold">0.0</span> <span class="text-notion-dim text-xs ml-1">/ 4.3</span>
-                                </div>
-                                <div class="notion-callout bg-notion-green-bg py-1 px-3 flex items-center text-sm">
-                                    <span class="mr-2">📊</span> <span id="acad-total-credits" class="font-bold">0</span> <span class="text-notion-dim text-xs ml-1">/ 42</span>
-                                </div>
+                                <div class="notion-callout bg-notion-blue-bg py-1 px-3 flex items-center text-sm"><span class="mr-2">🎓</span> <span id="acad-gpa" class="font-bold">0.0</span> <span class="text-notion-dim text-xs ml-1">/ 4.3</span></div>
+                                <div class="notion-callout bg-notion-green-bg py-1 px-3 flex items-center text-sm"><span class="mr-2">📊</span> <span id="acad-total-credits" class="font-bold">0</span> <span class="text-notion-dim text-xs ml-1">/ 42</span></div>
                             </div>
                         </div>
                         <button onclick="toggleCourseForm()" class="btn-notion btn-notion-primary ml-auto"><i class="fas fa-plus mr-1"></i> 課程</button>
@@ -267,32 +322,34 @@
                             <input type="number" id="course-credits" placeholder="學分" value="2">
                             <input type="number" id="course-target-grade" placeholder="目標成績">
                             <input type="number" id="course-grade" placeholder="實際成績">
-                            <input type="number" id="course-gpa" placeholder="單科GPA (e.g. 4.3)" step="0.1">
-                            <select id="course-type">
-                                <option value="必修">必修</option><option value="必選修">必選修</option><option value="選修">選修</option>
-                            </select>
-                            <select id="course-day">
-                                <option value="1">週一</option><option value="2">週二</option><option value="3">週三</option>
-                                <option value="4">週四</option><option value="5">週五</option>
-                            </select>
-                            <select id="course-start"></select>
-                            <select id="course-end"></select>
+                            <input type="number" id="course-gpa" placeholder="單科GPA" step="0.1">
+                            <select id="course-type"><option value="必修">必修</option><option value="必選修">必選修</option><option value="選修">選修</option></select>
+                            <select id="course-day"><option value="1">週一</option><option value="2">週二</option><option value="3">週三</option><option value="4">週四</option><option value="5">週五</option></select>
+                            <select id="course-start"></select><select id="course-end"></select>
                             <input type="hidden" id="course-semester">
                             <button id="btn-save-course" onclick="addCourse()" class="btn-notion btn-notion-primary">保存</button>
                         </div>
                     </div>
+                    
                     <h3 class="text-base font-bold mb-3 mt-6">課程列表 (All Courses)</h3>
-                    <div class="overflow-x-auto border border-notion-border rounded-md mb-8">
-                        <table class="w-full text-sm text-left">
-                            <thead class="bg-notion-gray-bg text-notion-dim text-xs">
-                                <tr><th class="p-3 border-b border-notion-border">學期</th><th class="p-3 border-b border-notion-border">課程</th><th class="p-3 border-b border-notion-border">類別</th><th class="p-3 border-b border-notion-border">學分</th><th class="p-3 border-b border-notion-border">實際</th><th class="p-3 border-b border-notion-border w-16"></th></tr>
-                            </thead>
-                            <tbody id="course-list-body" class="divide-y divide-notion-border bg-white"></tbody>
-                        </table>
+                    <!-- Responsive Course List Container -->
+                    <div id="course-list-container">
+                        <!-- Desktop Table -->
+                        <div class="hidden md:block overflow-x-auto border border-notion-border rounded-md mb-8">
+                            <table class="w-full text-sm text-left">
+                                <thead class="bg-notion-gray-bg text-notion-dim text-xs">
+                                    <tr><th class="p-3 border-b border-notion-border">學期</th><th class="p-3 border-b border-notion-border">課程</th><th class="p-3 border-b border-notion-border">類別</th><th class="p-3 border-b border-notion-border">學分</th><th class="p-3 border-b border-notion-border">實際</th><th class="p-3 border-b border-notion-border w-16"></th></tr>
+                                </thead>
+                                <tbody id="course-list-body-desktop" class="divide-y divide-notion-border bg-white"></tbody>
+                            </table>
+                        </div>
+                        <!-- Mobile Cards -->
+                        <div id="course-list-body-mobile" class="md:hidden space-y-3 mb-8"></div>
                     </div>
+
                     <div class="mb-8">
                         <div class="flex justify-between items-center mb-3 border-b border-notion-border pb-2">
-                            <h3 class="text-base font-bold">課程規劃</h3>
+                            <h3 class="text-base font-bold">課程規劃 (Course Planning)</h3>
                             <button onclick="toggleCourseForm()" class="text-xs text-blue-600 hover:underline"><i class="fas fa-plus"></i> 新增規劃</button>
                         </div>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -307,23 +364,6 @@
                             <div class="grid-schedule border-b border-notion-border bg-notion-gray-bg text-center text-xs font-bold py-2 text-notion-dim"><div>時間</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div></div>
                             <div id="schedule-container" class="relative"></div>
                         </div>
-                    </div>
-                </div>
-
-                <div id="tab-notebook" class="section-content hidden fade-in space-y-8">
-                    <section>
-                        <h3 class="text-lg font-bold mb-3 flex items-center border-b border-notion-border pb-2"><span class="mr-2">✍️</span> 隨手筆記</h3>
-                        <textarea id="notebook-global-note" oninput="saveCourseNotes()" class="w-full h-48 bg-notion-gray-bg border-none rounded p-4 text-sm resize-y focus:ring-0 leading-relaxed" placeholder="在這裡寫下任何想法..."></textarea>
-                    </section>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <section>
-                             <h3 class="text-lg font-bold mb-3 flex items-center border-b border-notion-border pb-2"><span class="mr-2">📓</span> 課程筆記</h3>
-                             <div id="notebook-course-list" class="space-y-2"></div>
-                        </section>
-                        <section>
-                             <h3 class="text-lg font-bold mb-3 flex items-center border-b border-notion-border pb-2"><span class="mr-2">📚</span> 文獻筆記</h3>
-                             <div id="notebook-lit-list" class="space-y-2"></div>
-                        </section>
                     </div>
                 </div>
 
@@ -430,11 +470,19 @@
                              <label><input type="checkbox" id="order-filter-unfinished" onchange="updateOrderDisplaySettings()"> 僅未完成</label>
                         </div>
                     </div>
-                    <div class="overflow-x-auto">
-                        <table class="w-full text-sm text-left">
-                            <thead class="text-notion-dim text-xs bg-notion-gray-bg"><tr><th class="p-2 rounded-l">資訊 (店家)</th><th class="p-2">明細</th><th class="p-2">狀態</th><th class="p-2">財務</th><th class="p-2">利潤</th><th class="p-2 rounded-r w-8"></th></tr></thead>
-                            <tbody id="order-list-body" class="divide-y divide-notion-border"></tbody>
-                        </table>
+                    <!-- Order Ledger Container: Table for Desktop, Cards for Mobile -->
+                    <div id="order-list-container" class="space-y-4 md:space-y-0">
+                        <!-- Desktop Table Header (Hidden on Mobile) -->
+                        <div class="hidden md:grid md:grid-cols-6 text-notion-dim text-xs bg-notion-gray-bg p-2 rounded-t font-bold">
+                            <div>資訊 (店家)</div>
+                            <div>明細</div>
+                            <div>狀態</div>
+                            <div>財務</div>
+                            <div>利潤</div>
+                            <div class="text-right">操作</div>
+                        </div>
+                        <!-- Content injected by JS -->
+                        <div id="order-list-body" class="md:divide-y md:divide-notion-border"></div>
                     </div>
                 </div>
 
@@ -476,7 +524,10 @@
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div>
-                            <h3 class="text-base font-bold mb-3 flex items-center justify-between border-b border-notion-border pb-2"><span>一般帳務 (欠款/還款)</span></h3>
+                            <h3 class="text-base font-bold mb-3 flex items-center justify-between border-b border-notion-border pb-2">
+                                <span>一般帳務</span>
+                                <span id="debt-total-balance" class="text-xs font-normal bg-notion-gray-bg px-2 py-1 rounded">結餘: 0</span>
+                            </h3>
                             <div id="debt-list" class="space-y-2"></div>
                         </div>
                         <div>
@@ -560,7 +611,7 @@
         let orderFilterUnfinished = false;
         let currentEditingCourseId = null;
         let currentEditingOrderId = null;
-        let currentNoteCourseId = null; // Fix for Missing Logic
+        let currentNoteCourseId = null; 
 
         document.addEventListener('DOMContentLoaded', () => {
             loadData(); 
@@ -596,21 +647,25 @@
             document.querySelectorAll('.nav-item').forEach(b=>{ b.classList.remove('active'); if(b.id===`btn-${t}`) b.classList.add('active'); });
             document.querySelectorAll('.section-content').forEach(s=>{s.classList.add('hidden');if(s.id===`tab-${t}`)s.classList.remove('hidden');}); 
             
-            const titles = { 'dashboard':'Dashboard', 'planner':'Planner', 'drinks':'Drinks Log', 'purchasing':'Purchase Agent', 'subs':'Subscriptions', 'debt':'Finance', 'literature':'Literature', 'academia':'Academia', 'resources':'Resources', 'notebook':'Notebook' };
+            const titles = { 'dashboard':'Dashboard', 'planner':'Planner', 'drinks':'Drinks Log', 'purchasing':'Purchase Agent', 'subs':'Subscriptions', 'debt':'Finance', 'literature':'Literature', 'academia':'Academia', 'resources':'Resources' };
+            const icons = { 'dashboard':'🏠', 'planner':'📅', 'drinks':'🧋', 'purchasing':'🛍️', 'subs':'💳', 'debt':'💰', 'literature':'📚', 'academia':'🎓', 'resources':'📂' };
+            const descs = { 'dashboard':'美好的一天，從這裡開始。', 'planner':'管理您的日程與待辦事項。', 'drinks':'紀錄每一杯快樂的泉源。', 'purchasing':'追蹤代購訂單與利潤。', 'subs':'管理定期扣款的服務。', 'debt':'一般的記帳與夢想基金。', 'literature':'學術文獻的整理與筆記。', 'academia':'課表、學分與成績管理。', 'resources':'檔案歸檔與近期參考文獻。' };
+            
             if(document.getElementById('page-title')) document.getElementById('page-title').innerText = titles[t];
+            if(document.getElementById('page-desc')) document.getElementById('page-desc').innerHTML = `<span>${descs[t]}</span>`; 
+            if(document.getElementById('page-icon')) document.getElementById('page-icon').innerText = icons[t] || '📒';
 
             if(t==='planner') renderCalendar(); 
             if(t==='drinks') renderDrinkCalendar();
             if(t==='dashboard') { renderDashboard(); renderSchedule('dash-schedule-container'); }
             if(t==='academia') { renderAcademia(); }
             if(t==='resources') { renderDriveFiles(); }
-            if(t==='notebook') { renderNotebook(); }
-            if(t==='purchasing') { renderOrders(); updatePurchasingStats(); } // Fix: Render orders when tab clicked
+            if(t==='purchasing') { renderOrders(); updatePurchasingStats(); } 
             
             hideMoreMenu();
         }
 
-        // --- DASHBOARD ---
+        // --- DASHBOARD RENDER & HELPERS ---
         function renderDashboard() {
             const todayStr = new Date().toISOString().split('T')[0];
             const dashTasks = document.getElementById('dashboard-tasks');
@@ -618,22 +673,11 @@
                 dashTasks.innerHTML = '';
                 const todayTasks = appData.tasks.filter(t => t.date === todayStr && !t.completed);
                 const q1Tasks = appData.tasks.filter(t => t.quadrant === 'q1' && !t.completed && t.date !== todayStr);
-                const combinedTasks = [...todayTasks, ...q1Tasks].slice(0, 5); 
+                const combinedTasks = [...todayTasks, ...q1Tasks].slice(0, 10); 
                 if(combinedTasks.length === 0) dashTasks.innerHTML = '<div class="text-sm text-notion-dim pl-2 italic">無緊急待辦</div>';
                 else {
                     combinedTasks.forEach(t => {
                         dashTasks.innerHTML += `<div class="flex items-start gap-2 p-1 hover:bg-notion-hover rounded cursor-default"><input type="checkbox" onclick="toggleTask(${t.id}); renderDashboard()" class="mt-1 cursor-pointer"><div class="flex-1 min-w-0"><div class="text-sm font-medium text-black truncate">${t.title}</div><div class="text-[10px] text-notion-dim">${t.date}</div></div></div>`;
-                    });
-                }
-            }
-            // Course Notes Snippet
-            const noteList = document.getElementById('dash-course-list-notes');
-            if(noteList) {
-                noteList.innerHTML = '';
-                if(appData.courses.length === 0) noteList.innerHTML = '<div class="text-sm text-notion-dim pl-2 italic">請先至「學業與課表」新增課程</div>';
-                else {
-                    appData.courses.slice(0, 3).forEach(c => {
-                        noteList.innerHTML += `<div onclick="openCourseNote(${c.id})" class="cursor-pointer p-2 hover:bg-notion-hover rounded flex items-center group transition"><span class="text-lg mr-2">📓</span><span class="text-sm font-medium text-notion-text group-hover:underline flex-1 truncate">${c.name}</span></div>`;
                     });
                 }
             }
@@ -799,7 +843,6 @@
                 saveData();
                 showToast('筆記已儲存');
                 closeCourseNote();
-                renderNotebook(); // Refresh notebook tab if active
             }
         }
 
@@ -847,11 +890,56 @@
         }
         
         function renderCourseList(){
-            const tbody = document.getElementById('course-list-body'); if(!tbody) return; tbody.innerHTML='';
+            const desktopBody = document.getElementById('course-list-body-desktop');
+            const mobileBody = document.getElementById('course-list-body-mobile');
+            if(!desktopBody || !mobileBody) return;
+            
+            desktopBody.innerHTML = '';
+            mobileBody.innerHTML = '';
+            
             const allCourses = [...appData.courses].sort((a,b) => (a.semester||'') > (b.semester||'') ? -1 : 1);
-            allCourses.forEach(c=>{
+            
+            allCourses.forEach(c => {
                 let actualDisplay = c.grade > 0 ? `${c.grade} <span class="text-xs text-notion-dim">(${c.gpaPoints||'-'})</span>` : '-';
-                tbody.innerHTML+=`<tr class="hover:bg-notion-hover border-b border-notion-border last:border-0"><td class="p-3 font-bold text-notion-dim">${c.semester || '-'}</td><td class="p-3 font-medium text-notion-text">${c.name}</td><td class="p-3 text-xs text-notion-dim">${c.type || '未分類'}</td><td class="p-3 text-sm">${c.credits}</td><td class="p-3 text-sm font-mono text-notion-dim">${c.target > 0 ? c.target : '-'}</td><td class="p-3 text-sm font-mono font-bold">${actualDisplay}</td><td class="p-3 text-right"><div class="flex justify-end gap-2"><button onclick="editCourse(${c.id})" class="text-gray-400 hover:text-blue-500"><i class="fas fa-edit"></i></button><button onclick="openCourseNote(${c.id})" class="text-gray-400 hover:text-notion-text"><i class="fas fa-book-open"></i></button><button onclick="deleteCourse(${c.id})" class="text-gray-300 hover:text-red-500"><i class="fas fa-trash"></i></button></div></td></tr>`;
+                
+                // Desktop Row
+                desktopBody.innerHTML += `
+                <tr class="hover:bg-notion-hover border-b border-notion-border last:border-0">
+                    <td class="p-3 font-bold text-notion-dim">${c.semester || '-'}</td>
+                    <td class="p-3 font-medium text-notion-text">${c.name}</td>
+                    <td class="p-3 text-xs text-notion-dim">${c.type || '未分類'}</td>
+                    <td class="p-3 text-sm">${c.credits}</td>
+                    <td class="p-3 text-sm font-mono text-notion-dim">${c.target > 0 ? c.target : '-'}</td>
+                    <td class="p-3 text-sm font-mono font-bold">${actualDisplay}</td>
+                    <td class="p-3 text-right">
+                        <div class="flex justify-end gap-2">
+                             <button onclick="editCourse(${c.id})" class="text-gray-400 hover:text-blue-500"><i class="fas fa-edit"></i></button>
+                             <button onclick="openCourseNote(${c.id})" class="text-gray-400 hover:text-notion-text"><i class="fas fa-book-open"></i></button>
+                             <button onclick="deleteCourse(${c.id})" class="text-gray-300 hover:text-red-500"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </td>
+                </tr>`;
+                
+                // Mobile Card (New Design)
+                mobileBody.innerHTML += `
+                <div class="bg-white border border-notion-border rounded p-3 shadow-sm flex flex-col gap-2">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="text-xs bg-notion-gray-bg px-1.5 py-0.5 rounded text-notion-dim mb-1 inline-block">${c.semester || '-'}</span>
+                            <div class="font-bold text-notion-text text-base">${c.name}</div>
+                            <div class="text-xs text-notion-dim">${c.type} · ${c.credits} 學分</div>
+                        </div>
+                        <div class="text-right">
+                             <div class="font-mono font-bold text-lg text-blue-600">${c.grade > 0 ? c.grade : '--'}</div>
+                             <div class="text-[10px] text-notion-dim">目標: ${c.target || '-'}</div>
+                        </div>
+                    </div>
+                    <div class="border-t border-notion-border pt-2 flex justify-end gap-3 mt-1">
+                        <button onclick="editCourse(${c.id})" class="text-xs text-blue-500 flex items-center gap-1"><i class="fas fa-edit"></i> 編輯</button>
+                        <button onclick="openCourseNote(${c.id})" class="text-xs text-gray-500 flex items-center gap-1"><i class="fas fa-book"></i> 筆記</button>
+                        <button onclick="deleteCourse(${c.id})" class="text-xs text-red-500 flex items-center gap-1"><i class="fas fa-trash"></i> 刪除</button>
+                    </div>
+                </div>`;
             });
         }
 
@@ -939,19 +1027,57 @@
             
             list.forEach(o => {
                 const itemsStr = o.items.map(i => `${i.name} x${i.qty}`).join(', ');
-                tbody.innerHTML += `
-                    <tr class="hover:bg-notion-hover border-b border-notion-border">
-                        <td class="p-2 align-top"><div class="font-bold">${o.shop}</div><div class="text-xs text-notion-dim">${o.code || '-'}</div><div class="text-xs text-gray-400">${o.date}</div></td>
-                        <td class="p-2 align-top text-xs text-notion-text">${itemsStr}</td>
-                        <td class="p-2 align-top"><span class="bg-gray-100 text-xs px-2 py-1 rounded">${o.status}</span></td>
-                        <td class="p-2 align-top text-xs"><div class="${o.isPaid?'text-green-600':'text-red-500'}">款: ${o.isPaid?'OK':'未'}</div><div class="${o.isShippingPaid?'text-green-600':'text-red-500'}">運: ${o.isShippingPaid?'OK':'未'}</div></td>
-                        <td class="p-2 align-top font-bold text-green-700">$${o.profit}</td>
-                        <td class="p-2 align-top"><button onclick="deleteOrder(${o.id})" class="text-gray-300 hover:text-red-500"><i class="fas fa-trash"></i></button></td>
-                    </tr>
+                const statusOptions = ORDER_STATUSES.map(s => `<option value="${s}" ${s===o.status?'selected':''}>${s}</option>`).join('');
+                
+                // Card View for Mobile (Using flex-col and responsive visibility)
+                const cardHtml = `
+                    <div class="md:hidden bg-white border border-notion-border rounded p-3 mb-2 shadow-sm relative">
+                        <div class="flex justify-between items-start mb-2">
+                            <div>
+                                <div class="font-bold text-lg text-notion-text">${o.shop}</div>
+                                <div class="text-xs text-notion-dim">${o.date} <span class="mx-1">·</span> ${o.code || '-'}</div>
+                            </div>
+                            <div class="text-right">
+                                <div class="font-bold text-green-600">$${o.profit}</div>
+                                <div class="text-xs text-notion-dim">利潤</div>
+                            </div>
+                        </div>
+                        <div class="text-sm text-gray-700 mb-2 border-b border-gray-100 pb-2">${itemsStr}</div>
+                        <div class="flex flex-wrap gap-2 items-center justify-between">
+                            <select onchange="updateOrderStatus(${o.id}, this.value)" class="bg-gray-100 text-xs rounded p-1 border-none cursor-pointer flex-1 min-w-[100px]">
+                                ${statusOptions}
+                            </select>
+                            <div class="flex gap-2">
+                                <span class="text-xs px-2 py-1 rounded ${o.isPaid?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}">${o.isPaid?'已收':'未收'}</span>
+                                <span class="text-xs px-2 py-1 rounded ${o.isShippingPaid?'bg-green-100 text-green-700':'bg-red-100 text-red-700'}">${o.isShippingPaid?'運OK':'運未'}</span>
+                            </div>
+                        </div>
+                        <div class="absolute top-3 right-1/2 translate-x-1/2 flex gap-3">
+                             <button onclick="editOrder(${o.id})" class="text-gray-400 hover:text-blue-500"><i class="fas fa-edit"></i></button>
+                             <button onclick="deleteOrder(${o.id})" class="text-gray-300 hover:text-red-500"><i class="fas fa-trash"></i></button>
+                        </div>
+                    </div>
                 `;
+
+                // Table Row for Desktop (Hidden on Mobile)
+                const rowHtml = `
+                    <div class="hidden md:contents">
+                        <div class="p-2 border-b border-notion-border grid grid-cols-6 items-start gap-2 hover:bg-notion-hover">
+                            <div class="align-top"><div class="font-bold">${o.shop}</div><div class="text-xs text-notion-dim">${o.code || '-'}</div><div class="text-xs text-gray-400">${o.date}</div></div>
+                            <div class="align-top text-xs text-notion-text col-span-1">${itemsStr}</div>
+                            <div class="align-top"><select onchange="updateOrderStatus(${o.id}, this.value)" class="bg-notion-gray-bg border-none text-xs rounded p-1 w-full cursor-pointer">${statusOptions}</select></div>
+                            <div class="align-top text-xs"><div class="${o.isPaid?'text-green-600':'text-red-500'}">款: ${o.isPaid?'OK':'未'}</div><div class="${o.isShippingPaid?'text-green-600':'text-red-500'}">運: ${o.isShippingPaid?'OK':'未'}</div></div>
+                            <div class="align-top font-bold text-green-700">$${o.profit}</div>
+                            <div class="align-top text-right"><button onclick="editOrder(${o.id})" class="text-gray-400 hover:text-blue-500 mr-2"><i class="fas fa-edit"></i></button><button onclick="deleteOrder(${o.id})" class="text-gray-300 hover:text-red-500"><i class="fas fa-trash"></i></button></div>
+                        </div>
+                    </div>
+                `;
+                
+                tbody.innerHTML += cardHtml + rowHtml;
             });
         }
         function deleteOrder(id) { if(confirm("刪除？")) { appData.orders = appData.orders.filter(o => o.id !== id); saveData(); renderOrders(); updatePurchasingStats(); } }
+        function updateOrderStatus(id, newStatus) { const order = appData.orders.find(o => o.id === id); if(order){ order.status = newStatus; saveData(); showToast("狀態已更新"); } }
         function updateOrderDisplaySettings() {
             orderSort = document.getElementById('order-sort-select').value;
             orderFilterUnfinished = document.getElementById('order-filter-unfinished').checked;
@@ -1001,7 +1127,7 @@
             while(d.getMonth()===m){ 
                 const dateStr=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; 
                 const cups=appData.drinks.filter(dr=>dr.date===dateStr).length; 
-                g.innerHTML+=`<div class="h-12 border border-notion-border rounded p-1 text-xs relative flex items-center justify-center hover:bg-notion-hover ${cups>0?'bg-notion-blue-bg':''}"><span class="${cups>0?'font-bold text-blue-600':''}">${d.getDate()}</span>${cups>0 ? `<span class="absolute bottom-0.5 right-1 text-[8px] text-notion-dim">🥤${cups}</span>` : ''}</div>`; 
+                g.innerHTML+=`<div class="h-12 border border-notion-border rounded p-1 text-xs relative flex items-center justify-center hover:bg-notion-hover ${cups>0?'bg-notion-blue-bg':''}"><span class="font-bold">${d.getDate()}</span>${cups>0 ? `<span class="absolute bottom-0.5 right-1 text-[8px] text-notion-dim">🥤${cups}</span>` : ''}</div>`; 
                 d.setDate(d.getDate()+1); 
             } 
         }
@@ -1018,20 +1144,82 @@
              if(document.getElementById('ledger-category').value === 'general') appData.debts.unshift(item); else appData.cameraFund.entries.unshift(item);
              saveData(); renderDebts(); renderCameraFund(); document.getElementById('ledger-desc').value=''; document.getElementById('ledger-amount').value='';
         }
+        
+        // --- UPDATED DEBT RENDER (GROUPED & COLLAPSED) ---
         function renderDebts(){
             const c=document.getElementById('debt-list'); c.innerHTML='';
-            const groups = {}; appData.debts.forEach(d => { if(!groups[d.desc]) groups[d.desc] = { owe: 0, repay: 0, history: [] }; if(d.type === 'owe') groups[d.desc].owe += d.amount; else groups[d.desc].repay += d.amount; groups[d.desc].history.push(d); });
+            const groups = {}; 
+            let totalGeneralBalance = 0;
+
+            appData.debts.forEach(d => { 
+                if(!groups[d.desc]) groups[d.desc] = { owe: 0, repay: 0, history: [] }; 
+                if(d.type === 'owe') groups[d.desc].owe += d.amount; else groups[d.desc].repay += d.amount; 
+                groups[d.desc].history.push(d); 
+            });
+
             for(let person in groups) {
-                const g = groups[person]; const balance = g.owe - g.repay;
-                const details = document.createElement('details'); details.className = "group border border-notion-border rounded bg-white overflow-hidden";
-                details.innerHTML = `<summary class="flex justify-between items-center p-3 cursor-pointer hover:bg-notion-hover list-none"><span class="font-bold text-sm">${person}</span><span class="text-sm font-mono ${balance>0?'text-red-500':'text-green-500'}">$${balance}</span></summary><div class="p-3 bg-notion-gray-bg/30 text-xs border-t border-notion-border space-y-2">${g.history.map(h => `<div class="flex justify-between items-center"><span class="text-notion-dim">${h.date}</span><span class="${h.type==='owe'?'text-red-500':'text-green-600'}">${h.type==='owe'?'借':'還'} $${h.amount}</span><button onclick="deleteDebt(${h.id})" class="text-gray-300 hover:text-red-500 ml-2"><i class="fas fa-trash"></i></button></div>`).join('')}</div>`;
+                const g = groups[person]; 
+                const balance = g.owe - g.repay;
+                totalGeneralBalance += balance;
+                
+                const balanceClass = balance > 0 ? 'text-red-500' : 'text-green-600';
+                const balanceText = balance > 0 ? `欠: $${balance}` : `餘: $${Math.abs(balance)}`;
+
+                const details = document.createElement('details'); 
+                details.className = "group border border-notion-border rounded bg-white overflow-hidden mb-2";
+                // Default collapsed (no 'open' attribute)
+                details.innerHTML = `
+                    <summary class="flex justify-between items-center p-3 cursor-pointer hover:bg-notion-hover list-none select-none">
+                        <div class="flex items-center gap-2">
+                            <i class="fas fa-chevron-right text-xs text-gray-400 group-open:rotate-90 transition-transform"></i>
+                            <span class="font-bold text-sm">${person}</span>
+                        </div>
+                        <span class="text-sm font-mono ${balanceClass}">${balanceText}</span>
+                    </summary>
+                    <div class="p-3 bg-notion-gray-bg/30 text-xs border-t border-notion-border space-y-2">
+                        ${g.history.sort((a,b)=>new Date(b.date)-new Date(a.date)).map(h => `
+                            <div class="flex justify-between items-center border-b border-gray-100 pb-1 last:border-0">
+                                <span class="text-notion-dim font-mono text-[10px] w-20">${h.date}</span>
+                                <span class="${h.type==='owe'?'text-red-500':'text-green-600'} flex-1 text-right mr-2 font-medium">
+                                    ${h.type==='owe'?'借入':'還款'} $${h.amount}
+                                </span>
+                                <button onclick="deleteDebt(${h.id})" class="text-gray-300 hover:text-red-500 ml-2"><i class="fas fa-trash"></i></button>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
                 c.appendChild(details);
             }
+            
+            // Update Header Balance
+            const headerEl = document.getElementById('debt-total-balance');
+            if(headerEl) {
+                const totalText = totalGeneralBalance > 0 ? `總欠款: $${totalGeneralBalance}` : `總結餘: $${Math.abs(totalGeneralBalance)}`;
+                headerEl.innerText = totalText;
+                headerEl.className = `text-xs font-bold px-2 py-1 rounded ${totalGeneralBalance > 0 ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'}`;
+            }
         }
+        
         function renderCameraFund(){
-            const l=document.getElementById('fund-list'); l.innerHTML=''; let total=0;
-            appData.cameraFund.entries.forEach(e=>{ total += (e.type==='withdraw' ? -e.amount : e.amount); l.innerHTML+=`<li class="flex justify-between p-2 border-b border-notion-border text-sm"><span>${e.desc}</span><span class="${e.type=='withdraw'?'text-red-500':'text-green-600'}">$${e.amount}</span></li>`; });
-            document.getElementById('camera-bar').style.width = Math.min((total/50000)*100, 100) + '%'; document.getElementById('camera-header-balance').innerText = `存: $${total}`;
+            const l=document.getElementById('fund-list'); l.innerHTML=''; 
+            let total=0;
+            // Calculate total first
+            appData.cameraFund.entries.forEach(e => total += (e.type==='withdraw' ? -e.amount : e.amount));
+            
+            // Update Header
+            const headerEl = document.getElementById('camera-header-balance');
+            if(headerEl) headerEl.innerText = `存: $${total}`;
+            
+            // Render List with Date
+            appData.cameraFund.entries.forEach(e=>{ 
+                l.innerHTML+=`
+                <li class="flex justify-between p-2 border-b border-notion-border text-sm items-center">
+                    <span class="text-notion-dim text-xs font-mono w-20">${e.date}</span>
+                    <span class="flex-1 truncate px-2">${e.desc}</span>
+                    <span class="${e.type=='withdraw'?'text-red-500':'text-green-600'} font-bold">$${e.amount}</span>
+                </li>`; 
+            });
+            document.getElementById('camera-bar').style.width = Math.min((total/50000)*100, 100) + '%'; 
         }
 
         // --- LITERATURE ---
@@ -1120,25 +1308,6 @@
         }
         function backupAllData() { const a = document.createElement('a'); a.href = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData)); a.download = "Notion_Backup.json"; a.click(); }
         function importAllData(input) { const f = input.files[0]; if(!f) return; const r = new FileReader(); r.onload = e => { try { appData = { ...appData, ...JSON.parse(e.target.result) }; saveData(); location.reload(); } catch(err) { alert("匯入失敗"); } }; r.readAsText(f); }
-        function renderNotebook() {
-            const cList = document.getElementById('notebook-course-list');
-            if(cList) {
-                cList.innerHTML = '';
-                appData.courses.forEach(c => {
-                    cList.innerHTML += `<div onclick="openCourseNote(${c.id})" class="p-3 bg-white border border-notion-border rounded hover:bg-notion-hover cursor-pointer group"><div class="font-bold text-sm text-notion-text mb-1">${c.name}</div><div class="text-xs text-notion-dim line-clamp-2">${c.note || '尚無筆記...'}</div></div>`;
-                });
-            }
-            const lList = document.getElementById('notebook-lit-list');
-            if(lList) {
-                lList.innerHTML = '';
-                appData.literature.forEach(l => {
-                    lList.innerHTML += `<div class="p-3 bg-white border border-notion-border rounded hover:bg-notion-hover cursor-default"><div class="font-bold text-sm text-notion-text mb-1">${l.title}</div><div class="text-xs text-notion-dim mb-2 line-clamp-2">${l.note || '尚無筆記...'}</div><div class="text-[10px] text-notion-dim bg-notion-gray-bg px-1 rounded inline-block">文獻筆記</div></div>`;
-                });
-            }
-            const globalNote = document.getElementById('notebook-global-note');
-            if(globalNote) globalNote.value = appData.courseNotes || "";
-        }
-        
         function deleteCourse(id){ if(confirm("刪除？")){appData.courses=appData.courses.filter(c=>c.id!==id); saveData(); renderAcademia();} }
         function deleteDebt(id){ if(confirm("刪除？")){appData.debts=appData.debts.filter(d=>d.id!==id); saveData(); renderDebts();} }
 
