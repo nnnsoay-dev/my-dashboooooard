@@ -117,6 +117,8 @@
             background-size: cover;
             background-position: center;
         }
+        #page-cover-container:hover #change-cover-btn { opacity: 1; }
+        #change-cover-btn { opacity: 0; transition: opacity 0.2s ease-in-out; }
     </style>
 </head>
 <body class="h-screen flex overflow-hidden bg-notion-bg text-notion-text">
@@ -270,26 +272,51 @@
 
                 <!-- Tab 1: Planner -->
                 <div id="tab-planner" class="section-content hidden fade-in">
-                    <div class="flex justify-end mb-4"><button onclick="toggleTaskForm()" class="btn-notion btn-notion-primary"><i class="fas fa-plus mr-1"></i> 新增待辦</button></div>
+                    <div class="flex justify-end mb-4"><button onclick="toggleTaskForm()" class="btn-notion btn-notion-primary"><i class="fas fa-plus mr-1"></i> 新增</button></div>
                     <div id="task-form-panel" class="bg-notion-gray-bg rounded-md border border-notion-border">
+                        <!-- Type Switcher -->
+                        <div class="flex gap-4 p-4 border-b border-notion-border/50 mb-2">
+                             <label class="flex items-center gap-2 cursor-pointer select-none">
+                                 <input type="radio" name="task-type" value="todo" checked onchange="toggleTaskTypeUI()" class="text-notion-text">
+                                 <span class="text-sm font-bold">待辦事項</span>
+                             </label>
+                             <label class="flex items-center gap-2 cursor-pointer select-none">
+                                 <input type="radio" name="task-type" value="event" onchange="toggleTaskTypeUI()" class="text-notion-text">
+                                 <span class="text-sm font-bold">日程安排</span>
+                             </label>
+                        </div>
+                        
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                             <input type="date" id="task-date" class="w-full">
                             <div class="flex items-center gap-2"><input type="time" id="task-time" class="w-full"><label class="text-sm text-notion-dim whitespace-nowrap"><input type="checkbox" id="task-allday" onchange="toggleTimeInput()"> 全日</label></div>
                             <select id="task-priority" class="md:col-span-2"><option value="q1">🔥 緊急且重要</option><option value="q2">⭐ 重要但不緊急</option><option value="q3">⚡ 緊急但不重要</option><option value="q4">☕ 不重要不緊急</option></select>
                         </div>
-                        <input type="text" id="task-title" placeholder="任務標題" class="w-full font-bold mb-4">
+                        <input type="text" id="task-title" placeholder="標題" class="w-full font-bold mb-4">
                         <textarea id="task-content" rows="3" placeholder="詳細內容..." class="w-full mb-4"></textarea>
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"><input type="text" id="task-location" placeholder="地點"><input type="text" id="task-url" placeholder="相關連結"></div>
                         <div class="flex justify-end gap-2"><button onclick="toggleTaskForm()" class="btn-notion">取消</button><button onclick="addTask()" class="btn-notion btn-notion-primary">確認新增</button></div>
                     </div>
+                    
                     <div class="flex justify-between items-center mb-4 mt-8"><button onclick="changeMonth(-1)" class="btn-notion"><i class="fas fa-chevron-left"></i></button><h2 id="calendar-month-year" class="text-xl font-bold"></h2><button onclick="changeMonth(1)" class="btn-notion"><i class="fas fa-chevron-right"></i></button></div>
                     <div class="grid grid-cols-7 text-center text-xs font-semibold text-notion-dim mb-2 border-b border-notion-border pb-2"><div>日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div></div>
                     <div id="calendar-grid" class="grid grid-cols-7 gap-1"></div>
-                    <h3 class="text-lg font-bold mt-8 mb-4 border-b border-notion-border pb-2">待辦清單</h3>
-                    <div class="bg-notion-gray-bg/50 p-2 rounded">
-                        <div class="flex justify-between items-center p-2"><span class="text-sm font-semibold text-notion-dim">所有事項</span><button onclick="toggleCollapse('all-tasks-list', 'icon-matrix-view')" class="text-notion-dim hover:text-notion-text"><i id="icon-matrix-view" class="fas fa-chevron-down"></i></button></div>
-                        <ul id="all-tasks-list" class="divide-y divide-notion-border collapse-content open"></ul>
-                        <div id="empty-tasks-msg" class="hidden p-8 text-center text-notion-dim text-sm">目前沒有待辦事項</div>
+                    
+                    <!-- Split Lists -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+                        <div>
+                            <h3 class="text-lg font-bold mb-3 border-b border-notion-border pb-2 flex items-center justify-between">
+                                <span>待辦清單</span>
+                                <span class="text-xs font-normal text-notion-dim bg-notion-gray-bg px-2 rounded" id="todo-count">0</span>
+                            </h3>
+                            <ul id="planner-todo-list" class="divide-y divide-notion-border bg-notion-gray-bg/20 rounded p-2 min-h-[100px]"></ul>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold mb-3 border-b border-notion-border pb-2 flex items-center justify-between">
+                                <span>日程安排</span>
+                                <span class="text-xs font-normal text-notion-dim bg-notion-gray-bg px-2 rounded" id="event-count">0</span>
+                            </h3>
+                            <ul id="planner-event-list" class="divide-y divide-notion-border bg-notion-gray-bg/20 rounded p-2 min-h-[100px]"></ul>
+                        </div>
                     </div>
                 </div>
 
@@ -431,8 +458,8 @@
                         <h4 class="font-bold mb-4">建立/編輯訂單</h4>
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                             <input type="date" id="order-date">
-                            <input type="text" id="order-shop" placeholder="店家">
                             <input type="text" id="order-code" placeholder="代號">
+                            <input type="text" id="order-shop" placeholder="店家" class="md:col-span-2">
                             <input type="number" id="order-rate" placeholder="匯率 (38)" value="38" oninput="calcProfit()">
                             <select id="order-status" class="md:col-span-3"></select>
                         </div>
@@ -682,11 +709,23 @@
                 dashTasks.innerHTML = '';
                 const todayTasks = appData.tasks.filter(t => t.date === todayStr && !t.completed);
                 const q1Tasks = appData.tasks.filter(t => t.quadrant === 'q1' && !t.completed && t.date !== todayStr);
-                const combinedTasks = [...todayTasks, ...q1Tasks]; // Removed slice limit as requested
+                const combinedTasks = [...todayTasks, ...q1Tasks]; // No limit
+                
+                // Sort combined tasks by date
+                combinedTasks.sort((a, b) => new Date(a.date) - new Date(b.date));
+
                 if(combinedTasks.length === 0) dashTasks.innerHTML = '<div class="text-sm text-notion-dim pl-2 italic">無緊急待辦</div>';
                 else {
                     combinedTasks.forEach(t => {
-                        dashTasks.innerHTML += `<div class="flex items-start gap-2 p-1 hover:bg-notion-hover rounded cursor-default"><input type="checkbox" onclick="toggleTask(${t.id}); renderDashboard()" class="mt-1 cursor-pointer"><div class="flex-1 min-w-0"><div class="text-sm font-medium text-black truncate">${t.title}</div><div class="text-[10px] text-notion-dim">${t.date}</div></div></div>`;
+                        const icon = t.type === 'event' ? '📅' : '📝';
+                        dashTasks.innerHTML += `
+                        <div class="flex items-start gap-2 p-1 hover:bg-notion-hover rounded cursor-default">
+                             <div class="mt-0.5 text-xs">${icon}</div>
+                             <div class="flex-1 min-w-0">
+                                <div class="text-sm font-medium text-black truncate">${t.title}</div>
+                                <div class="text-[10px] text-notion-dim">${t.date} ${t.time || ''}</div>
+                             </div>
+                        </div>`;
                     });
                 }
             }
@@ -923,6 +962,7 @@
                     <td class="p-3 text-right">
                         <div class="flex justify-end gap-2">
                              <button onclick="editCourse(${c.id})" class="text-gray-400 hover:text-blue-500"><i class="fas fa-edit"></i></button>
+                             <button onclick="openCourseNote(${c.id})" class="text-gray-400 hover:text-notion-text"><i class="fas fa-book-open"></i></button>
                              <button onclick="deleteCourse(${c.id})" class="text-gray-300 hover:text-red-500"><i class="fas fa-trash"></i></button>
                         </div>
                     </td>
@@ -944,6 +984,7 @@
                     </div>
                     <div class="border-t border-notion-border pt-2 flex justify-end gap-3 mt-1">
                         <button onclick="editCourse(${c.id})" class="text-xs text-blue-500 flex items-center gap-1"><i class="fas fa-edit"></i> 編輯</button>
+                        <button onclick="openCourseNote(${c.id})" class="text-xs text-gray-500 flex items-center gap-1"><i class="fas fa-book"></i> 筆記</button>
                         <button onclick="deleteCourse(${c.id})" class="text-xs text-red-500 flex items-center gap-1"><i class="fas fa-trash"></i> 刪除</button>
                     </div>
                 </div>`;
@@ -1266,20 +1307,26 @@
         function renderDebts(){
             const c=document.getElementById('debt-list'); c.innerHTML='';
             
+            // List all debts in one big list for now, but user requested collapsing General vs Camera.
+            // So here we list ALL general debts.
+            // Sorting by date descending
             const sortedDebts = [...appData.debts].sort((a,b) => new Date(b.date) - new Date(a.date));
             
+            // Calculate total balance
             let totalBalance = 0;
             appData.debts.forEach(d => {
                 if(d.type === 'owe') totalBalance += d.amount;
                 else totalBalance -= d.amount;
             });
             
+            // Update Header Balance
             const headerEl = document.getElementById('debt-total-balance');
             if(headerEl) {
                 headerEl.innerText = `總欠款: $${totalBalance}`;
                 headerEl.className = `text-xs font-bold px-2 py-1 rounded ${totalBalance > 0 ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'}`;
             }
 
+            // Render Items
             sortedDebts.forEach(h => {
                 c.innerHTML += `
                     <div class="flex justify-between items-center border-b border-notion-border py-2 text-sm">
@@ -1300,11 +1347,14 @@
         function renderCameraFund(){
             const l=document.getElementById('fund-list'); l.innerHTML=''; 
             let total=0;
+            // Calculate total first
             appData.cameraFund.entries.forEach(e => total += (e.type==='withdraw' ? -e.amount : e.amount));
             
+            // Update Header
             const headerEl = document.getElementById('camera-header-balance');
             if(headerEl) headerEl.innerText = `存: $${total}`;
             
+            // Render List with Date
             const sortedEntries = [...appData.cameraFund.entries].sort((a,b) => new Date(b.date) - new Date(a.date));
             
             sortedEntries.forEach(e=>{ 
@@ -1407,20 +1457,89 @@
         function changeMonth(d){currentCalendarDate.setMonth(currentCalendarDate.getMonth()+d); renderCalendar();}
         function toggleTimeInput(){document.getElementById('task-time').disabled=document.getElementById('task-allday').checked;}
         function toggleTaskForm(){ const p=document.getElementById('task-form-panel'); p.classList.toggle('open'); }
+        function toggleTaskTypeUI() {
+             const type = document.querySelector('input[name="task-type"]:checked').value;
+             const prioritySelect = document.getElementById('task-priority');
+             if(type === 'event') {
+                 prioritySelect.classList.add('hidden');
+             } else {
+                 prioritySelect.classList.remove('hidden');
+             }
+        }
+
         function addTask(){
             const d=document.getElementById('task-date').value; const t=document.getElementById('task-title').value; 
+            const type = document.querySelector('input[name="task-type"]:checked').value;
             if(!t.trim()||!d)return showToast("請輸入日期與標題"); 
-            appData.tasks.push({id:Date.now(),date:d, time:document.getElementById('task-time').value, isAllDay:document.getElementById('task-allday').checked, quadrant:document.getElementById('task-priority').value, title:t,text:t, content:document.getElementById('task-content').value, location:document.getElementById('task-location').value, url:document.getElementById('task-url').value, completed:false}); 
+            appData.tasks.push({
+                id:Date.now(),
+                date:d, 
+                time:document.getElementById('task-time').value, 
+                isAllDay:document.getElementById('task-allday').checked, 
+                quadrant:document.getElementById('task-priority').value, 
+                title:t,
+                text:t, 
+                content:document.getElementById('task-content').value, 
+                location:document.getElementById('task-location').value, 
+                url:document.getElementById('task-url').value, 
+                completed:false,
+                type: type // 'todo' or 'event'
+            }); 
             saveData(); renderTasks(); renderCalendar(); showToast("已新增"); toggleTaskForm();
         }
+        
         function renderTasks(){
-            const list = document.getElementById('all-tasks-list'); if(!list) return; list.innerHTML = '';
-            if(appData.tasks.length === 0) { document.getElementById('empty-tasks-msg').classList.remove('hidden'); return; }
-            document.getElementById('empty-tasks-msg').classList.add('hidden');
-            [...appData.tasks].sort((a,b) => (a.completed===b.completed)?(new Date(a.date)-new Date(b.date)):(a.completed?1:-1)).forEach(t => {
-                list.innerHTML += `<li class="p-3 hover:bg-notion-hover transition flex gap-3 items-start ${t.completed ? 'opacity-50 line-through' : ''}"><input type="checkbox" ${t.completed ? 'checked' : ''} onchange="toggleTask(${t.id})" class="mt-1 cursor-pointer"><div class="flex-1"><div class="text-sm font-medium text-notion-text">${t.title}</div><div class="text-xs text-notion-dim mt-0.5">${t.date}</div></div><button onclick="deleteTask(${t.id})" class="text-gray-300 hover:text-red-400"><i class="fas fa-trash-alt"></i></button></li>`;
+            const todoList = document.getElementById('planner-todo-list'); 
+            const eventList = document.getElementById('planner-event-list');
+            const todoCountEl = document.getElementById('todo-count');
+            const eventCountEl = document.getElementById('event-count');
+            
+            if(!todoList || !eventList) return; 
+            
+            todoList.innerHTML = '';
+            eventList.innerHTML = '';
+            
+            let todoCount = 0;
+            let eventCount = 0;
+            
+            const sortedTasks = [...appData.tasks].sort((a,b) => {
+                 if (a.completed !== b.completed) return a.completed ? 1 : -1; 
+                 return new Date(a.date) - new Date(b.date); 
             });
+
+            sortedTasks.forEach(t => {
+                if (t.type === 'event') {
+                    eventCount++;
+                    eventList.innerHTML += `
+                    <li class="p-3 hover:bg-notion-hover transition flex gap-3 items-start">
+                        <div class="mt-1 text-notion-dim"><i class="far fa-calendar-alt"></i></div>
+                        <div class="flex-1">
+                            <div class="text-sm font-medium text-notion-text">${t.title}</div>
+                            <div class="text-xs text-notion-dim mt-0.5">${t.date} ${t.time || ''} ${t.location ? '@'+t.location : ''}</div>
+                            ${t.content ? `<div class="text-xs text-gray-500 mt-1">${t.content}</div>` : ''}
+                        </div>
+                        <button onclick="deleteTask(${t.id})" class="text-gray-300 hover:text-red-400"><i class="fas fa-trash-alt"></i></button>
+                    </li>`;
+                } else {
+                    // Default to todo if type is undefined (for old data)
+                    todoCount++;
+                    const qLabels = { q1: "🔥", q2: "⭐", q3: "⚡", q4: "☕" };
+                    todoList.innerHTML += `
+                    <li class="p-3 hover:bg-notion-hover transition flex gap-3 items-start ${t.completed ? 'opacity-50 line-through' : ''}">
+                        <input type="checkbox" ${t.completed ? 'checked' : ''} onchange="toggleTask(${t.id})" class="mt-1 cursor-pointer">
+                        <div class="flex-1">
+                            <div class="text-sm font-medium text-notion-text">${qLabels[t.quadrant]||''} ${t.title}</div>
+                            <div class="text-xs text-notion-dim mt-0.5">${t.date} ${t.time || ''}</div>
+                        </div>
+                        <button onclick="deleteTask(${t.id})" class="text-gray-300 hover:text-red-400"><i class="fas fa-trash-alt"></i></button>
+                    </li>`;
+                }
+            });
+            
+            if(todoCountEl) todoCountEl.innerText = todoCount;
+            if(eventCountEl) eventCountEl.innerText = eventCount;
         }
+        
         function showMoreMenu(){ document.getElementById('mobile-more-menu').classList.remove('hidden'); }
         function hideMoreMenu(){ document.getElementById('mobile-more-menu').classList.add('hidden'); }
         function uploadCover(input) { const file = input.files[0]; if (!file) return; const reader = new FileReader(); reader.onload = function(e) { appData.coverImage = e.target.result; saveData(); renderCover(); }; reader.readAsDataURL(file); input.value = ''; }
