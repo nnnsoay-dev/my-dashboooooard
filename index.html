@@ -117,7 +117,6 @@
             background-size: cover;
             background-position: center;
         }
-        /* Buttons are now handled via Tailwind classes in HTML to avoid conflict */
     </style>
 </head>
 <body class="h-screen flex overflow-hidden bg-notion-bg text-notion-text">
@@ -162,7 +161,6 @@
     <!-- Mobile More Menu -->
     <div id="mobile-more-menu" class="hidden md:hidden fixed inset-0 bg-black/50 z-50" onclick="hideMoreMenu()">
         <div class="absolute bottom-16 right-4 bg-white rounded-lg shadow-xl w-48 py-2 overflow-hidden animate-fade-in-up" onclick="event.stopPropagation()">
-            <!-- Added Data Actions to Mobile Menu -->
             <div class="border-b border-gray-100 pb-1 mb-1">
                 <div class="px-4 py-2 hover:bg-notion-hover flex items-center gap-3 cursor-pointer text-sm" onclick="backupAllData(); hideMoreMenu()">
                     <i class="fas fa-download w-4 text-center text-gray-400"></i> 匯出資料
@@ -172,7 +170,6 @@
                     <input type="file" class="hidden" onchange="importAllData(this)">
                 </label>
             </div>
-            
             <div onclick="switchTab('academia'); hideMoreMenu()" class="px-4 py-3 hover:bg-notion-hover flex items-center gap-3 border-b border-gray-100"><span>🎓</span> Academia</div>
             <div onclick="switchTab('drinks'); hideMoreMenu()" class="px-4 py-3 hover:bg-notion-hover flex items-center gap-3 border-b border-gray-100"><span>🧋</span> Drinks</div>
             <div onclick="switchTab('debt'); hideMoreMenu()" class="px-4 py-3 hover:bg-notion-hover flex items-center gap-3 border-b border-gray-100"><span>💰</span> Finance</div>
@@ -335,7 +332,15 @@
                         <div class="hidden md:block overflow-x-auto border border-notion-border rounded-md mb-8">
                             <table class="w-full text-sm text-left">
                                 <thead class="bg-notion-gray-bg text-notion-dim text-xs">
-                                    <tr><th class="p-3 border-b border-notion-border">學期</th><th class="p-3 border-b border-notion-border">課程</th><th class="p-3 border-b border-notion-border">類別</th><th class="p-3 border-b border-notion-border">學分</th><th class="p-3 border-b border-notion-border">實際</th><th class="p-3 border-b border-notion-border w-16"></th></tr>
+                                    <tr>
+                                        <th class="p-3 border-b border-notion-border text-left">學期</th>
+                                        <th class="p-3 border-b border-notion-border text-left">課程</th>
+                                        <th class="p-3 border-b border-notion-border text-left">類別</th>
+                                        <th class="p-3 border-b border-notion-border text-left">學分</th>
+                                        <th class="p-3 border-b border-notion-border text-left">目標</th>
+                                        <th class="p-3 border-b border-notion-border text-left">實際</th>
+                                        <th class="p-3 border-b border-notion-border w-24"></th>
+                                    </tr>
                                 </thead>
                                 <tbody id="course-list-body-desktop" class="divide-y divide-notion-border bg-white"></tbody>
                             </table>
@@ -426,8 +431,8 @@
                         <h4 class="font-bold mb-4">建立/編輯訂單</h4>
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                             <input type="date" id="order-date">
+                            <input type="text" id="order-shop" placeholder="店家">
                             <input type="text" id="order-code" placeholder="代號">
-                            <input type="text" id="order-shop" placeholder="店家" class="md:col-span-2">
                             <input type="number" id="order-rate" placeholder="匯率 (38)" value="38" oninput="calcProfit()">
                             <select id="order-status" class="md:col-span-3"></select>
                         </div>
@@ -677,7 +682,7 @@
                 dashTasks.innerHTML = '';
                 const todayTasks = appData.tasks.filter(t => t.date === todayStr && !t.completed);
                 const q1Tasks = appData.tasks.filter(t => t.quadrant === 'q1' && !t.completed && t.date !== todayStr);
-                const combinedTasks = [...todayTasks, ...q1Tasks].slice(0, 10); 
+                const combinedTasks = [...todayTasks, ...q1Tasks]; // Removed slice limit as requested
                 if(combinedTasks.length === 0) dashTasks.innerHTML = '<div class="text-sm text-notion-dim pl-2 italic">無緊急待辦</div>';
                 else {
                     combinedTasks.forEach(t => {
@@ -957,8 +962,16 @@
         function addOrderItemRow(name='', qty=1, krw=''){ 
             const c=document.getElementById('order-items-container');
             const d=document.createElement('div'); 
+            // Changed input layout for mobile
             d.className="flex flex-col md:flex-row gap-2 mb-2 item-row items-stretch md:items-center border-b md:border-b-0 border-dashed border-gray-200 pb-2 md:pb-0";
-            d.innerHTML=`<input class="flex-1 bg-transparent border border-notion-border rounded px-2 py-1 text-sm item-name" placeholder="品名" value="${name}"><div class="flex gap-2"><input type="number" class="flex-1 md:w-16 bg-transparent border border-notion-border rounded px-2 py-1 text-sm item-qty" placeholder="數量" value="${qty}" oninput="calcProfit()"><input type="number" class="flex-1 md:w-20 bg-transparent border border-notion-border rounded px-2 py-1 text-sm item-krw" placeholder="韓幣" value="${krw}" oninput="calcProfit()"><button onclick="this.parentElement.parentElement.remove(); calcProfit()" class="text-gray-400 hover:text-red-500 w-8 flex items-center justify-center border border-gray-200 rounded"><i class="fas fa-times"></i></button></div>`;
+            d.innerHTML=`
+                <input class="flex-1 bg-transparent border border-notion-border rounded px-2 py-1 text-sm item-name w-full" placeholder="品名" value="${name}">
+                <div class="flex gap-2 w-full">
+                    <input type="number" class="flex-1 bg-transparent border border-notion-border rounded px-2 py-1 text-sm item-qty" placeholder="數量" value="${qty}" oninput="calcProfit()">
+                    <input type="number" class="flex-1 bg-transparent border border-notion-border rounded px-2 py-1 text-sm item-krw" placeholder="韓幣" value="${krw}" oninput="calcProfit()">
+                    <button onclick="this.parentElement.parentElement.remove(); calcProfit()" class="text-gray-400 hover:text-red-500 w-8 flex-shrink-0 flex items-center justify-center border border-gray-200 rounded"><i class="fas fa-times"></i></button>
+                </div>
+            `;
             c.appendChild(d);
         }
         function calcProfit() {
@@ -1119,8 +1132,11 @@
             renderOrders();
         }
         function updatePurchasingStats() {
+            // Unpaid calculation: Sum of 'sell' price where isPaid is false (Receivables)
+            // Or 'sell' price where status isn't complete? Usually 'isPaid' is the tracker.
+            // Using 'sell' as per typical agent usage (receivable from customer)
             const net = appData.orders.reduce((acc, o) => acc + (o.profit || 0), 0);
-            const unpaid = appData.orders.filter(o => !o.isPaid).reduce((acc, o) => acc + (o.cost || 0), 0); // Estimate unpaid cost
+            const unpaid = appData.orders.filter(o => !o.isPaid).reduce((acc, o) => acc + (o.sell || 0), 0); 
             document.getElementById('stats-net-profit').innerText = net;
             document.getElementById('stats-unpaid').innerText = unpaid;
             document.getElementById('stats-total-orders').innerText = appData.orders.length;
@@ -1250,26 +1266,20 @@
         function renderDebts(){
             const c=document.getElementById('debt-list'); c.innerHTML='';
             
-            // List all debts in one big list for now, but user requested collapsing General vs Camera.
-            // So here we list ALL general debts.
-            // Sorting by date descending
             const sortedDebts = [...appData.debts].sort((a,b) => new Date(b.date) - new Date(a.date));
             
-            // Calculate total balance
             let totalBalance = 0;
             appData.debts.forEach(d => {
                 if(d.type === 'owe') totalBalance += d.amount;
                 else totalBalance -= d.amount;
             });
             
-            // Update Header Balance
             const headerEl = document.getElementById('debt-total-balance');
             if(headerEl) {
                 headerEl.innerText = `總欠款: $${totalBalance}`;
                 headerEl.className = `text-xs font-bold px-2 py-1 rounded ${totalBalance > 0 ? 'bg-red-50 text-red-600' : 'bg-green-50 text-green-600'}`;
             }
 
-            // Render Items
             sortedDebts.forEach(h => {
                 c.innerHTML += `
                     <div class="flex justify-between items-center border-b border-notion-border py-2 text-sm">
@@ -1290,14 +1300,11 @@
         function renderCameraFund(){
             const l=document.getElementById('fund-list'); l.innerHTML=''; 
             let total=0;
-            // Calculate total first
             appData.cameraFund.entries.forEach(e => total += (e.type==='withdraw' ? -e.amount : e.amount));
             
-            // Update Header
             const headerEl = document.getElementById('camera-header-balance');
             if(headerEl) headerEl.innerText = `存: $${total}`;
             
-            // Render List with Date
             const sortedEntries = [...appData.cameraFund.entries].sort((a,b) => new Date(b.date) - new Date(a.date));
             
             sortedEntries.forEach(e=>{ 
@@ -1350,7 +1357,28 @@
             appData.subs.forEach(s => { if(!groups[s.name]) groups[s.name] = []; groups[s.name].push(s); });
             for(let service in groups) {
                 const items = groups[service]; const total = items.reduce((a,b)=>a+b.price,0);
-                c.innerHTML += `<div class="bg-white border border-notion-border rounded p-4 shadow-sm flex flex-col h-full"><div class="flex items-center gap-3 mb-1"><div class="w-10 h-10 rounded-full bg-notion-gray-bg flex items-center justify-center text-xl shrink-0"><i class="${iconMap[service] || 'fas fa-receipt text-gray-400'}"></i></div><div><div class="font-bold text-notion-text">${service}</div><div class="text-xs text-notion-dim font-mono">總計: $${total} / ${items[0].cycle}</div></div></div><div class="mt-3 border-t border-gray-100 pt-2 space-y-1">${items.map(item => `<div class="flex justify-between items-center text-xs text-gray-600"><span>${item.person}</span><div class="flex items-center gap-2"><span class="font-medium">$${item.price}</span><button onclick="deleteSub(${item.id})" class="text-gray-300 hover:text-red-500"><i class="fas fa-times"></i></button></div></div>`).join('')}</div></div>`;
+                
+                // Calculate Days Left
+                let daysLeftText = '';
+                if(items[0].date) {
+                    const today = new Date();
+                    const start = new Date(items[0].date);
+                    let nextDate = new Date(start);
+                    
+                    // Simple cycle logic (can be improved)
+                    while (nextDate < today) {
+                         if(items[0].cycle === 'monthly') nextDate.setMonth(nextDate.getMonth() + 1);
+                         else if(items[0].cycle === 'quarterly') nextDate.setMonth(nextDate.getMonth() + 3);
+                         else if(items[0].cycle === 'yearly') nextDate.setFullYear(nextDate.getFullYear() + 1);
+                    }
+                    const diffTime = Math.abs(nextDate - today);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+                    daysLeftText = `<span class="absolute top-2 right-2 text-[10px] bg-red-100 text-red-600 px-1.5 py-0.5 rounded font-bold">剩 ${diffDays} 天</span>`;
+                }
+
+                c.innerHTML += `<div class="bg-white border border-notion-border rounded p-4 shadow-sm flex flex-col h-full relative">
+                    ${daysLeftText}
+                    <div class="flex items-center gap-3 mb-1"><div class="w-10 h-10 rounded-full bg-notion-gray-bg flex items-center justify-center text-xl shrink-0"><i class="${iconMap[service] || 'fas fa-receipt text-gray-400'}"></i></div><div><div class="font-bold text-notion-text">${service}</div><div class="text-xs text-notion-dim font-mono">總計: $${total} / ${items[0].cycle}</div></div></div><div class="mt-3 border-t border-gray-100 pt-2 space-y-1">${items.map(item => `<div class="flex justify-between items-center text-xs text-gray-600"><span>${item.person}</span><div class="flex items-center gap-2"><span class="font-medium">$${item.price}</span><button onclick="deleteSub(${item.id})" class="text-gray-300 hover:text-red-500"><i class="fas fa-times"></i></button></div></div>`).join('')}</div></div>`;
             }
         }
         function deleteSub(id){ if(confirm("刪除？")){appData.subs=appData.subs.filter(s=>s.id!==id); saveData(); renderSubs();} }
