@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>個人手札 (Notion Style)</title>
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Inter Font (Standard Notion) & Gaegu (Korean Handwritten) -->
@@ -91,11 +90,11 @@
         .collapse-content.open { max-height: 3000px; }
         
         /* Transitions for Forms */
-        #task-form-panel, #drink-form-panel, #order-form-panel, #sub-form-panel, #lit-form-panel, #course-form-panel, #ledger-form-panel {
+        #drink-form-panel, #order-form-panel, #sub-form-panel, #lit-form-panel, #course-form-panel, #ledger-form-panel {
             transition: max-height 0.4s ease-in-out, opacity 0.4s ease-in-out, margin 0.4s, padding 0.4s;
             max-height: 0; opacity: 0; overflow: hidden; padding: 0; margin: 0; border: none;
         }
-        #task-form-panel.open, #drink-form-panel.open, #order-form-panel.open, #sub-form-panel.open, #lit-form-panel.open, #course-form-panel.open, #ledger-form-panel.open {
+        #drink-form-panel.open, #order-form-panel.open, #sub-form-panel.open, #lit-form-panel.open, #course-form-panel.open, #ledger-form-panel.open {
             max-height: 2000px; opacity: 1; margin-bottom: 1.5rem; padding: 1.5rem; border: 1px solid #E9E9E7; border-radius: 6px;
         }
 
@@ -107,7 +106,7 @@
         
         .grid-schedule { display: grid; grid-template-columns: 85px repeat(5, 1fr); }
         
-        /* Cover Image Styles */
+        /* Cover Image Styles - Updated for Mobile Visibility */
         #page-cover-container {
             position: relative;
             width: 100%;
@@ -143,13 +142,13 @@
         </div>
         <div class="flex-1 overflow-y-auto px-2 py-2 space-y-0.5 custom-scroll">
             <div class="text-xs font-semibold text-notion-dim px-3 py-2 mt-2">FAVORITES</div>
-            <div onclick="switchTab('dashboard')" id="btn-dashboard" class="nav-item active"><span class="emoji">🏠</span>Dashboard</div>
+            <!-- Removed Dashboard -->
+            <div onclick="switchTab('academia')" id="btn-academia" class="nav-item active"><span class="emoji">🎓</span>Academia</div>
+            
             <div class="text-xs font-semibold text-notion-dim px-3 py-2 mt-4">PRIVATE</div>
-            <div onclick="switchTab('academia')" id="btn-academia" class="nav-item"><span class="emoji">🎓</span>Academia</div>
             <div onclick="switchTab('drinks')" id="btn-drinks" class="nav-item"><span class="emoji">🧋</span>Drinks Log</div>
             <div onclick="switchTab('debt')" id="btn-debt" class="nav-item"><span class="emoji">💰</span>Finance</div>
-            <!-- Merged Literature into Resources, Literature item removed from here -->
-            <div onclick="switchTab('planner')" id="btn-planner" class="nav-item"><span class="emoji">📅</span>Planner</div>
+            <!-- Removed Planner -->
             <div onclick="switchTab('purchasing')" id="btn-purchasing" class="nav-item"><span class="emoji">🛍️</span>Purchase Agent</div>
             <div onclick="switchTab('resources')" id="btn-resources" class="nav-item"><span class="emoji">📚</span>Resources</div>
             <div onclick="switchTab('subs')" id="btn-subs" class="nav-item"><span class="emoji">💳</span>Subscriptions</div>
@@ -158,8 +157,8 @@
 
     <!-- Mobile Nav Bar (Bottom) -->
     <div class="md:hidden fixed bottom-0 left-0 right-0 h-16 bg-white border-t border-notion-border z-50 flex justify-around items-center px-2">
-        <button onclick="switchTab('dashboard')" class="flex flex-col items-center justify-center w-full h-full text-notion-dim hover:text-notion-text"><i class="fas fa-home text-lg mb-1"></i><span class="text-[10px]">Home</span></button>
-        <button onclick="switchTab('planner')" class="flex flex-col items-center justify-center w-full h-full text-notion-dim hover:text-notion-text"><i class="fas fa-calendar-alt text-lg mb-1"></i><span class="text-[10px]">Planner</span></button>
+        <button onclick="switchTab('academia')" class="flex flex-col items-center justify-center w-full h-full text-notion-dim hover:text-notion-text"><i class="fas fa-graduation-cap text-lg mb-1"></i><span class="text-[10px]">Academia</span></button>
+        <button onclick="switchTab('debt')" class="flex flex-col items-center justify-center w-full h-full text-notion-dim hover:text-notion-text"><i class="fas fa-coins text-lg mb-1"></i><span class="text-[10px]">Finance</span></button>
         <button onclick="switchTab('resources')" class="flex flex-col items-center justify-center w-full h-full text-notion-dim hover:text-notion-text"><i class="fas fa-folder text-lg mb-1"></i><span class="text-[10px]">Files</span></button>
         <button onclick="showMoreMenu()" class="flex flex-col items-center justify-center w-full h-full text-notion-dim hover:text-notion-text"><i class="fas fa-ellipsis-h text-lg mb-1"></i><span class="text-[10px]">More</span></button>
     </div>
@@ -176,9 +175,8 @@
                     <input type="file" class="hidden" onchange="importAllData(this)">
                 </label>
             </div>
-            <div onclick="switchTab('academia'); hideMoreMenu()" class="px-4 py-3 hover:bg-notion-hover flex items-center gap-3 border-b border-gray-100"><span>🎓</span> Academia</div>
+            <!-- Removed Dashboard and Planner from More Menu -->
             <div onclick="switchTab('drinks'); hideMoreMenu()" class="px-4 py-3 hover:bg-notion-hover flex items-center gap-3 border-b border-gray-100"><span>🧋</span> Drinks</div>
-            <div onclick="switchTab('debt'); hideMoreMenu()" class="px-4 py-3 hover:bg-notion-hover flex items-center gap-3 border-b border-gray-100"><span>💰</span> Finance</div>
             <div onclick="switchTab('purchasing'); hideMoreMenu()" class="px-4 py-3 hover:bg-notion-hover flex items-center gap-3 border-b border-gray-100"><span>🛍️</span> Shop</div>
             <div onclick="switchTab('subs'); hideMoreMenu()" class="px-4 py-3 hover:bg-notion-hover flex items-center gap-3"><span>💳</span> Subscriptions</div>
         </div>
@@ -189,8 +187,8 @@
     <main class="flex-1 h-full overflow-y-auto relative bg-white">
         <!-- Top Cover Image Area -->
         <div id="page-cover-container" class="bg-gradient-to-r from-pink-100 via-purple-100 to-indigo-100 opacity-90 group relative w-full h-48 md:h-64">
-            <!-- Action buttons container -->
-            <div class="cover-actions absolute bottom-2 right-4 flex gap-2 z-20">
+            <!-- Fixed: Grouped buttons container absolute positioned at bottom-right -->
+            <div class="cover-actions absolute bottom-4 right-4 flex gap-2 z-20">
                 <button onclick="removeCover()" class="btn-notion text-xs bg-white/80 hover:bg-white shadow-sm text-red-500" title="移除封面"><i class="fas fa-times"></i></button>
                 <label class="btn-notion text-xs bg-white/80 hover:bg-white cursor-pointer shadow-sm">
                     <i class="fas fa-image mr-1"></i> 更換封面
@@ -201,12 +199,12 @@
         
         <div class="max-w-5xl mx-auto px-4 md:px-12 pb-24 md:pb-12 relative z-10">
             <!-- Dynamic Page Icon with ID -->
-            <div id="page-icon" class="text-6xl md:text-7xl mb-4 select-none -mt-10 md:-mt-12">🏠</div>
+            <div id="page-icon" class="text-6xl md:text-7xl mb-4 select-none -mt-10 md:-mt-12">🎓</div>
             <div class="mb-8 border-b border-notion-border pb-4 flex flex-col md:flex-row justify-between items-start md:items-end gap-4">
                 <div>
-                    <h1 class="text-3xl md:text-4xl font-bold text-notion-text mb-1" id="page-title">Dashboard</h1>
+                    <h1 class="text-3xl md:text-4xl font-bold text-notion-text mb-1" id="page-title">Academia</h1>
                     <div class="text-sm text-notion-dim flex items-center gap-2" id="page-desc">
-                        <span>最後更新: <span id="dashboard-date">--</span></span>
+                        <span>課表、學分與成績管理。</span>
                     </div>
                 </div>
                 
@@ -225,85 +223,13 @@
             <!-- Content Container -->
             <div id="content-area">
                 
-                <!-- Tab 0: Dashboard -->
-                <div id="tab-dashboard" class="section-content fade-in space-y-8">
-                    <div class="bg-notion-gray-bg rounded-md p-6 flex flex-col md:flex-row items-center justify-between">
-                        <div class="flex-1 border-l-4 border-notion-text pl-4 py-1">
-                            <p class="text-xl font-korean text-notion-text leading-relaxed">"멈춰서도 괜찮아 아무 이유도 모르는 채 달릴 필요 없이"</p>
-                        </div>
-                    </div>
-
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                        <!-- Swapped: Left -> Upcoming, Right -> To Do -->
-                        <div class="space-y-8">
-                             <section>
-                                <h3 class="text-lg font-bold mb-3 flex items-center border-b border-notion-border pb-2"><span class="mr-2">📅</span> Upcoming & Due</h3>
-                                <ul id="dash-due-dates" class="space-y-2"><li class="text-sm text-notion-dim pl-2">無近期事項</li></ul>
-                            </section>
-                        </div>
-                        <div class="space-y-8">
-                            <section>
-                                <h3 class="text-lg font-bold mb-3 flex items-center border-b border-notion-border pb-2"><span class="mr-2">🏠</span> To Do List</h3>
-                                <div id="dashboard-tasks" class="space-y-1"><div class="text-sm text-notion-dim pl-2">載入中...</div></div>
-                            </section>
-                            <section>
-                                <div class="flex justify-between items-center mb-3 border-b border-notion-border pb-2">
-                                    <h3 class="text-lg font-bold flex items-center"><span class="mr-2">🔖</span> Bookmarks</h3>
-                                    <button onclick="addBookmark()" class="text-notion-dim hover:text-notion-text"><i class="fas fa-plus"></i></button>
-                                </div>
-                                <ul id="dash-bookmarks" class="space-y-1"><li class="text-sm text-notion-dim pl-2">暫無書籤</li></ul>
-                            </section>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Tab: Resources (Merged Literature) -->
                 <div id="tab-resources" class="section-content hidden fade-in space-y-8">
-                     <!-- Literature Management Section -->
                      <section>
-                         <div class="flex justify-between items-center mb-4 border-b border-notion-border pb-2">
-                            <h3 class="text-lg font-bold flex items-center"><span class="mr-2">📚</span> 文獻管理 (Literature)</h3>
-                            <button onclick="toggleCollapse('lit-form-panel', 'icon-add-lit')" class="btn-notion btn-notion-primary text-xs"><i id="icon-add-lit" class="fas fa-plus mr-1 transition-transform duration-300"></i> 新增</button>
-                         </div>
-                         
-                         <!-- Lit Form -->
-                         <div id="lit-form-panel" class="bg-notion-gray-bg rounded-md border border-notion-border mb-6 collapse-content">
-                            <div class="p-4">
-                                <h4 class="text-xs font-bold text-notion-dim mb-4 uppercase">基本資訊</h4>
-                                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                                    <input type="text" id="lit-title" placeholder="標題" class="md:col-span-2 font-bold">
-                                    <input type="text" id="lit-author" placeholder="作者">
-                                    <input type="text" id="lit-date" placeholder="年份 (2023)">
-                                    <select id="lit-type"><option>期刊論文</option><option>書籍</option><option>學位論文</option><option>網路文章</option><option>其他</option></select>
-                                    <select id="lit-status"><option>已讀</option><option>閱讀中</option><option>想讀</option></select>
-                                    <input type="text" id="lit-field" placeholder="領域" class="md:col-span-2">
-                                    <input type="text" id="lit-keywords" placeholder="關鍵字" class="md:col-span-4">
-                                    <input type="text" id="lit-doi" placeholder="DOI">
-                                    <input type="text" id="lit-theories" placeholder="相關理論" class="md:col-span-3">
-                                </div>
-                                <h4 class="text-xs font-bold text-notion-dim mb-4 uppercase">變數模型</h4>
-                                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 bg-white p-4 rounded border border-notion-border">
-                                    <input type="text" id="lit-method-iv" placeholder="自變數 (IV)">
-                                    <input type="text" id="lit-method-dv" placeholder="因變數 (DV)">
-                                    <input type="text" id="lit-method-med" placeholder="中介變數 (Mediator)">
-                                    <input type="text" id="lit-method-mod" placeholder="調節變數 (Moderator)">
-                                </div>
-                                <h4 class="text-xs font-bold text-notion-dim mb-4 uppercase">研究核心</h4>
-                                <div class="space-y-4 mb-6">
-                                    <textarea id="lit-background" class="w-full" rows="2" placeholder="研究背景..."></textarea>
-                                    <textarea id="lit-purpose" class="w-full" rows="2" placeholder="研究目的..."></textarea>
-                                    <textarea id="lit-conclusion" class="w-full" rows="3" placeholder="研究結論..."></textarea>
-                                    <textarea id="lit-note" class="w-full" rows="2" placeholder="個人筆記..."></textarea>
-                                    <input type="text" id="lit-link" placeholder="連結 URL" class="w-full">
-                                </div>
-                                <button onclick="addLit()" class="btn-notion btn-notion-primary w-full">儲存文獻</button>
-                            </div>
-                        </div>
-                        <div id="lit-list-container" class="space-y-4"></div>
-                     </section>
-
-                     <!-- File Archive Section -->
-                     <section class="mt-12 pt-8 border-t border-notion-border">
+                        <h3 class="text-lg font-bold mb-3 flex items-center border-b border-notion-border pb-2"><span class="mr-2">📚</span> Recent Sources</h3>
+                        <div id="dash-recent-sources" class="space-y-1 overflow-y-auto custom-scroll"><div class="text-sm text-notion-dim">尚無文獻資料</div></div>
+                    </section>
+                     <section>
                         <h3 class="text-lg font-bold mb-3 flex items-center border-b border-notion-border pb-2"><span class="mr-2">📂</span> 歸檔紀錄 (File Log)</h3>
                         <div id="drop-zone" class="border border-dashed border-gray-300 rounded p-6 text-center cursor-pointer hover:bg-notion-hover mb-4 transition bg-notion-gray-bg/30">
                             <i class="fas fa-cloud-upload-alt text-2xl text-notion-dim mb-2"></i>
@@ -314,72 +240,8 @@
                     </section>
                 </div>
 
-                <!-- Tab 1: Planner -->
-                <div id="tab-planner" class="section-content hidden fade-in">
-                    <div class="flex justify-end mb-4"><button onclick="toggleTaskForm()" class="btn-notion btn-notion-primary"><i class="fas fa-plus mr-1"></i> 新增</button></div>
-                    <div id="task-form-panel" class="bg-notion-gray-bg rounded-md border border-notion-border">
-                        <!-- Type Switcher -->
-                        <div class="flex gap-4 p-4 border-b border-notion-border/50 mb-2">
-                             <label class="flex items-center gap-2 cursor-pointer select-none">
-                                 <input type="radio" name="task-type" value="todo" checked onchange="toggleTaskTypeUI()" class="text-notion-text">
-                                 <span class="text-sm font-bold">待辦事項</span>
-                             </label>
-                             <label class="flex items-center gap-2 cursor-pointer select-none">
-                                 <input type="radio" name="task-type" value="event" onchange="toggleTaskTypeUI()" class="text-notion-text">
-                                 <span class="text-sm font-bold">日程安排</span>
-                             </label>
-                        </div>
-                        
-                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
-                            <!-- Added End Date for Multi-day events -->
-                            <div class="flex flex-col">
-                                <label class="text-xs text-notion-dim mb-1">開始日期</label>
-                                <input type="date" id="task-date" class="w-full">
-                            </div>
-                            <div class="flex flex-col">
-                                <label class="text-xs text-notion-dim mb-1">結束日期 (選填)</label>
-                                <input type="date" id="task-end-date" class="w-full">
-                            </div>
-                            
-                            <div class="flex items-center gap-2 mt-5">
-                                <input type="time" id="task-time" class="w-full">
-                                <label class="text-sm text-notion-dim whitespace-nowrap"><input type="checkbox" id="task-allday" onchange="toggleTimeInput()"> 全日</label>
-                            </div>
-                            <div class="mt-5">
-                                <select id="task-priority" class="w-full"><option value="q1">🔥 緊急且重要</option><option value="q2">⭐ 重要但不緊急</option><option value="q3">⚡ 緊急但不重要</option><option value="q4">☕ 不重要不緊急</option></select>
-                            </div>
-                        </div>
-                        <input type="text" id="task-title" placeholder="標題" class="w-full font-bold mb-4">
-                        <textarea id="task-content" rows="3" placeholder="詳細內容..." class="w-full mb-4"></textarea>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4"><input type="text" id="task-location" placeholder="地點"><input type="text" id="task-url" placeholder="相關連結"></div>
-                        <div class="flex justify-end gap-2"><button onclick="toggleTaskForm()" class="btn-notion">取消</button><button onclick="addTask()" class="btn-notion btn-notion-primary">確認新增</button></div>
-                    </div>
-                    
-                    <div class="flex justify-between items-center mb-4 mt-8"><button onclick="changeMonth(-1)" class="btn-notion"><i class="fas fa-chevron-left"></i></button><h2 id="calendar-month-year" class="text-xl font-bold"></h2><button onclick="changeMonth(1)" class="btn-notion"><i class="fas fa-chevron-right"></i></button></div>
-                    <div class="grid grid-cols-7 text-center text-xs font-semibold text-notion-dim mb-2 border-b border-notion-border pb-2"><div>日</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div><div>六</div></div>
-                    <div id="calendar-grid" class="grid grid-cols-7 gap-1"></div>
-                    
-                    <!-- Split Lists -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-                        <div>
-                            <h3 class="text-lg font-bold mb-3 border-b border-notion-border pb-2 flex items-center justify-between">
-                                <span>待辦清單</span>
-                                <span class="text-xs font-normal text-notion-dim bg-notion-gray-bg px-2 rounded" id="todo-count">0</span>
-                            </h3>
-                            <ul id="planner-todo-list" class="divide-y divide-notion-border bg-notion-gray-bg/20 rounded p-2 min-h-[100px]"></ul>
-                        </div>
-                        <div>
-                            <h3 class="text-lg font-bold mb-3 border-b border-notion-border pb-2 flex items-center justify-between">
-                                <span>日程安排</span>
-                                <span class="text-xs font-normal text-notion-dim bg-notion-gray-bg px-2 rounded" id="event-count">0</span>
-                            </h3>
-                            <ul id="planner-event-list" class="divide-y divide-notion-border bg-notion-gray-bg/20 rounded p-2 min-h-[100px]"></ul>
-                        </div>
-                    </div>
-                </div>
-
                 <!-- Tab 1.5: Academia -->
-                <div id="tab-academia" class="section-content hidden fade-in">
+                <div id="tab-academia" class="section-content fade-in">
                     <div class="flex justify-between items-center mb-6 flex-wrap gap-4">
                         <div class="flex gap-2 shrink-0">
                              <div class="notion-callout bg-notion-blue-bg py-1 px-3 flex items-center text-sm"><span class="mr-2">🎓</span> <span id="acad-gpa" class="font-bold">0.0</span> <span class="text-notion-dim text-xs ml-1">/ 4.3</span></div>
@@ -387,7 +249,6 @@
                         </div>
                         <button onclick="toggleCourseForm()" class="btn-notion btn-notion-primary ml-auto"><i class="fas fa-plus mr-1"></i> 課程</button>
                     </div>
-                    
                     <div id="course-form-panel" class="bg-notion-gray-bg rounded-md border border-notion-border">
                          <div class="grid grid-cols-1 md:grid-cols-4 gap-3">
                             <input type="text" id="course-name" placeholder="課程名稱" class="md:col-span-2">
@@ -443,6 +304,15 @@
                             <div class="grid-schedule border-b border-notion-border bg-notion-gray-bg text-center text-xs font-bold py-2 text-notion-dim"><div>時間</div><div>一</div><div>二</div><div>三</div><div>四</div><div>五</div></div>
                             <div id="schedule-container" class="relative"></div>
                         </div>
+                    </div>
+
+                    <!-- Moved Bookmarks Section Here -->
+                    <div class="pt-8 border-t border-notion-border">
+                        <div class="flex justify-between items-center mb-3 border-b border-notion-border pb-2">
+                            <h3 class="text-lg font-bold flex items-center"><span class="mr-2">🔖</span> Bookmarks</h3>
+                            <button onclick="addBookmark()" class="text-notion-dim hover:text-notion-text"><i class="fas fa-plus"></i></button>
+                        </div>
+                        <ul id="dash-bookmarks" class="space-y-1"><li class="text-sm text-notion-dim pl-2">暫無書籤</li></ul>
                     </div>
                 </div>
 
@@ -508,9 +378,8 @@
                         <h4 class="font-bold mb-4">建立/編輯訂單</h4>
                         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                             <input type="date" id="order-date">
-                            <!-- Swapped Code and Shop -->
-                            <input type="text" id="order-shop" placeholder="店家" class="md:col-span-2">
                             <input type="text" id="order-code" placeholder="代號">
+                            <input type="text" id="order-shop" placeholder="店家" class="md:col-span-2">
                             <input type="number" id="order-rate" placeholder="匯率 (38)" value="38" oninput="calcProfit()">
                             <select id="order-status" class="md:col-span-3"></select>
                         </div>
@@ -616,6 +485,43 @@
                     </div>
                 </div>
 
+                <div id="tab-literature" class="section-content hidden fade-in">
+                    <div class="flex justify-end mb-4"><button onclick="toggleCollapse('lit-form-panel', 'icon-add-lit')" class="btn-notion btn-notion-primary"><i id="icon-add-lit" class="fas fa-plus mr-1 transition-transform duration-300"></i> 新增文獻</button></div>
+                    <div id="lit-form-panel" class="bg-notion-gray-bg rounded-md border border-notion-border mb-8 collapse-content">
+                        <div class="p-4">
+                            <h4 class="text-xs font-bold text-notion-dim mb-4 uppercase">基本資訊</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                                <input type="text" id="lit-title" placeholder="標題" class="md:col-span-2 font-bold">
+                                <input type="text" id="lit-author" placeholder="作者">
+                                <input type="text" id="lit-date" placeholder="年份 (2023)">
+                                <select id="lit-type"><option>期刊論文</option><option>書籍</option><option>學位論文</option><option>網路文章</option><option>其他</option></select>
+                                <select id="lit-status"><option>已讀</option><option>閱讀中</option><option>想讀</option></select>
+                                <input type="text" id="lit-field" placeholder="領域" class="md:col-span-2">
+                                <input type="text" id="lit-keywords" placeholder="關鍵字" class="md:col-span-4">
+                                <input type="text" id="lit-doi" placeholder="DOI">
+                                <input type="text" id="lit-theories" placeholder="相關理論" class="md:col-span-3">
+                            </div>
+                            <h4 class="text-xs font-bold text-notion-dim mb-4 uppercase">變數模型</h4>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6 bg-white p-4 rounded border border-notion-border">
+                                <input type="text" id="lit-method-iv" placeholder="自變數 (IV)">
+                                <input type="text" id="lit-method-dv" placeholder="因變數 (DV)">
+                                <input type="text" id="lit-method-med" placeholder="中介變數 (Mediator)">
+                                <input type="text" id="lit-method-mod" placeholder="調節變數 (Moderator)">
+                            </div>
+                            <h4 class="text-xs font-bold text-notion-dim mb-4 uppercase">研究核心</h4>
+                            <div class="space-y-4 mb-6">
+                                <textarea id="lit-background" class="w-full" rows="2" placeholder="研究背景..."></textarea>
+                                <textarea id="lit-purpose" class="w-full" rows="2" placeholder="研究目的..."></textarea>
+                                <textarea id="lit-conclusion" class="w-full" rows="3" placeholder="研究結論..."></textarea>
+                                <textarea id="lit-note" class="w-full" rows="2" placeholder="個人筆記..."></textarea>
+                                <input type="text" id="lit-link" placeholder="連結 URL" class="w-full">
+                            </div>
+                            <button onclick="addLit()" class="btn-notion btn-notion-primary w-full">儲存文獻</button>
+                        </div>
+                    </div>
+                    <div id="lit-list-container" class="space-y-4"></div>
+                </div>
+
             </div> </div>
     </main>
     
@@ -656,7 +562,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             loadData(); 
             updateDate(); 
-            switchTab('dashboard');
+            switchTab('academia'); // Default to Academia as Dashboard deleted
             renderTasks(); renderCalendar(); renderDrinks(); renderDrinkCalendar(); 
             renderStatusOptions(); renderOrders(); updateStats(); updatePurchasingStats(); 
             renderSubs(); renderDebts(); renderCameraFund(); updateLedgerTypeOptions(); 
@@ -680,103 +586,29 @@
             const n=new Date(); 
             const dateStr = `${n.getFullYear()} / ${String(n.getMonth()+1).padStart(2,'0')} / ${String(n.getDate()).padStart(2,'0')} (${['日','一','二','三','四','五','六'][n.getDay()]})`;
             if(document.getElementById('sidebar-date-display')) document.getElementById('sidebar-date-display').innerHTML = dateStr;
-            if(document.getElementById('dashboard-date')) document.getElementById('dashboard-date').innerHTML = dateStr;
         }
         
         function switchTab(t) { 
             document.querySelectorAll('.nav-item').forEach(b=>{ b.classList.remove('active'); if(b.id===`btn-${t}`) b.classList.add('active'); });
             document.querySelectorAll('.section-content').forEach(s=>{s.classList.add('hidden');if(s.id===`tab-${t}`)s.classList.remove('hidden');}); 
             
-            const titles = { 'dashboard':'Dashboard', 'planner':'Planner', 'drinks':'Drinks Log', 'purchasing':'Purchase Agent', 'subs':'Subscriptions', 'debt':'Finance', 'literature':'Literature', 'academia':'Academia', 'resources':'Resources' };
-            const icons = { 'dashboard':'🏠', 'planner':'📅', 'drinks':'🧋', 'purchasing':'🛍️', 'subs':'💳', 'debt':'💰', 'literature':'📚', 'academia':'🎓', 'resources':'📂' };
-            const descs = { 'dashboard':'美好的一天，從這裡開始。', 'planner':'管理您的日程與待辦事項。', 'drinks':'紀錄每一杯快樂的泉源。', 'purchasing':'追蹤代購訂單與利潤。', 'subs':'管理定期扣款的服務。', 'debt':'一般的記帳與夢想基金。', 'literature':'學術文獻的整理與筆記。', 'academia':'課表、學分與成績管理。', 'resources':'檔案歸檔與近期參考文獻。' };
+            const titles = { 'drinks':'Drinks Log', 'purchasing':'Purchase Agent', 'subs':'Subscriptions', 'debt':'Finance', 'literature':'Literature', 'academia':'Academia', 'resources':'Resources' };
+            const icons = { 'drinks':'🧋', 'purchasing':'🛍️', 'subs':'💳', 'debt':'💰', 'literature':'📚', 'academia':'🎓', 'resources':'📂' };
+            const descs = { 'drinks':'紀錄每一杯快樂的泉源。', 'purchasing':'追蹤代購訂單與利潤。', 'subs':'管理定期扣款的服務。', 'debt':'一般的記帳與夢想基金。', 'literature':'學術文獻的整理與筆記。', 'academia':'課表、學分與成績管理。', 'resources':'檔案歸檔與近期參考文獻。' };
             
             if(document.getElementById('page-title')) document.getElementById('page-title').innerText = titles[t];
             if(document.getElementById('page-desc')) document.getElementById('page-desc').innerHTML = `<span>${descs[t]}</span>`; 
             if(document.getElementById('page-icon')) document.getElementById('page-icon').innerText = icons[t] || '📒';
 
-            if(t==='planner') renderCalendar(); 
             if(t==='drinks') renderDrinkCalendar();
-            if(t==='dashboard') { renderDashboard(); renderSchedule('dash-schedule-container'); }
-            if(t==='academia') { renderAcademia(); }
+            if(t==='academia') { renderAcademia(); renderBookmarks(); } // Added renderBookmarks here
             if(t==='resources') { renderDriveFiles(); }
             if(t==='purchasing') { renderOrders(); updatePurchasingStats(); } 
             
             hideMoreMenu();
         }
 
-        // --- DASHBOARD RENDER & HELPERS ---
-        function renderDashboard() {
-            const todayStr = new Date().toISOString().split('T')[0];
-            const dashTasks = document.getElementById('dashboard-tasks');
-            const dueList = document.getElementById('dash-due-dates');
-
-            // 1. Dashboard To-Do List (Left) - NOW ON RIGHT IN HTML, but logic here
-            // Logic: All incomplete Todos, sorted by date then priority
-            if(dashTasks) {
-                dashTasks.innerHTML = '';
-                const todos = appData.tasks.filter(t => (!t.type || t.type === 'todo') && !t.completed);
-                
-                todos.sort((a, b) => {
-                    if (a.date !== b.date) return new Date(a.date) - new Date(b.date);
-                    return (a.quadrant || 'q4').localeCompare(b.quadrant || 'q4');
-                });
-
-                if(todos.length === 0) dashTasks.innerHTML = '<div class="text-sm text-notion-dim pl-2 italic">無待辦事項</div>';
-                else {
-                    todos.forEach(t => {
-                        const qLabels = { q1: "🔥", q2: "⭐", q3: "⚡", q4: "☕" };
-                        const label = qLabels[t.quadrant] || "";
-                        dashTasks.innerHTML += `
-                        <div class="flex items-start gap-2 p-1 hover:bg-notion-hover rounded cursor-default">
-                             <input type="checkbox" onclick="toggleTask(${t.id}); renderDashboard()" class="mt-1 cursor-pointer">
-                             <div class="flex-1 min-w-0">
-                                <div class="text-sm font-medium text-notion-text truncate">${label} ${t.title}</div>
-                                <div class="text-[10px] text-notion-dim">${t.date} ${t.time || ''}</div>
-                             </div>
-                        </div>`;
-                    });
-                }
-            }
-            
-            // 2. Dashboard Upcoming & Due (Right) - NOW ON LEFT IN HTML
-            // Logic: Events & Incomplete Todos >= Today
-            if(dueList) {
-                dueList.innerHTML = '';
-                const upcoming = appData.tasks.filter(t => t.date >= todayStr && (t.type === 'event' || !t.completed));
-                
-                upcoming.sort((a, b) => {
-                    const dateA = new Date(a.date + (a.time ? 'T'+a.time : 'T00:00'));
-                    const dateB = new Date(b.date + (b.time ? 'T'+b.time : 'T00:00'));
-                    return dateA - dateB;
-                });
-
-                const displayList = upcoming.slice(0, 10);
-
-                if(displayList.length === 0) dueList.innerHTML = '<div class="text-sm text-notion-dim pl-2 italic">無近期事項</div>';
-                else {
-                    displayList.forEach(t => {
-                        const icon = t.type === 'event' ? '📅' : '📝';
-                        const diffTime = new Date(t.date) - new Date(todayStr);
-                        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-                        let badgeText = diffDays === 0 ? '今天' : (diffDays === 1 ? '明天' : `${diffDays}天後`);
-                        if(diffDays < 0) badgeText = "已過期"; 
-
-                        dueList.innerHTML += `
-                        <div class="flex justify-between items-center text-sm p-1 border-b border-gray-50 last:border-0 hover:bg-notion-hover rounded">
-                            <div class="flex items-center gap-2 overflow-hidden">
-                                <span class="text-xs flex-shrink-0">${icon}</span>
-                                <span class="truncate text-notion-text">${t.title}</span>
-                            </div>
-                            <span class="text-[10px] bg-notion-gray-bg text-notion-dim px-1.5 py-0.5 rounded whitespace-nowrap flex-shrink-0 ml-2">${badgeText}</span>
-                        </div>`;
-                    });
-                }
-            }
-
-            renderBookmarks(); renderDriveFiles(); renderRecentSources();
-        }
-
+        // Bookmarks moved to Academia
         function renderBookmarks() {
             const list = document.getElementById('dash-bookmarks'); if(!list) return;
             list.innerHTML = '';
@@ -1216,7 +1048,9 @@
             renderOrders();
         }
         function updatePurchasingStats() {
-            // Fix: Unpaid calculation should use 'sell' price for unpaid orders
+            // Unpaid calculation: Sum of 'sell' price where isPaid is false (Receivables)
+            // Or 'sell' price where status isn't complete? Usually 'isPaid' is the tracker.
+            // Using 'sell' as per typical agent usage (receivable from customer)
             const net = appData.orders.reduce((acc, o) => acc + (o.profit || 0), 0);
             const unpaid = appData.orders.filter(o => !o.isPaid).reduce((acc, o) => acc + (o.sell || 0), 0); 
             document.getElementById('stats-net-profit').innerText = net;
